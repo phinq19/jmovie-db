@@ -31,9 +31,13 @@ public class Parser {
 		}
 	}
 
+	/**
+	 * 
+	 * @param movies
+	 */
 	public void addMovies (final ArrayList<MovieModel> movies) {
 		for (final MovieModel movie : movies) {
-			System.out.println(movie.getTitle());
+			this.tableModel.addRow(movie.getMovieVector());
 		}
 	}
 

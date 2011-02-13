@@ -32,7 +32,6 @@ import moviedb.util.SwingUtilities;
 public class ParserGUI extends JFrame {
 
 	private JButton btnOpen = null;
-
 	private JButton btnStartScan = null;
 
 	private ArrayList<String> dirList = null;

@@ -88,7 +88,7 @@ public class MovieListGUI extends JFrame {
 		this.mainMenu = this.setMainMenuSettings(this.mainMenu);
 		this.toolBar = this.setToolBarSettings(this.toolBar);
 		frame.add(this.mainMenu, BorderLayout.NORTH);
-		frame.getContentPane().add(this.toolBar, BorderLayout.WEST);
+		frame.getContentPane().add(this.toolBar, BorderLayout.SOUTH);
 		frame.getContentPane().add(this.tableScrollPane, BorderLayout.CENTER);
 		frame.pack();
 	}

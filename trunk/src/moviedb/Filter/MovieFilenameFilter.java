@@ -14,10 +14,11 @@ import java.io.FilenameFilter;
 public class MovieFilenameFilter implements FilenameFilter {
 
 	@Override
-	public boolean accept (final File dir, final String s) {
+	public boolean accept (final File file, final String s) {
 		return s.toLowerCase().endsWith(".avi") || s.toLowerCase().endsWith(".mkv")
 				|| s.toLowerCase().endsWith(".mpg") || s.toLowerCase().endsWith(".mpeg")
 				|| s.toLowerCase().endsWith(".iso") || s.toLowerCase().endsWith(".xvid")
-				|| s.toLowerCase().endsWith(".divx") || dir.isDirectory();
+				|| s.toLowerCase().endsWith(".divx")
+				|| (file.isDirectory() && !s.equals(".") && !s.equals(".."));
 	}
 }

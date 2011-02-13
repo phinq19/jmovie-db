@@ -17,7 +17,7 @@ public class MovieModel {
 	private String filepath = null;
 	private String filetype = null;
 	private String hdType = null;
-	HashMap<String, String> movieMap = null;
+	private HashMap<String, String> movieMap = null;
 	private Vector<String> movieVector = null;
 	private Boolean R5 = null;
 	private String subTitle = null;
@@ -74,6 +74,16 @@ public class MovieModel {
 	 * @return the movieVector
 	 */
 	public final Vector<String> getMovieVector () {
+		this.movieVector.add(this.movieMap.get("title") != null ? this.movieMap.get("title") : "");
+		this.movieVector.add(this.movieMap.get("subTitle") != null ? this.movieMap.get("subTitle")
+				: "");
+		this.movieVector.add(this.movieMap.get("version") != null ? this.movieMap.get("version")
+				: "");
+		this.movieVector.add(this.movieMap.get("year") != null ? this.movieMap.get("year") : "");
+		this.movieVector
+				.add(this.movieMap.get("hdType") != null ? this.movieMap.get("hdType") : "");
+		this.movieVector.add(this.movieMap.get("filepath") != null ? this.movieMap.get("filepath")
+				: "");
 		return this.movieVector;
 	}
 
@@ -144,7 +154,6 @@ public class MovieModel {
 	 */
 	public final void setFilepath (final String filepath) {
 		this.updateHashMap("filepath", filepath);
-
 		this.filepath = filepath;
 	}
 
@@ -162,7 +171,7 @@ public class MovieModel {
 	 *            the hdType to set
 	 */
 	public void setHdType (final String hdType) {
-		this.updateHashMap("hdtype", hdType);
+		this.updateHashMap("hdType", hdType);
 
 		this.hdType = hdType;
 	}
