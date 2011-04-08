@@ -1,0 +1,9 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Wiki of jMovieDB
+
+= Missing features =
+  * [AddMovieToDB Add found movies to database.]
+  * [AddOwnParser Allows to define own syntax for files.]
