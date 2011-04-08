@@ -2,7 +2,7 @@
 
 = Introduction =
 
-Wiki of jMovieDB
+Developer wiki of jMovieDB
 
 = Missing features =
   * [AddMovieToDB Add found movies to database.]
