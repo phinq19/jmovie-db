@@ -1,0 +1,9 @@
+#summary One-sentence summary of this page.
+
+= Details =
+
+Actually it is not possible to save the found movies in the database. 
+
+Two types of adding to database:
+  # Add movie automaticly after found (Select a box in the options to enabled/disable)
+  # Save movie with savebutton.
