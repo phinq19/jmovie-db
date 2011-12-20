@@ -116,8 +116,6 @@ public class MovieTableModel implements TableModel {
 				e.printStackTrace();
 			} catch (final InvocationTargetException e) {
 				e.printStackTrace();
-			} catch (final NoSuchMethodException e) {
-				e.printStackTrace();
 			}
 			Object resultVal = null;
 			if (o == null) {

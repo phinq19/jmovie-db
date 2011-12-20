@@ -37,6 +37,7 @@ import javax.swing.table.TableModel;
 
 import com.lars_albrecht.moviedb.annotation.DatabaseOptions;
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
+import com.lars_albrecht.moviedb.apiscraper.themoviedb.TMDbScraper;
 import com.lars_albrecht.moviedb.components.StatusBar;
 import com.lars_albrecht.moviedb.components.imagepanel.JImage;
 import com.lars_albrecht.moviedb.components.labeled.JLabeledComboBox;
@@ -58,6 +59,7 @@ import com.lars_albrecht.moviedb.model.Options;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
 import com.lars_albrecht.moviedb.utilities.Debug;
 import com.lars_albrecht.moviedb.utilities.Helper;
+import com.lars_albrecht.moviedb.utilities.PropertiesReader;
 
 /**
  * @author lalbrecht
@@ -107,7 +109,7 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 		Controller.flDB = Helper.getDBFieldModelFromClass(MovieModel.class);
 
 		Controller.apiScraper = new ArrayList<IApiScraperPlugin>();
-		// Controller.apiScraper.add(new TMDbScraper());
+		Controller.apiScraper.add(new TMDbScraper());
 
 		for (final IApiScraperPlugin apiScraper : Controller.apiScraper) {
 			Controller.flTable.addAll(Helper.getTableFieldModelFromClass(apiScraper.getMovieModelInstance()));
@@ -126,9 +128,9 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 			}
 		}
 
-		for (final FieldModel fm : Controller.flTable) {
-			System.out.println(fm.getAs());
-		}
+		// for (final FieldModel fm : Controller.flTable) {
+		// System.out.println(fm.getAs());
+		// }
 
 		this.initDB();
 
@@ -328,7 +330,11 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 		} else if (e.getSource() == this.pf.getMiRemoveAll()) {
 			if (JOptionPane.showConfirmDialog(this.pf, "Wirklich löschen?", "Löschen?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) {
 				try {
+					int movieCount = this.lv.getTable().getRowCount();
 					MovieController.removeAllMovies();
+					this.lv.getTableModel().getMovies().removeAllElements();
+					this.lv.getTable().revalidate();
+					this.sbStatus.setText(String.format(PropertiesReader.getInstance().getProperties("application.status.movielist.removedall"), movieCount));
 				} catch (final SQLException e1) {
 					e1.printStackTrace();
 				}
@@ -378,10 +384,14 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 			// set new status
 			if (this.lv.getTableModel().getMovies().size() > 0) {
 				for (final MovieModel movie : this.lv.getTableModel().getMovies()) {
-					if (movie.getFile().getAbsoluteFile().exists()) {
-						movie.setValidPath(Boolean.TRUE);
-					} else {
-						movie.setValidPath(Boolean.FALSE);
+					try {
+						if (((File) movie.get("file")).getAbsoluteFile().exists()) {
+							movie.set("validPath", Boolean.TRUE);
+						} else {
+							movie.set("validPath", Boolean.FALSE);
+						}
+					} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
+						e1.printStackTrace();
 					}
 				}
 				this.lv.getTableModel().callListenersChange(
@@ -619,52 +629,50 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 			for (final Map.Entry<String, Component> entry : this.getTv().getComponentList().entrySet()) {
 				try {
 					final Object result = selectedMovie.get(entry.getKey());
-					// if(result != null) {
-					Object resultForComponent = null;
-					if ((result instanceof ArrayList)) {
-						resultForComponent = Helper.implode((ArrayList<?>) result, ", ", null, null);
-					} else if ((result instanceof File)) {
-						resultForComponent = ((File) result).getAbsolutePath();
-					} else if ((result instanceof String)) {
-						resultForComponent = result;
-					} else if (result instanceof Integer) {
-						resultForComponent = Integer.toString((Integer) result);
-					} else if ((result instanceof Image)) {
-						resultForComponent = result;
-					}
-
-					if (entry.getValue() instanceof JLabeledTextInput) {
-						((JLabeledTextInput) entry.getValue()).getTfText().setText((String) resultForComponent);
-					} else if (entry.getValue() instanceof JLabeledTextArea) {
-
-					} else if (entry.getValue() instanceof JLabeledComboBox) {
-						// for (String s : (ArrayList<String>) result) {
-						// System.out.println(resultForComponent);
-						// ((JLabeledComboBox<String>)
-						// entry.getValue()).getCbBox().addItem(s);
-						// }
-					} else if (entry.getValue() instanceof JLabeledList) {
-						final ListModel<KeyValue<Integer, String>> listModel = ((JLabeledList<KeyValue<Integer, String>>) entry.getValue()).getlList().getModel();
-						final JList<KeyValue<Integer, String>> list = ((JLabeledList<KeyValue<Integer, String>>) entry.getValue()).getlList();
-						final int[] selectedIndices = new int[((ArrayList<String>) result).size()];
-						int j = 0;
-						for (int i = 0; i < listModel.getSize(); i++) {
-							if (((ArrayList<String>) result).contains(listModel.getElementAt(i).getValue())) {
-								selectedIndices[j] = i;
-								j++;
-							}
+					if (result != null) {
+						Object resultForComponent = null;
+						if ((result instanceof ArrayList)) {
+							resultForComponent = Helper.implode((ArrayList<?>) result, ", ", null, null);
+						} else if ((result instanceof File)) {
+							resultForComponent = ((File) result).getAbsolutePath();
+						} else if ((result instanceof String)) {
+							resultForComponent = result;
+						} else if (result instanceof Integer) {
+							resultForComponent = Integer.toString((Integer) result);
+						} else if ((result instanceof Image)) {
+							resultForComponent = result;
 						}
-						list.setSelectedIndices(selectedIndices);
-					} else if (entry.getValue() instanceof JImage) {
-						((JImage) entry.getValue()).setImage(resultForComponent != null ? (Image) resultForComponent : null);
+
+						if (entry.getValue() instanceof JLabeledTextInput) {
+							((JLabeledTextInput) entry.getValue()).getTfText().setText((String) resultForComponent);
+						} else if (entry.getValue() instanceof JLabeledTextArea) {
+
+						} else if (entry.getValue() instanceof JLabeledComboBox) {
+							// for (String s : (ArrayList<String>) result) {
+							// System.out.println(resultForComponent);
+							// ((JLabeledComboBox<String>)
+							// entry.getValue()).getCbBox().addItem(s);
+							// }
+						} else if (entry.getValue() instanceof JLabeledList) {
+							final ListModel<KeyValue<Integer, String>> listModel = ((JLabeledList<KeyValue<Integer, String>>) entry.getValue()).getlList().getModel();
+							final JList<KeyValue<Integer, String>> list = ((JLabeledList<KeyValue<Integer, String>>) entry.getValue()).getlList();
+							final int[] selectedIndices = new int[((ArrayList<String>) result).size()];
+							int j = 0;
+							for (int i = 0; i < listModel.getSize(); i++) {
+								if (((ArrayList<String>) result).contains(listModel.getElementAt(i).getValue())) {
+									selectedIndices[j] = i;
+									j++;
+								}
+							}
+							list.setSelectedIndices(selectedIndices);
+						} else if (entry.getValue() instanceof JImage) {
+							((JImage) entry.getValue()).setImage(resultForComponent != null ? (Image) resultForComponent : null);
+						} else {
+							System.out.println(": " + entry.getValue().getClass());
+						}
 					} else {
-						System.out.println(": " + entry.getValue().getClass());
+						System.out.println(entry.getKey() + " is null");
 					}
-					// } else {
-					// System.out.println(entry.getKey() + " is null");
-					// }
-				} catch (final NoSuchMethodException e1) {
-					e1.printStackTrace();
 				} catch (final SecurityException e1) {
 					e1.printStackTrace();
 				} catch (final IllegalAccessException e1) {

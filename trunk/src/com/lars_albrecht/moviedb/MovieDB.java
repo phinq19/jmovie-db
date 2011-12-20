@@ -3,8 +3,9 @@
  */
 package com.lars_albrecht.moviedb;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
-import com.lars_albrecht.moviedb.apiscraper.rottentomatoes.RottenTomatoesScraper;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.TMDbScraper;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
@@ -64,8 +65,10 @@ public class MovieDB {
 		// } catch (NoSuchMethodException e) {
 		// e.printStackTrace();
 		// }
-		//
+
+		// testApiScraper();
 		// System.exit(-1);
+
 		Debug.log(Debug.LEVEL_DEBUG, "Start MovieDB");
 		new Controller();
 
@@ -83,21 +86,27 @@ public class MovieDB {
 
 	@SuppressWarnings("unused")
 	private void testApiScraper() {
-		System.setProperty("java.net.useSystemProxies", "true");
+		// System.setProperty("java.net.useSystemProxies", "true");
 
 		final String debugStr = "Blade Runner";
 		final Integer debugYear = 1982;
 		IApiScraperPlugin x = new TMDbScraper();
 		MovieModel m = x.getMovieFromStringYear(debugStr, debugYear);
 		if (m != null) {
-			// sysout informations
+			try {
+				System.out.println(m.get("tmdbId"));
+				System.out.println(m.get("alternativeName"));
+				System.out.println(m.get("maintitle"));
+			} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
 		}
-		System.out.println("--------------");
-		x = new RottenTomatoesScraper();
-		m = x.getMovieFromStringYear(debugStr, debugYear);
-		if (m != null) {
-			// sysout informations
-		}
+		// System.out.println("--------------");
+		// x = new RottenTomatoesScraper();
+		// m = x.getMovieFromStringYear(debugStr, debugYear);
+		// if (m != null) {
+		// // sysout informations
+		// }
 
 	}
 }

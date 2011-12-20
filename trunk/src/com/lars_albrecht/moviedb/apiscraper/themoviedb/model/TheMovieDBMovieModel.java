@@ -52,7 +52,7 @@ public class TheMovieDBMovieModel extends MovieModel {
 	/**
 	 * @return the tmdbId
 	 */
-	public synchronized final Integer getTmdbId() {
+	protected synchronized final Integer getTmdbId() {
 		return this.tmdbId;
 	}
 
@@ -60,14 +60,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param tmdbId
 	 *            the tmdbId to set
 	 */
-	public synchronized final void setTmdbId(final Integer tmdbId) {
+	protected synchronized final void setTmdbId(final Integer tmdbId) {
 		this.tmdbId = tmdbId;
 	}
 
 	/**
 	 * @return the alternativeName
 	 */
-	public synchronized final String getAlternativeName() {
+	protected synchronized final String getAlternativeName() {
 		return this.alternativeName;
 	}
 
@@ -75,14 +75,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param alternativeName
 	 *            the alternativeName to set
 	 */
-	public synchronized final void setAlternativeName(final String alternativeName) {
+	protected synchronized final void setAlternativeName(final String alternativeName) {
 		this.alternativeName = alternativeName;
 	}
 
 	/**
 	 * @return the originalName
 	 */
-	public synchronized final String getOriginalName() {
+	protected synchronized final String getOriginalName() {
 		return this.originalName;
 	}
 
@@ -90,14 +90,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param originalName
 	 *            the originalName to set
 	 */
-	public synchronized final void setOriginalName(final String originalName) {
+	protected synchronized final void setOriginalName(final String originalName) {
 		this.originalName = originalName;
 	}
 
 	/**
 	 * @return the runtime
 	 */
-	public synchronized final Integer getRuntime() {
+	protected synchronized final Integer getRuntime() {
 		return this.runtime;
 	}
 
@@ -105,14 +105,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param runtime
 	 *            the runtime to set
 	 */
-	public synchronized final void setRuntime(final Integer runtime) {
+	protected synchronized final void setRuntime(final Integer runtime) {
 		this.runtime = runtime;
 	}
 
 	/**
 	 * @return the budget
 	 */
-	public synchronized final Integer getBudget() {
+	protected synchronized final Integer getBudget() {
 		return this.budget;
 	}
 
@@ -120,14 +120,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param budget
 	 *            the budget to set
 	 */
-	public synchronized final void setBudget(final Integer budget) {
+	protected synchronized final void setBudget(final Integer budget) {
 		this.budget = budget;
 	}
 
 	/**
 	 * @return the rating
 	 */
-	public synchronized final Integer getRating() {
+	protected synchronized final Integer getRating() {
 		return this.rating;
 	}
 
@@ -135,14 +135,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param rating
 	 *            the rating to set
 	 */
-	public synchronized final void setRating(final Integer rating) {
+	protected synchronized final void setRating(final Integer rating) {
 		this.rating = rating;
 	}
 
 	/**
 	 * @return the countries
 	 */
-	public synchronized final ArrayList<String> getCountries() {
+	protected synchronized final ArrayList<String> getCountries() {
 		return this.countries;
 	}
 
@@ -150,14 +150,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param countries
 	 *            the countries to set
 	 */
-	public synchronized final void setCountries(final ArrayList<String> countries) {
+	protected synchronized final void setCountries(final ArrayList<String> countries) {
 		this.countries = countries;
 	}
 
 	/**
 	 * @return the people
 	 */
-	public synchronized final ArrayList<String> getPeople() {
+	protected synchronized final ArrayList<String> getPeople() {
 		return this.people;
 	}
 
@@ -165,7 +165,7 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param people
 	 *            the people to set
 	 */
-	public synchronized final void setPeople(final ArrayList<String> people) {
+	protected synchronized final void setPeople(final ArrayList<String> people) {
 		this.people = people;
 	}
 

@@ -166,7 +166,7 @@ public class MovieController {
 						tempMovie.set(field.getField().getName(), rs.getObject(field.getAs()));
 					}
 				} else if (field.getField().getType() == ArrayList.class) {
-					subSql = "SELECT " + field.getAs() + ".id, " + field.getAs() + ".name FROM " + field.getAs() + ", movie_" + field.getAs() + " WHERE movie_id = " + tempMovie.getId()
+					subSql = "SELECT " + field.getAs() + ".id, " + field.getAs() + ".name FROM " + field.getAs() + ", movie_" + field.getAs() + " WHERE movie_id = " + tempMovie.get("id")
 							+ " AND movie_" + field.getAs() + "." + field.getAs() + "_id = " + field.getAs() + ".id";
 					rsSub = DB.query(subSql);
 					final ArrayList<String> tempRsList = new ArrayList<String>();

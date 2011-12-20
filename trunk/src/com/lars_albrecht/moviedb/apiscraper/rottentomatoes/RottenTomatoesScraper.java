@@ -29,12 +29,13 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getMovieFromKey(java.lang.String)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
+	 * getMovieFromKey(java.lang.String)
 	 */
 	@Override
 	public MovieModel getMovieFromKey(final String key) {
 		final Movie m = this.rt.movieInfo(Integer.parseInt(key));
-		if(m != null) {
+		if (m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -43,19 +44,20 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getMovieFromString(java.lang.String, java.lang.Integer)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
+	 * getMovieFromString(java.lang.String, java.lang.Integer)
 	 */
 	@Override
 	public MovieModel getMovieFromStringYear(final String s, final Integer year) {
 		final Set<Movie> x = this.rt.moviesSearch(s);
 		Movie m = null;
-		for(final Movie movie : x) {
-			if(movie.getYear() == year) {
+		for (final Movie movie : x) {
+			if (movie.getYear() == year) {
 				m = movie;
 				break;
 			}
 		}
-		if(m != null) {
+		if (m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -64,7 +66,8 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getPluginName()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
+	 * getPluginName()
 	 */
 	@Override
 	public String getPluginName() {
@@ -74,7 +77,9 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle()
+	 * @see
+	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle
+	 * ()
 	 */
 	@Override
 	public String getTabTitle() {
@@ -84,7 +89,9 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion()
+	 * @see
+	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion
+	 * ()
 	 */
 	@Override
 	public String getVersion() {
@@ -94,10 +101,11 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	private MovieModel returnInfosFromMovie(final Movie m) {
 
 		final MovieModel movie = new DefaultMovieModel();
-		movie.setMaintitle(m.getTitle());
-		movie.setId(m.getId());
+		// movie.setMaintitle(m.getTitle());
+		// movie.setId(m.getId());
 
-		// final HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		// final HashMap<String, Object> resultMap = new HashMap<String,
+		// Object>();
 		// resultMap.put("certification", m.getCertification());
 		// resultMap.put("id", m.getId());
 		// resultMap.put("title", m.getTitle());

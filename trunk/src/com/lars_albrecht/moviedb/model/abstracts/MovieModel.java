@@ -122,13 +122,12 @@ public abstract class MovieModel {
 		additional = new ConcurrentHashMap<String, Object>();
 	}
 
-	final public Object get(final String s) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		if (additional.containsKey(s)) {
-			return additional.get(s);
-		} else {
+	final public Object get(final String s) throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		try {
 			return Helper.call("get" + Helper.ucfirst(s), this);
+		} catch (NoSuchMethodException e) {
+			return additional.get(s);
 		}
-
 	}
 
 	final public void set(final String s, final Object set) throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -142,7 +141,7 @@ public abstract class MovieModel {
 	/**
 	 * @return the id
 	 */
-	public synchronized final Integer getId() {
+	protected synchronized final Integer getId() {
 		return this.id;
 	}
 
@@ -150,14 +149,14 @@ public abstract class MovieModel {
 	 * @param id
 	 *            the id to set
 	 */
-	public synchronized final void setId(final Integer id) {
+	protected synchronized final void setId(final Integer id) {
 		this.id = id;
 	}
 
 	/**
 	 * @return the versionList
 	 */
-	public synchronized final ArrayList<String> getVersionList() {
+	protected synchronized final ArrayList<String> getVersionList() {
 		if (this.versionList == null) {
 			this.versionList = new ArrayList<String>();
 		}
@@ -168,14 +167,14 @@ public abstract class MovieModel {
 	 * @param versionList
 	 *            the versionList to set
 	 */
-	public synchronized final void setVersionList(final ArrayList<String> versionList) {
+	protected synchronized final void setVersionList(final ArrayList<String> versionList) {
 		this.versionList = versionList;
 	}
 
 	/**
 	 * @return the videoList
 	 */
-	public synchronized final ArrayList<String> getVideoList() {
+	protected synchronized final ArrayList<String> getVideoList() {
 		if (this.videoList == null) {
 			this.videoList = new ArrayList<String>();
 		}
@@ -186,14 +185,14 @@ public abstract class MovieModel {
 	 * @param videoList
 	 *            the videoList to set
 	 */
-	public synchronized final void setVideoList(final ArrayList<String> videoList) {
+	protected synchronized final void setVideoList(final ArrayList<String> videoList) {
 		this.videoList = videoList;
 	}
 
 	/**
 	 * @return the encoderList
 	 */
-	public synchronized final ArrayList<String> getEncoderList() {
+	protected synchronized final ArrayList<String> getEncoderList() {
 		if (this.encoderList == null) {
 			this.encoderList = new ArrayList<String>();
 		}
@@ -204,14 +203,14 @@ public abstract class MovieModel {
 	 * @param encoderList
 	 *            the encoderList to set
 	 */
-	public synchronized final void setEncoderList(final ArrayList<String> encoderList) {
+	protected synchronized final void setEncoderList(final ArrayList<String> encoderList) {
 		this.encoderList = encoderList;
 	}
 
 	/**
 	 * @return the langList
 	 */
-	public synchronized final ArrayList<String> getLangList() {
+	protected synchronized final ArrayList<String> getLangList() {
 		if (this.langList == null) {
 			this.langList = new ArrayList<String>();
 		}
@@ -222,14 +221,14 @@ public abstract class MovieModel {
 	 * @param langList
 	 *            the langList to set
 	 */
-	public synchronized final void setLangList(final ArrayList<String> langList) {
+	protected synchronized final void setLangList(final ArrayList<String> langList) {
 		this.langList = langList;
 	}
 
 	/**
 	 * @return the year
 	 */
-	public synchronized final Integer getYear() {
+	protected synchronized final Integer getYear() {
 		return this.year;
 	}
 
@@ -237,14 +236,14 @@ public abstract class MovieModel {
 	 * @param year
 	 *            the year to set
 	 */
-	public synchronized final void setYear(final Integer year) {
+	protected synchronized final void setYear(final Integer year) {
 		this.year = year;
 	}
 
 	/**
 	 * @return the file
 	 */
-	public synchronized final File getFile() {
+	protected synchronized final File getFile() {
 		return this.file;
 	}
 
@@ -252,7 +251,7 @@ public abstract class MovieModel {
 	 * @param file
 	 *            the file to set
 	 */
-	public synchronized final void setFile(final File file) {
+	protected synchronized final void setFile(final File file) {
 		this.file = file;
 	}
 
@@ -260,14 +259,14 @@ public abstract class MovieModel {
 	 * @param audioList
 	 *            the soundList to set
 	 */
-	public synchronized final void setAudioList(final ArrayList<String> audioList) {
+	protected synchronized final void setAudioList(final ArrayList<String> audioList) {
 		this.audioList = audioList;
 	}
 
 	/**
 	 * @return the maintitle
 	 */
-	public synchronized final String getMaintitle() {
+	protected synchronized final String getMaintitle() {
 		return this.maintitle;
 	}
 
@@ -275,14 +274,14 @@ public abstract class MovieModel {
 	 * @param maintitle
 	 *            the maintitle to set
 	 */
-	public synchronized final void setMaintitle(final String maintitle) {
+	protected synchronized final void setMaintitle(final String maintitle) {
 		this.maintitle = maintitle;
 	}
 
 	/**
 	 * @return the subtitle
 	 */
-	public synchronized final String getSubtitle() {
+	protected synchronized final String getSubtitle() {
 		return this.subtitle;
 	}
 
@@ -290,14 +289,14 @@ public abstract class MovieModel {
 	 * @param subtitle
 	 *            the subtitle to set
 	 */
-	public synchronized final void setSubtitle(final String subtitle) {
+	protected synchronized final void setSubtitle(final String subtitle) {
 		this.subtitle = subtitle;
 	}
 
 	/**
 	 * @return the audioList
 	 */
-	public synchronized final ArrayList<String> getAudioList() {
+	protected synchronized final ArrayList<String> getAudioList() {
 		if (this.audioList == null) {
 			this.audioList = new ArrayList<String>();
 		}
@@ -307,7 +306,7 @@ public abstract class MovieModel {
 	/**
 	 * @return the descriptionLong
 	 */
-	public synchronized final String getDescriptionLong() {
+	protected synchronized final String getDescriptionLong() {
 		return this.descriptionLong;
 	}
 
@@ -315,14 +314,14 @@ public abstract class MovieModel {
 	 * @param descriptionLong
 	 *            the descriptionLong to set
 	 */
-	public synchronized final void setDescriptionLong(final String descriptionLong) {
+	protected synchronized final void setDescriptionLong(final String descriptionLong) {
 		this.descriptionLong = descriptionLong;
 	}
 
 	/**
 	 * @return the descriptionShort
 	 */
-	public synchronized final String getDescriptionShort() {
+	protected synchronized final String getDescriptionShort() {
 		return this.descriptionShort;
 	}
 
@@ -330,14 +329,14 @@ public abstract class MovieModel {
 	 * @param descriptionShort
 	 *            the descriptionShort to set
 	 */
-	public synchronized final void setDescriptionShort(final String descriptionShort) {
+	protected synchronized final void setDescriptionShort(final String descriptionShort) {
 		this.descriptionShort = descriptionShort;
 	}
 
 	/**
 	 * @return the validPath
 	 */
-	public synchronized final Boolean getValidPath() {
+	protected synchronized final Boolean getValidPath() {
 		return this.validPath;
 	}
 
@@ -345,14 +344,14 @@ public abstract class MovieModel {
 	 * @param validPath
 	 *            the validPath to set
 	 */
-	public synchronized final void setValidPath(final Boolean validPath) {
+	protected synchronized final void setValidPath(final Boolean validPath) {
 		this.validPath = validPath;
 	}
 
 	/**
 	 * @return the genreList
 	 */
-	public synchronized final ArrayList<String> getGenreList() {
+	protected synchronized final ArrayList<String> getGenreList() {
 		if (this.genreList == null) {
 			this.genreList = new ArrayList<String>();
 		}
@@ -363,14 +362,14 @@ public abstract class MovieModel {
 	 * @param genreList
 	 *            the genreList to set
 	 */
-	public synchronized final void setGenreList(final ArrayList<String> genreList) {
+	protected synchronized final void setGenreList(final ArrayList<String> genreList) {
 		this.genreList = genreList;
 	}
 
 	/**
 	 * @return the cover
 	 */
-	public synchronized final Image getCover() {
+	protected synchronized final Image getCover() {
 		return this.cover;
 	}
 
@@ -378,7 +377,7 @@ public abstract class MovieModel {
 	 * @param cover
 	 *            the cover to set
 	 */
-	public synchronized final void setCover(final Image cover) {
+	protected synchronized final void setCover(final Image cover) {
 		this.cover = cover;
 	}
 }

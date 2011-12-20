@@ -3,12 +3,12 @@
  */
 package com.lars_albrecht.moviedb.apiscraper.themoviedb;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.model.TheMovieDBMovieModel;
 import com.moviejukebox.themoviedb.TheMovieDb;
-import com.moviejukebox.themoviedb.model.Category;
 import com.moviejukebox.themoviedb.model.MovieDB;
 
 /**
@@ -29,12 +29,13 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getMovieFromKey(java.lang.String)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
+	 * getMovieFromKey(java.lang.String)
 	 */
 	@Override
 	public TheMovieDBMovieModel getMovieFromKey(final String key) {
 		final MovieDB m = this.tmdb.moviedbGetInfo(key, this.langKey);
-		if(m != null) {
+		if (m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -43,13 +44,13 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getMovieFromString(java.lang.String, java.lang.Integer)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
+	 * getMovieFromString(java.lang.String, java.lang.Integer)
 	 */
 	@Override
 	public TheMovieDBMovieModel getMovieFromStringYear(final String s, final Integer year) {
-		final MovieDB m = TheMovieDb.findMovie(this.tmdb.moviedbSearch(s, this.langKey), s, (year != null ? Integer
-				.toString(year) : null));
-		if(m != null) {
+		final MovieDB m = TheMovieDb.findMovie(this.tmdb.moviedbSearch(s, this.langKey), s, (year != null ? Integer.toString(year) : null));
+		if (m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -58,7 +59,8 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getPluginName()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
+	 * getPluginName()
 	 */
 	@Override
 	public String getPluginName() {
@@ -68,7 +70,9 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle ()
+	 * @see
+	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle
+	 * ()
 	 */
 	@Override
 	public String getTabTitle() {
@@ -78,7 +82,9 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion ()
+	 * @see
+	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion
+	 * ()
 	 */
 	@Override
 	public String getVersion() {
@@ -88,17 +94,22 @@ public class TMDbScraper implements IApiScraperPlugin {
 	private TheMovieDBMovieModel returnInfosFromMovie(final MovieDB m) {
 
 		final TheMovieDBMovieModel movie = new TheMovieDBMovieModel();
-		movie.setMaintitle(m.getTitle());
-		movie.setId(Integer.parseInt(m.getId()));
-		movie.setDescriptionShort(m.getOverview());
-		for(final Category category : m.getCategories()) {
-			movie.getGenreList().add(category.getName());
-		}
+		try {
+			movie.set("maintitle", m.getTitle());
+			movie.set("tmdbId", m.getId());
+			// movie.setId(Integer.parseInt(m.getId()));
+			movie.set("descriptionShort", m.getOverview());
+			// for (final Category category : m.getCategories()) {
+			// movie.getGenreList().add(category.getName());
+			// }
 
-		if(m.getReleaseDate() != null) {
-			movie.setYear(Integer.parseInt(m.getReleaseDate().substring(0, 4)));
+			if (m.getReleaseDate() != null) {
+				movie.set("year", Integer.parseInt(m.getReleaseDate().substring(0, 4)));
+			}
+		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 		// resultMap = new HashMap<String, Object>();
 		// resultMap.put("adult", m.getAdult());
 		// resultMap.put("alternativeName", m.getAlternativeName());
