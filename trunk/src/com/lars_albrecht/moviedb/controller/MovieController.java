@@ -85,6 +85,14 @@ public class MovieController {
 		return true;
 	}
 
+	public static void updateMovie(final MovieModel movie) throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException, NoSuchMethodException {
+		String sql = "DELETE FROM movie WHERE id = ?";
+		final ConcurrentHashMap<Integer, Object> temp = new ConcurrentHashMap<Integer, Object>();
+		temp.put(1, movie.get("id"));
+		DB.updatePS(sql, temp);
+		MovieController.addMovie(movie);
+	}
+
 	/**
 	 * 
 	 * @param dbFields
@@ -104,9 +112,12 @@ public class MovieController {
 		}
 		DB.updatePS(sql, temp);
 		final ResultSet rs = DB.query("CALL IDENTITY()");
-		rs.next();
-		final Integer result = (Integer) rs.getObject(1);
-		return result;
+		if (rs.getFetchSize() > 0) {
+			return (Integer) rs.getObject(1);
+		} else {
+			// TODO try to get and then return or null
+			return (Integer) dbFields.get("id");
+		}
 	}
 
 	/**

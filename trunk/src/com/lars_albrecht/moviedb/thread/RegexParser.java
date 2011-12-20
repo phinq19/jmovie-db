@@ -43,7 +43,8 @@ public class RegexParser implements Runnable {
 	 * @param regexList
 	 * @param fieldList
 	 */
-	public RegexParser(final ThreadController tc, final ArrayList<File> files, final LinkedHashMap<String, ArrayList<String>> regexList, final FieldList fieldList) {
+	public RegexParser(final ThreadController tc, final ArrayList<File> files,
+			final LinkedHashMap<String, ArrayList<String>> regexList, final FieldList fieldList) {
 		this.tc = tc;
 		this.files = files;
 		this.regexList = regexList;
@@ -51,8 +52,7 @@ public class RegexParser implements Runnable {
 	}
 
 	/**
-	 * Parse the file(name) with the given regex and fill out model to add them
-	 * to a list.
+	 * Parse the file(name) with the given regex and fill out model to add them to a list.
 	 * 
 	 * @param filename
 	 * @param tempMovie
@@ -67,7 +67,7 @@ public class RegexParser implements Runnable {
 		ArrayList<String> nameList = null;
 
 		// for each regex ...
-		for (final Entry<String, ArrayList<String>> regexList : this.regexList.entrySet()) {
+		for(final Entry<String, ArrayList<String>> regexList : this.regexList.entrySet()) {
 			regex = regexList.getKey();
 			nameList = regexList.getValue();
 			// System.out.println(regex);
@@ -77,12 +77,12 @@ public class RegexParser implements Runnable {
 			final ConcurrentHashMap<String, ArrayList<String>> keyValueList = new ConcurrentHashMap<String, ArrayList<String>>();
 
 			// if regex matches file ...
-			if (matcherValues.find()) {
+			if(matcherValues.find()) {
 				// fill key value list (e.g.: year = 2011)
 				// System.out.println(regex + " - " + filename);
-				for (int i = 1; i <= matcherValues.groupCount(); i++) {
+				for(int i = 1; i <= matcherValues.groupCount(); i++) {
 					ArrayList<String> temp = keyValueList.get(nameList.get(i - 1));
-					if (temp == null) {
+					if(temp == null) {
 						temp = new ArrayList<String>();
 					}
 					temp.add(matcherValues.group(i));
@@ -92,9 +92,9 @@ public class RegexParser implements Runnable {
 				}
 
 				// if list filled
-				if (keyValueList.size() > 0) {
+				if(keyValueList.size() > 0) {
 					// for each entry
-					for (final Map.Entry<String, ArrayList<String>> entry : keyValueList.entrySet()) {
+					for(final Map.Entry<String, ArrayList<String>> entry : keyValueList.entrySet()) {
 						// System.out.println(e.getKey() + " = " +
 						// e.getValue());
 						// final String name = (entry.getKey().indexOf("_") >
@@ -102,44 +102,51 @@ public class RegexParser implements Runnable {
 						// entry.getKey().indexOf("_")) : (String)
 						// entry.getKey();
 						final Integer posInList = this.fieldList.fieldNameInAsList(entry.getKey());
-						if (posInList > -1) {
+						if(posInList > -1) {
 							try {
 								final FieldModel item = this.fieldList.get(posInList);
 								final ParseOptions parseAnnotation = item.getField().getAnnotation(ParseOptions.class);
-								if ((item.getField().getType() == Integer.class) || (item.getField().getType() == String.class)) {
-									Helper.call("set" + Helper.ucfirst(item.getField().getName()), tempMovie, ((item.getField().getType() == String.class) ? keyValueList.get(parseAnnotation.as())
-											.get(0) : Integer.parseInt(keyValueList.get(parseAnnotation.as()).get(0))));
-								} else if (item.getField().getType() == ArrayList.class) {
-									final ArrayList<String> list = (ArrayList<String>) Helper.call("get" + Helper.ucfirst(item.getField().getName()), tempMovie);
+								if((item.getField().getType() == Integer.class) || (item.getField().getType() == String.class)) {
+									Helper.call("set" + Helper.ucfirst(item.getField().getName()), tempMovie, ((item.getField()
+											.getType() == String.class) ? keyValueList.get(parseAnnotation.as()).get(0) : Integer
+											.parseInt(keyValueList.get(parseAnnotation.as()).get(0))));
+								} else if(item.getField().getType() == ArrayList.class) {
+									final ArrayList<String> list = (ArrayList<String>) Helper.call("get"
+											+ Helper.ucfirst(item.getField().getName()), tempMovie);
 									final ArrayList<String> temp = keyValueList.get(parseAnnotation.as());
-									for (final String string : temp) {
+									for(final String string : temp) {
 										list.add(string);
 									}
 								}
-							} catch (final NumberFormatException e) {
+							} catch(final NumberFormatException e) {
 								e.printStackTrace();
-							} catch (final NoSuchMethodException e) {
+							} catch(final NoSuchMethodException e) {
 								e.printStackTrace();
-							} catch (final SecurityException e) {
+							} catch(final SecurityException e) {
 								e.printStackTrace();
-							} catch (final IllegalAccessException e) {
+							} catch(final IllegalAccessException e) {
 								e.printStackTrace();
-							} catch (final IllegalArgumentException e) {
+							} catch(final IllegalArgumentException e) {
 								e.printStackTrace();
-							} catch (final InvocationTargetException e) {
+							} catch(final InvocationTargetException e) {
 								e.printStackTrace();
-							} catch (final Exception e) {
+							} catch(final Exception e) {
 								e.printStackTrace();
 							}
 						}
 					}
 					// defaults
+					// TODO define defaults with annotations
 					try {
 						tempMovie.set("file", file);
-
 						tempMovie.set("validPath", Boolean.TRUE);
-
-					} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+					} catch(final SecurityException e) {
+						e.printStackTrace();
+					} catch(final IllegalAccessException e) {
+						e.printStackTrace();
+					} catch(final IllegalArgumentException e) {
+						e.printStackTrace();
+					} catch(final InvocationTargetException e) {
 						e.printStackTrace();
 					}
 
@@ -158,8 +165,8 @@ public class RegexParser implements Runnable {
 	 */
 	@Override
 	public void run() {
-		if (this.files != null) {
-			for (final File file : this.files) {
+		if(this.files != null) {
+			for(final File file : this.files) {
 				this.parseMoviename(file);
 			}
 			this.tc.getParserList().remove(Thread.currentThread());

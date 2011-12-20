@@ -3,7 +3,6 @@
  */
 package com.lars_albrecht.moviedb.apiscraper.themoviedb;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
@@ -95,21 +94,43 @@ public class TMDbScraper implements IApiScraperPlugin {
 
 		final TheMovieDBMovieModel movie = new TheMovieDBMovieModel();
 		try {
-			movie.set("maintitle", m.getTitle());
-			movie.set("tmdbId", m.getId());
-			// movie.setId(Integer.parseInt(m.getId()));
-			movie.set("descriptionShort", m.getOverview());
+			// Helper.getFieldsFromClass(MovieDB.class);
+			// FieldList fl =
+			// Helper.getDBFieldModelFromClass(TheMovieDBMovieModel.class);
+			// for (FieldModel fieldModel : fl) {
+			// System.out.println(fieldModel.getField().getName());
+			// Method method = MovieDB.class.getMethod("get" +
+			// Helper.ucfirst(fieldModel.getField().getName()));
+			// movie.set(fieldModel.getField().getName(), method.invoke(m));
+			// }
+
+			movie.setAlternativeName(m.getAlternativeName());
+			movie.setBudget((m.getBudget() != null && !m.getBudget().equals("") ? Integer.parseInt(m.getBudget()) : null));
+			movie.setOriginalName(m.getOriginalName());
+			movie.setRating((m.getRating() != null && !m.getRating().equals("") ? new Double(m.getRating()).intValue() : null));
+			movie.setRuntime((m.getRuntime() != null && !m.getRuntime().equals("") ? Integer.parseInt(m.getRuntime()) : null));
+			movie.setTmdbId(Integer.parseInt(m.getId()));
+
+			// movie.set("maintitle", m.getTitle());
+			//
+			// movie.set("tmdbId", m.getId());
+			// // movie.setId(Integer.parseInt(m.getId()));
+			// movie.set("descriptionShort", m.getOverview());
 			// for (final Category category : m.getCategories()) {
 			// movie.getGenreList().add(category.getName());
 			// }
 
-			if (m.getReleaseDate() != null) {
-				movie.set("year", Integer.parseInt(m.getReleaseDate().substring(0, 4)));
-			}
-		} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
+			// if (m.getReleaseDate() != null) {
+			// movie.set("year",
+			// Integer.parseInt(m.getReleaseDate().substring(0, 4)));
+			// }
+
+		} catch (final SecurityException e) {
+			e.printStackTrace();
+		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
 		}
+		// TODO Auto-generated catch block
 		// resultMap = new HashMap<String, Object>();
 		// resultMap.put("adult", m.getAdult());
 		// resultMap.put("alternativeName", m.getAlternativeName());

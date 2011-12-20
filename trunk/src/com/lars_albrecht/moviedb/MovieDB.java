@@ -90,14 +90,20 @@ public class MovieDB {
 
 		final String debugStr = "Blade Runner";
 		final Integer debugYear = 1982;
-		IApiScraperPlugin x = new TMDbScraper();
-		MovieModel m = x.getMovieFromStringYear(debugStr, debugYear);
-		if (m != null) {
+		final IApiScraperPlugin x = new TMDbScraper();
+		final MovieModel m = x.getMovieFromStringYear(debugStr, debugYear);
+		if(m != null) {
 			try {
 				System.out.println(m.get("tmdbId"));
 				System.out.println(m.get("alternativeName"));
 				System.out.println(m.get("maintitle"));
-			} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			} catch(final SecurityException e) {
+				e.printStackTrace();
+			} catch(final IllegalAccessException e) {
+				e.printStackTrace();
+			} catch(final IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch(final InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}

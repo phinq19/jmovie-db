@@ -174,6 +174,7 @@ public class DB {
 		}
 
 		System.out.println(expression);
+		System.out.println(values);
 		final int result = st.executeUpdate(); // run the query
 		if (result == -1) {
 			Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);

@@ -78,6 +78,8 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 	public static FieldList flParse = null;
 	public static FieldList flDB = null;
 
+	public static MovieModel loadedMovie = null;
+
 	public static ArrayList<IApiScraperPlugin> apiScraper = null;
 
 	public static ConcurrentHashMap<String, ArrayList<KeyValue<Integer, String>>> keyValueLists = new ConcurrentHashMap<String, ArrayList<KeyValue<Integer, String>>>();;
@@ -113,7 +115,10 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 
 		for (final IApiScraperPlugin apiScraper : Controller.apiScraper) {
 			Controller.flTable.addAll(Helper.getTableFieldModelFromClass(apiScraper.getMovieModelInstance()));
-			Controller.flTabs.addAll(Helper.getTabFieldModelFromClass(apiScraper.getMovieModelInstance()));
+			for (final FieldModel fieldModel : Helper.getTabFieldModelFromClass(apiScraper.getMovieModelInstance())) {
+				fieldModel.setName(apiScraper.getTabTitle());
+				Controller.flTabs.add(fieldModel);
+			}
 			Controller.flParse.addAll(Helper.getParseFieldModelFromClass(apiScraper.getMovieModelInstance()));
 			Controller.flDB.addAll(Helper.getDBFieldModelFromClass(apiScraper.getMovieModelInstance()));
 		}
@@ -330,7 +335,7 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 		} else if (e.getSource() == this.pf.getMiRemoveAll()) {
 			if (JOptionPane.showConfirmDialog(this.pf, "Wirklich löschen?", "Löschen?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) {
 				try {
-					int movieCount = this.lv.getTable().getRowCount();
+					final int movieCount = this.lv.getTable().getRowCount();
 					MovieController.removeAllMovies();
 					this.lv.getTableModel().getMovies().removeAllElements();
 					this.lv.getTable().revalidate();
@@ -390,7 +395,13 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 						} else {
 							movie.set("validPath", Boolean.FALSE);
 						}
-					} catch (SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e1) {
+					} catch (final SecurityException e1) {
+						e1.printStackTrace();
+					} catch (final IllegalAccessException e1) {
+						e1.printStackTrace();
+					} catch (final IllegalArgumentException e1) {
+						e1.printStackTrace();
+					} catch (final InvocationTargetException e1) {
 						e1.printStackTrace();
 					}
 				}
@@ -412,6 +423,39 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 				Controller.options.setFilenameSeperator(this.getSlv().getTfRegExp().getText());
 			}
 
+		} else if ((this.tv != null) && (this.tv.getComponentList() != null) && this.tv.getComponentList().containsValue(e.getSource()) && (Controller.loadedMovie != null)
+				&& ((String) Helper.getKeyFromMapObject(this.tv.getComponentList(), e.getSource())).startsWith("refresh")) {
+			final String pluginName = ((String) Helper.getKeyFromMapObject(this.tv.getComponentList(), e.getSource())).substring("refresh".length());
+			for (final IApiScraperPlugin apiScraper : Controller.apiScraper) {
+				if (apiScraper.getPluginName().equals(pluginName)) {
+					try {
+						//
+						// TODO get movie from movie / threaded / if there is a
+						// id, use it
+						final MovieModel m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle"), (Integer) Controller.loadedMovie.get("year"));
+						FieldList fl = Helper.getDBFieldModelFromClass(m.getClass());
+						for (FieldModel fieldModel : fl) {
+							if (m.get(fieldModel.getField().getName()) != null) {
+								Controller.loadedMovie.set(fieldModel.getField().getName(), m.get(fieldModel.getField().getName()));
+							}
+						}
+						// set infos in tabview (reload movie)
+						MovieController.updateMovie(Controller.loadedMovie);
+					} catch (final SecurityException e1) {
+						e1.printStackTrace();
+					} catch (final IllegalAccessException e1) {
+						e1.printStackTrace();
+					} catch (final IllegalArgumentException e1) {
+						e1.printStackTrace();
+					} catch (final InvocationTargetException e1) {
+						e1.printStackTrace();
+					} catch (NoSuchMethodException e1) {
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
 		}
 
 	}
@@ -613,10 +657,6 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 	@Override
 	public void mouseClicked(final MouseEvent e) {
 		if ((e.getClickCount() == 2) && (e.getSource() == this.lv.getTable())) {
-			final JTable target = (JTable) e.getSource();
-			final int viewRow = target.getSelectedRow();
-
-			final int modelRow = this.lv.getTable().convertRowIndexToModel(viewRow);
 			// System.out.println(this.lv.getTable().getValueAt(modelRow,
 			// 1));
 			// System.out.println(this.lv.getTableModel().getMovies().get(modelRow));
@@ -625,10 +665,11 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 			// System.out.println(String.format("Selected Row in view: %d. " +
 			// "Selected Row in model: %d.", viewRow, modelRow));
 
-			final MovieModel selectedMovie = this.lv.getTableModel().getMovies().get(modelRow);
+			final int modelRow = this.lv.getTable().convertRowIndexToModel(((JTable) e.getSource()).getSelectedRow());
+			Controller.loadedMovie = this.lv.getTableModel().getMovies().get(modelRow);
 			for (final Map.Entry<String, Component> entry : this.getTv().getComponentList().entrySet()) {
 				try {
-					final Object result = selectedMovie.get(entry.getKey());
+					final Object result = Controller.loadedMovie.get(entry.getKey());
 					if (result != null) {
 						Object resultForComponent = null;
 						if ((result instanceof ArrayList)) {

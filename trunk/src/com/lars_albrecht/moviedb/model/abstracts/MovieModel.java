@@ -126,6 +126,9 @@ public abstract class MovieModel {
 		try {
 			return Helper.call("get" + Helper.ucfirst(s), this);
 		} catch (NoSuchMethodException e) {
+			if (additional == null) {
+				additional = new ConcurrentHashMap<>();
+			}
 			return additional.get(s);
 		}
 	}
@@ -134,6 +137,9 @@ public abstract class MovieModel {
 		try {
 			Helper.call("set" + Helper.ucfirst(s), this, set);
 		} catch (NoSuchMethodException e) {
+			if (additional == null) {
+				additional = new ConcurrentHashMap<>();
+			}
 			additional.put(s, set);
 		}
 	}

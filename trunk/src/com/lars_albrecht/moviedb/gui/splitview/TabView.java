@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -32,7 +33,6 @@ import com.lars_albrecht.moviedb.utilities.Helper;
 @SuppressWarnings("serial")
 public class TabView extends JTabbedPane {
 
-	@SuppressWarnings("unused")
 	private Controller controller = null;
 
 	private ConcurrentHashMap<String, Component> componentList = null;
@@ -57,7 +57,7 @@ public class TabView extends JTabbedPane {
 		String tabName = null;
 		int i = 1;
 		for(final FieldModel fieldModel : fl) {
-			tabName = (String) fieldModel.getAdditional().get("tabname");
+			tabName = fieldModel.getName();
 			tempPanel = (JPanel) (tempTab.containsKey(tabName) ? tempTab.get(tabName) : new JPanel(new GridBagLayout()));
 			i = (tempTab.containsKey(tabName + "Counter") ? (Integer) (tempTab.get(tabName + "Counter")) : 1);
 			final GridBagConstraints gbc = new GridBagConstraints();
@@ -125,13 +125,26 @@ public class TabView extends JTabbedPane {
 			tempTab.put(tabName + "Counter", ++i);
 		}
 
+		// add tabs
 		i = 0;
 		for(final Map.Entry<String, Object> tabEntry : tempTab.entrySet()) {
 			if(tabEntry.getValue() instanceof JPanel) {
+				final GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST,
+						GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+				final JPanel filledPanel = (JPanel) tabEntry.getValue();
+				for(int j = 0; j < Controller.apiScraper.size(); j++) {
+					if(Controller.apiScraper.get(j).getTabTitle().equals(tabEntry.getKey())) {
+						final JButton bRefreshButton = new JButton("Refresh");
+						bRefreshButton.addActionListener(this.controller);
+						this.componentList.put("refresh" + Controller.apiScraper.get(j).getPluginName(), bRefreshButton);
+						filledPanel.add(bRefreshButton, gbc);
+						break;
+					}
+				}
 				final JPanel t = new JPanel(new GridBagLayout());
-				final GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTH,
+				final GridBagConstraints gbcRootPanel = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTH,
 						GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
-				t.add((JPanel) tabEntry.getValue(), gbc);
+				t.add(filledPanel, gbcRootPanel);
 				panel.addTab(Helper.ucfirst(tabEntry.getKey()), new JScrollPane(t));
 				i++;
 			}
