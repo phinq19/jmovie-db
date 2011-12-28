@@ -14,6 +14,9 @@ public class Options {
 
 	private ArrayList<File> paths = null;
 	private String filenameSeperator = null;
+	private Boolean showStatusAfterRefresh = null;
+
+	// x y height / width / pos
 
 	public Options() {
 	}
@@ -22,7 +25,7 @@ public class Options {
 	 * @return the paths
 	 */
 	public synchronized final ArrayList<File> getPaths() {
-		if(this.paths == null) {
+		if (this.paths == null) {
 			this.paths = new ArrayList<File>();
 		}
 		return this.paths;
@@ -40,7 +43,7 @@ public class Options {
 	 * @return the filenameSeperator
 	 */
 	public synchronized final String getFilenameSeperator() {
-		if(this.filenameSeperator == null) {
+		if (this.filenameSeperator == null) {
 			this.filenameSeperator = new String();
 		}
 		return this.filenameSeperator;
@@ -52,6 +55,21 @@ public class Options {
 	 */
 	public synchronized final void setFilenameSeperator(final String filenameSeperator) {
 		this.filenameSeperator = filenameSeperator;
+	}
+
+	/**
+	 * @return the showStatusAfterRefresh
+	 */
+	public synchronized final Boolean getShowStatusAfterRefresh() {
+		return this.showStatusAfterRefresh;
+	}
+
+	/**
+	 * @param showStatusAfterRefresh
+	 *            the showStatusAfterRefresh to set
+	 */
+	public synchronized final void setShowStatusAfterRefresh(Boolean showStatusAfterRefresh) {
+		this.showStatusAfterRefresh = showStatusAfterRefresh;
 	}
 
 }

@@ -3,11 +3,15 @@
  */
 package com.lars_albrecht.moviedb.apiscraper.themoviedb;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.model.TheMovieDBMovieModel;
-import com.moviejukebox.themoviedb.TheMovieDb;
+import com.lars_albrecht.moviedb.utilities.Helper;
 import com.moviejukebox.themoviedb.model.MovieDB;
 
 /**
@@ -48,11 +52,78 @@ public class TMDbScraper implements IApiScraperPlugin {
 	 */
 	@Override
 	public TheMovieDBMovieModel getMovieFromStringYear(final String s, final Integer year) {
-		final MovieDB m = TheMovieDb.findMovie(this.tmdb.moviedbSearch(s, this.langKey), s, (year != null ? Integer.toString(year) : null));
+		List<MovieDB> searchResults = this.tmdb.moviedbSearch(s, this.langKey);
+		MovieDB m = null;
+		if (searchResults.size() > 1) {
+			m = findMovie(searchResults, s, (year != null ? Integer.toString(year) : null));
+		} else if (searchResults.size() == 1) {
+			m = searchResults.get(0);
+		}
+		System.out.println(m);
 		if (m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
+	}
+
+	/**
+	 * Search a list of movies and return the one that matches the title & year
+	 * 
+	 * @param movieList
+	 *            The list of movies to search
+	 * @param title
+	 *            The title to search for
+	 * @param year
+	 *            The year of the title to search for
+	 * @return The matching movie
+	 */
+	private MovieDB findMovie(Collection<MovieDB> movieList, String title, String year) {
+		if (movieList == null || movieList.isEmpty()) {
+			return null;
+		}
+
+		for (MovieDB moviedb : movieList) {
+			if (this.compareMovies(moviedb, title, year)) {
+				return moviedb;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Compare the MovieDB object with a title & year
+	 * 
+	 * @param moviedb
+	 *            The moviedb object to compare too
+	 * @param title
+	 *            The title of the movie to compare
+	 * @param year
+	 *            The year of the movie to compare
+	 * @return True if there is a match, False otherwise.
+	 */
+	private boolean compareMovies(MovieDB moviedb, String title, String year) {
+		if ((moviedb == null) || (!Helper.isValidString(title))) {
+			return false;
+		}
+
+		if (Helper.isValidString(year)) {
+			if (Helper.isValidString(moviedb.getReleaseDate())) {
+				// Compare with year
+				String movieYear = moviedb.getReleaseDate().substring(0, 4);
+				if (movieYear.equals(year)
+						&& (moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title) || moviedb.getAlternativeName().equalsIgnoreCase(title) || (moviedb
+								.getTitle().contains("-") && moviedb.getTitle().split("-")[0].trim().equalsIgnoreCase(title)))) {
+					return true;
+				}
+			}
+		} else {
+			// Compare without year
+			if (moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title) || moviedb.getAlternativeName().equalsIgnoreCase(title)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/*
@@ -110,6 +181,9 @@ public class TMDbScraper implements IApiScraperPlugin {
 			movie.setRating((m.getRating() != null && !m.getRating().equals("") ? new Double(m.getRating()).intValue() : null));
 			movie.setRuntime((m.getRuntime() != null && !m.getRuntime().equals("") ? Integer.parseInt(m.getRuntime()) : null));
 			movie.setTmdbId(Integer.parseInt(m.getId()));
+			movie.set("descriptionShort", m.getOverview());
+			movie.setCountries(new ArrayList(m.getCountries()));
+			movie.setPeople(new ArrayList(m.getPeople()));
 
 			// movie.set("maintitle", m.getTitle());
 			//
@@ -159,6 +233,11 @@ public class TMDbScraper implements IApiScraperPlugin {
 		// resultMap.put("type", m.getType());
 		// resultMap.put("url", m.getUrl());
 		// resultMap.put("version", m.getVersion());
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
 
 		return movie;
 	}

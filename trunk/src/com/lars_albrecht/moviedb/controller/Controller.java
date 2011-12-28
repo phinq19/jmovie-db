@@ -433,14 +433,20 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 						// TODO get movie from movie / threaded / if there is a
 						// id, use it
 						final MovieModel m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle"), (Integer) Controller.loadedMovie.get("year"));
-						FieldList fl = Helper.getDBFieldModelFromClass(m.getClass());
-						for (FieldModel fieldModel : fl) {
-							if (m.get(fieldModel.getField().getName()) != null) {
-								Controller.loadedMovie.set(fieldModel.getField().getName(), m.get(fieldModel.getField().getName()));
+						if (m != null) {
+							FieldList fieldlist = Helper.getDBFieldModelFromClass(m.getClass());
+							for (FieldModel fieldModel : fieldlist) {
+								System.out.println("AS: " + fieldModel.getAs());
+								if (m.get(fieldModel.getField().getName()) != null) {
+									System.out.println(fieldModel.getField().getName());
+									System.out.println(m.get(fieldModel.getField().getName()));
+									Controller.loadedMovie.set(fieldModel.getField().getName(), m.get(fieldModel.getField().getName()));
+								}
+								System.out.println("----------");
 							}
+							// TODO set infos in tabview (reload movie)
+							MovieController.updateMovie(Controller.loadedMovie);
 						}
-						// set infos in tabview (reload movie)
-						MovieController.updateMovie(Controller.loadedMovie);
 					} catch (final SecurityException e1) {
 						e1.printStackTrace();
 					} catch (final IllegalAccessException e1) {
@@ -687,7 +693,7 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 						if (entry.getValue() instanceof JLabeledTextInput) {
 							((JLabeledTextInput) entry.getValue()).getTfText().setText((String) resultForComponent);
 						} else if (entry.getValue() instanceof JLabeledTextArea) {
-
+							((JLabeledTextArea) entry.getValue()).getTaText().setText((String) resultForComponent);
 						} else if (entry.getValue() instanceof JLabeledComboBox) {
 							// for (String s : (ArrayList<String>) result) {
 							// System.out.println(resultForComponent);

@@ -49,6 +49,9 @@ public class TheMovieDBMovieModel extends MovieModel {
 	@DatabaseOptions(as = "people", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = {}, isUnique = false)
 	private ArrayList<String> people = null;
 
+	@DatabaseOptions(as = "descriptionshort", type = DatabaseOptions.TYPE_FIELD, additionalType = "LONGVARCHAR", defaultValues = {}, isUnique = false)
+	protected String descriptionShort = null;
+
 	/**
 	 * @return the tmdbId
 	 */

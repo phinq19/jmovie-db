@@ -79,6 +79,19 @@ public class TableView extends JPanel {
 		final GridBagConstraints gbc = new GridBagConstraints();
 		this.tableRowSorter = new TableRowSorter<TableModel>(this.tableModel);
 		this.table = new JTable(this.tableModel);
+
+		// @see
+		// "http://www.java-forum.org/awt-swing-swt/101885-jtable-spalten-ausblenden.html"
+		// HidableTableColumnModel htcm = new
+		// HidableTableColumnModel(table.getColumnModel());
+		// table.setColumnModel(htcm);
+		//
+		// JPopupMenu popup = new JPopupMenu();
+		// for (Action act : htcm.createColumnActions()) {
+		// popup.add(new JCheckBoxMenuItem(act));
+		// } // for
+		// table.setComponentPopupMenu(popup);
+
 		final MovieCellEditor mce = new MovieCellEditor();
 		final Enumeration<TableColumn> columns = this.table.getColumnModel().getColumns();
 		while (columns.hasMoreElements()) {
