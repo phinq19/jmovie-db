@@ -3,17 +3,23 @@
  */
 package com.lars_albrecht.moviedb.apiscraper.themoviedb;
 
-import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.imageio.ImageIO;
+
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.model.TheMovieDBMovieModel;
 import com.moviejukebox.themoviedb.TheMovieDb;
+import com.moviejukebox.themoviedb.model.Artwork;
 import com.moviejukebox.themoviedb.model.Country;
 import com.moviejukebox.themoviedb.model.MovieDB;
 import com.moviejukebox.themoviedb.model.Person;
@@ -198,7 +204,32 @@ public class TMDbScraper implements IApiScraperPlugin {
 			movie.setPeople(tempList);
 
 			if (m.getArtwork().size() > 0) {
-				movie.set("cover", Toolkit.getDefaultToolkit().getImage(m.getArtwork().get(0).getUrl()));
+				for (Artwork a : m.getArtwork()) {
+					System.out.println(a.getUrl());
+				}
+
+				BufferedImage bi;
+				try {
+					bi = ImageIO.read(new URL(m.getArtwork().get(0).getUrl()));
+					movie.set("cover", Helper.bufferedImageToImage(bi));
+					// ImageIO.write(bi, "jpeg", new File("testpic.jpg"));
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+				// BufferedImage bi = Helper.toBufferedImage(); // retrieve
+				// // image
+				// File outputfile = new File("saved.png");
+				// try {
+				// ImageIO.write(bi, "jpg", outputfile);
+				// } catch (IOException e) {
+				// e.printStackTrace();
+				// }
+
+				// movie.set("cover",
+				// Toolkit.getDefaultToolkit().createImage(m.getArtwork().get(0).getUrl()));
 			}
 
 			// movie.set("maintitle", m.getTitle());

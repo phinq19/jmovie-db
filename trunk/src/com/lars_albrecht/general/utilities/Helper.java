@@ -4,6 +4,7 @@ package com.lars_albrecht.general.utilities;
  * 
  */
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
@@ -15,6 +16,10 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.awt.image.FilteredImageSource;
+import java.awt.image.ImageFilter;
+import java.awt.image.ImageProducer;
+import java.awt.image.ReplicateScaleFilter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -75,10 +80,10 @@ public class Helper {
 	 * @return String
 	 */
 	public static String ucfirst(final String text) {
-		if(text == null) {
+		if (text == null) {
 			return null;
 		}
-		if(text.length() == 0) {
+		if (text.length() == 0) {
 			return text;
 		}
 
@@ -116,7 +121,7 @@ public class Helper {
 	public static ArrayList<Field> getFieldsFromClass(final Class<?> cClass) {
 		final Field[] fields = cClass.getDeclaredFields();
 		final ArrayList<Field> tempList = new ArrayList<Field>();
-		for(final Field field : fields) {
+		for (final Field field : fields) {
 			tempList.add(field);
 		}
 		return tempList;
@@ -125,9 +130,9 @@ public class Helper {
 	public static FieldList getTableFieldModelFromClass(final Class<?> cClass) {
 		final Field[] fields = cClass.getDeclaredFields();
 		final FieldList tempList = new FieldList();
-		for(final Field field : fields) {
+		for (final Field field : fields) {
 			final ViewInTable vit = field.getAnnotation(ViewInTable.class);
-			if(vit != null) {
+			if (vit != null) {
 				tempList.add(new FieldModel(field, vit.as(), null, null, vit.sort(), null, null));
 			}
 		}
@@ -143,9 +148,9 @@ public class Helper {
 	public static FieldList getParseFieldModelFromClass(final Class<?> cClass) {
 		final Field[] fields = cClass.getDeclaredFields();
 		final FieldList tempList = new FieldList();
-		for(final Field field : fields) {
+		for (final Field field : fields) {
 			final ParseOptions po = field.getAnnotation(ParseOptions.class);
-			if(po != null) {
+			if (po != null) {
 				tempList.add(new FieldModel(field, po.as(), po.type(), po.typeConf(), null, null, null));
 			}
 		}
@@ -161,9 +166,9 @@ public class Helper {
 	public static FieldList getDBFieldModelFromClass(final Class<?> cClass) {
 		final Field[] fields = cClass.getDeclaredFields();
 		final FieldList tempList = new FieldList();
-		for(final Field field : fields) {
+		for (final Field field : fields) {
 			final DatabaseOptions dbo = field.getAnnotation(DatabaseOptions.class);
-			if(dbo != null) {
+			if (dbo != null) {
 				final ConcurrentHashMap<String, Object> additionalList = new ConcurrentHashMap<String, Object>();
 				additionalList.put("additionalType", dbo.additionalType());
 				additionalList.put("defaultValues", dbo.defaultValues());
@@ -183,9 +188,9 @@ public class Helper {
 	public static FieldList getTabFieldModelFromClass(final Class<?> cClass) {
 		final Field[] fields = cClass.getDeclaredFields();
 		final FieldList tempList = new FieldList();
-		for(final Field field : fields) {
+		for (final Field field : fields) {
 			final ViewInTab vit = field.getAnnotation(ViewInTab.class);
-			if(vit != null) {
+			if (vit != null) {
 				final ConcurrentHashMap<String, Object> additionalList = new ConcurrentHashMap<String, Object>();
 				additionalList.put("editable", vit.editable());
 				tempList.add(new FieldModel(field, vit.as(), vit.type(), null, vit.sort(), vit.tabname(), additionalList));
@@ -204,8 +209,8 @@ public class Helper {
 	 */
 	public static String implode(final ArrayList<?> arrayList, final String delim, final String prefix, final String suffix) {
 		String temp = "";
-		for(int i = 0; i < arrayList.size(); i++) {
-			if(i != 0) {
+		for (int i = 0; i < arrayList.size(); i++) {
+			if (i != 0) {
 				temp += delim;
 			}
 			temp += (prefix != null ? prefix : "") + arrayList.get(i) + (suffix != null ? suffix : "");
@@ -221,7 +226,7 @@ public class Helper {
 	 */
 	public static ArrayList<String> explode(final String s, final String delim) {
 		final String[] sParted = s.split(delim);
-		if((sParted != null) && (sParted.length > 0)) {
+		if ((sParted != null) && (sParted.length > 0)) {
 			return new ArrayList<String>(Arrays.asList(sParted));
 		}
 		return null;
@@ -237,8 +242,8 @@ public class Helper {
 	 */
 	public static String implode(final String[] list, final String delim, final String prefix, final String suffix) {
 		String temp = "";
-		for(int i = 0; i < list.length; i++) {
-			if(i != 0) {
+		for (int i = 0; i < list.length; i++) {
+			if (i != 0) {
 				temp += delim;
 			}
 			temp += (prefix != null ? prefix : "") + list[i] + (suffix != null ? suffix : "");
@@ -254,8 +259,8 @@ public class Helper {
 	 */
 	public static Object getKeyFromMapPos(final Map<?, ?> map, final Integer pos) {
 		int resultVal = 0;
-		for(final Entry<?, ?> entry : map.entrySet()) {
-			if(pos == resultVal) {
+		for (final Entry<?, ?> entry : map.entrySet()) {
+			if (pos == resultVal) {
 				return entry.getKey();
 			}
 			resultVal++;
@@ -270,9 +275,9 @@ public class Helper {
 	 * @return Key
 	 */
 	public static Object getKeyFromMapObject(final Map<?, ?> map, final Object o) {
-		if(map.containsValue(o)) {
-			for(final Entry<?, ?> entry : map.entrySet()) {
-				if(o == entry.getValue()) {
+		if (map.containsValue(o)) {
+			for (final Entry<?, ?> entry : map.entrySet()) {
+				if (o == entry.getValue()) {
 					return entry.getKey();
 				}
 			}
@@ -291,8 +296,8 @@ public class Helper {
 		final ResultSetMetaData meta = rs.getMetaData();
 		final int numCol = meta.getColumnCount();
 
-		for(int i = 1; i < numCol + 1; i++) {
-			if(meta.getColumnName(i).equalsIgnoreCase(name)) {
+		for (int i = 1; i < numCol + 1; i++) {
+			if (meta.getColumnName(i).equalsIgnoreCase(name)) {
 				return true;
 			}
 		}
@@ -307,8 +312,8 @@ public class Helper {
 	 */
 	public static Boolean containsIgnoreCase(final List<String> list, final String s) {
 		final Iterator<String> it = list.iterator();
-		while(it.hasNext()) {
-			if(it.next().equalsIgnoreCase(s)) {
+		while (it.hasNext()) {
+			if (it.next().equalsIgnoreCase(s)) {
 				return true;
 			}
 		}
@@ -322,7 +327,7 @@ public class Helper {
 	 * @return BufferedImage
 	 */
 	public static BufferedImage toBufferedImage(Image image) {
-		if(image instanceof BufferedImage) {
+		if (image instanceof BufferedImage) {
 			return (BufferedImage) image;
 		}
 
@@ -340,7 +345,7 @@ public class Helper {
 		try {
 			// Determine the type of transparency of the new buffered image
 			int transparency = Transparency.OPAQUE;
-			if(hasAlpha) {
+			if (hasAlpha) {
 				transparency = Transparency.BITMASK;
 			}
 
@@ -348,14 +353,14 @@ public class Helper {
 			final GraphicsDevice gs = ge.getDefaultScreenDevice();
 			final GraphicsConfiguration gc = gs.getDefaultConfiguration();
 			bimage = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), transparency);
-		} catch(final HeadlessException e) {
+		} catch (final HeadlessException e) {
 			// The system does not have a screen
 		}
 
-		if(bimage == null) {
+		if (bimage == null) {
 			// Create a buffered image using the default color model
 			int type = BufferedImage.TYPE_INT_RGB;
-			if(hasAlpha) {
+			if (hasAlpha) {
 				type = BufferedImage.TYPE_INT_ARGB;
 			}
 			bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
@@ -374,16 +379,35 @@ public class Helper {
 	/**
 	 * 
 	 * @param image
+	 * @return BufferedImage
+	 * 
+	 * @see "https://forums.oracle.com/forums/thread.jspa?threadID=1287249"
+	 * 
+	 */
+	public static BufferedImage toBufferedImage2(Image image) {
+		image = new ImageIcon(image).getImage();
+		BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
+		Graphics g = bufferedImage.createGraphics();
+		g.setColor(Color.white);
+		g.fillRect(0, 0, image.getWidth(null), image.getHeight(null));
+		g.drawImage(image, 0, 0, null);
+		g.dispose();
+		return bufferedImage;
+	}
+
+	/**
+	 * 
+	 * @param image
 	 * @return byte[]
 	 */
 	public static byte[] getBytesFromImage(final Image image) {
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		try {
 			System.out.println(12);
-			if(!ImageIO.write(Helper.toBufferedImage(image), "jpeg", byteArrayOutputStream)) {
+			if (!ImageIO.write(Helper.toBufferedImage(image), "jpeg", byteArrayOutputStream)) {
 				// TODO THROW Exception
 			}
-		} catch(final IOException e) {
+		} catch (final IOException e) {
 			System.out.println(34);
 			e.printStackTrace();
 		}
@@ -402,8 +426,8 @@ public class Helper {
 
 	public static String repeatString(final String s, final String delim, final Integer count) {
 		String tempStr = "";
-		for(int i = 0; i < count; i++) {
-			if(i != 0) {
+		for (int i = 0; i < count; i++) {
+			if (i != 0) {
 				tempStr += delim;
 			}
 			tempStr += s;
@@ -416,13 +440,13 @@ public class Helper {
 	 * @param img
 	 * @param maxWidth
 	 * @param maxHeight
-	 * @return x=width/y=height
+	 * @return Point (x=width/y=height)
 	 */
 	public static Point getProportionalWidthHeightImage(final BufferedImage img, final Double maxWidth, final Double maxHeight) {
 
 		Double w = img.getWidth() / maxWidth;
 		Double h = img.getHeight() / maxHeight;
-		if(w > h) {
+		if (w > h) {
 			h = img.getHeight() / w;
 			w = maxWidth;
 		} else {
@@ -434,15 +458,30 @@ public class Helper {
 
 	/**
 	 * 
+	 * @param sourceImage
+	 * @param width
+	 * @param height
+	 * @return BufferedImage
+	 */
+	public static BufferedImage scaleImage(Image sourceImage, int width, int height) {
+		ImageFilter filter = new ReplicateScaleFilter(width, height);
+		ImageProducer producer = new FilteredImageSource(sourceImage.getSource(), filter);
+		Image resizedImage = Toolkit.getDefaultToolkit().createImage(producer);
+
+		return toBufferedImage(resizedImage);
+	}
+
+	/**
+	 * 
 	 * @param type
 	 * @return String
 	 */
 	public static String getDatabaseTypeForType(final Class<?> type) {
-		if(type == Integer.class) {
+		if (type == Integer.class) {
 			return "INT";
-		} else if((type == String.class) || (type == File.class)) {
+		} else if ((type == String.class) || (type == File.class)) {
 			return "VARCHAR(512)";
-		} else if(type == Image.class) {
+		} else if (type == Image.class) {
 			return "BLOB";
 		}
 
@@ -452,8 +491,11 @@ public class Helper {
 	/**
 	 * 
 	 * @param methodName
+	 *            String
 	 * @param obj
+	 *            Object
 	 * @param params
+	 *            Object...
 	 * @return Object
 	 * @throws NoSuchMethodException
 	 * @throws SecurityException
@@ -461,18 +503,18 @@ public class Helper {
 	 * @throws IllegalArgumentException
 	 * @throws InvocationTargetException
 	 */
-	public static Object call(final String methodName, final Object obj, final Object... params) throws NoSuchMethodException,
-			SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public static Object call(final String methodName, final Object obj, final Object... params) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
 		final ArrayList<Class<?>> types = new ArrayList<Class<?>>();
 		final ArrayList<Object> values = new ArrayList<Object>();
-		if((params != null) && (params.length > 0)) {
-			for(final Object object : params) {
+		if ((params != null) && (params.length > 0)) {
+			for (final Object object : params) {
 				values.add(object);
 				types.add((object != null ? ((object instanceof Class<?>) ? (Class<?>) object : object.getClass()) : null));
 			}
 		}
 		Method m = null;
-		if(types.size() > 0) {
+		if (types.size() > 0) {
 			final Class<?>[] list = new Class<?>[types.size()];
 			m = obj.getClass().getMethod(methodName, types.toArray(list));
 			return m.invoke(obj, values.toArray());
@@ -484,11 +526,12 @@ public class Helper {
 
 	/**
 	 * 
-	 * @param testString
+	 * @param str
+	 *            String
 	 * @return Boolean
 	 */
-	public static Boolean isValidString(final String testString) {
-		if((testString == null) || (testString.trim().equals(""))) {
+	public static Boolean isValidString(final String str) {
+		if ((str == null) || (str.trim().equals(""))) {
 			return false;
 		}
 		return true;
