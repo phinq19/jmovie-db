@@ -5,11 +5,11 @@ package com.lars_albrecht.moviedb;
 
 import java.lang.reflect.InvocationTargetException;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.TMDbScraper;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
-import com.lars_albrecht.moviedb.utilities.Debug;
 
 /**
  * @author lalbrecht
@@ -68,7 +68,7 @@ public class MovieDB {
 
 		// testApiScraper();
 		// System.exit(-1);
-
+		System.setProperty("java.net.useSystemProxies", "true");
 		Debug.log(Debug.LEVEL_DEBUG, "Start MovieDB");
 		new Controller();
 
@@ -86,7 +86,7 @@ public class MovieDB {
 
 	@SuppressWarnings("unused")
 	private void testApiScraper() {
-		// System.setProperty("java.net.useSystemProxies", "true");
+		System.setProperty("java.net.useSystemProxies", "true");
 
 		final String debugStr = "Blade Runner";
 		final Integer debugYear = 1982;

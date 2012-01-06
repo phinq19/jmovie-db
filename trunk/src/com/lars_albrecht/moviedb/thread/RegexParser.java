@@ -13,19 +13,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.annotation.ParseOptions;
 import com.lars_albrecht.moviedb.controller.ThreadController;
 import com.lars_albrecht.moviedb.model.DefaultMovieModel;
 import com.lars_albrecht.moviedb.model.FieldList;
 import com.lars_albrecht.moviedb.model.FieldModel;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
-import com.lars_albrecht.moviedb.utilities.Debug;
-import com.lars_albrecht.moviedb.utilities.Helper;
 
 /**
  * @author lalbrecht
  * 
  */
+@Deprecated
 public class RegexParser implements Runnable {
 
 	private ThreadController tc = null;

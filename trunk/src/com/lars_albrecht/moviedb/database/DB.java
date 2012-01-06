@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.lars_albrecht.moviedb.utilities.Debug;
-import com.lars_albrecht.moviedb.utilities.Helper;
+import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.Helper;
 
 /**
  * @author lalbrecht

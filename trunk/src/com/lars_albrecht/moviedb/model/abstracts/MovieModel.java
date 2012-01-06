@@ -7,13 +7,13 @@ import java.awt.Image;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.annotation.DatabaseOptions;
 import com.lars_albrecht.moviedb.annotation.ParseOptions;
 import com.lars_albrecht.moviedb.annotation.ViewInTab;
 import com.lars_albrecht.moviedb.annotation.ViewInTable;
-import com.lars_albrecht.moviedb.utilities.Helper;
 
 /**
  * @author lalbrecht
@@ -40,29 +40,31 @@ public abstract class MovieModel {
 
 	@ViewInTable(as = "Genres", sort = 90)
 	@ParseOptions(as = "genre", type = ParseOptions.TYPE_LIST, typeConf = "db")
-	@DatabaseOptions(as = "genre", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "Action", "Horror", "Komödie", "Sci-Fi", "Thriller", "Liebesfilm", "Erotik",
-			"Abenteuerfilm", "Katastrophenfilm", "Krimi", "Mystery", "Fantasy", "Western", "Kriegsfilm", "Dokumentation", "Historisch", "Biografie", "Antikriegsfilm", "Martial-Arts", "Eastern",
-			"Animationsfilm", "Comic", "Noir" }, isUnique = false)
+	@DatabaseOptions(as = "genre", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "Action", "Horror",
+			"Komödie", "Sci-Fi", "Thriller", "Liebesfilm", "Erotik", "Abenteuerfilm", "Katastrophenfilm", "Krimi", "Mystery",
+			"Fantasy", "Western", "Kriegsfilm", "Dokumentation", "Historisch", "Biografie", "Antikriegsfilm", "Martial-Arts",
+			"Eastern", "Animationsfilm", "Comic", "Noir" }, isUnique = false)
 	@ViewInTab(as = "Genres", tabname = "general", sort = 110, editable = true, type = ViewInTab.TYPE_AUTO)
 	protected ArrayList<String> genreList = null;
 
 	@ViewInTable(as = "Videostreams", sort = 80)
 	@ParseOptions(as = "video", type = ParseOptions.TYPE_LIST, typeConf = "db")
-	@DatabaseOptions(as = "video", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "720p", "1080p", "HDTV", "HDRip", "DVDRip", "BRRIP", "HD2DVD", "R5" }, isUnique = false)
+	@DatabaseOptions(as = "video", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "720p", "1080p",
+			"HDTV", "HDRip", "DVDRip", "BRRIP", "HD2DVD", "R5" }, isUnique = false)
 	@ViewInTab(as = "Videostreams", tabname = "general", sort = 100, editable = true, type = ViewInTab.TYPE_AUTO)
 	protected ArrayList<String> videoList = null;
 
 	@ViewInTable(as = "Audiostreams", sort = 70)
 	@ParseOptions(as = "audio", type = ParseOptions.TYPE_LIST, typeConf = "db")
-	@DatabaseOptions(as = "audio", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "DD5.1", "DTS", "DTSHD", "DTSD", "AC3", "AC3D", "AHC3", "AC5.1", "AC3 2.0", "5.1",
-			"AC3D 5.1" }, isUnique = false)
+	@DatabaseOptions(as = "audio", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "DD5.1", "DTS",
+			"DTSHD", "DTSD", "AC3", "AC3D", "AHC3", "AC5.1", "AC3 2.0", "5.1", "AC3D 5.1" }, isUnique = false)
 	@ViewInTab(as = "Audiostreams", tabname = "general", sort = 90, editable = true, type = ViewInTab.TYPE_AUTO)
 	protected ArrayList<String> audioList = null;
 
 	@ViewInTable(as = "Encoders", sort = 60)
 	@ParseOptions(as = "encoder", type = ParseOptions.TYPE_LIST, typeConf = "db")
-	@DatabaseOptions(as = "encoder", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "x264", "Xvid", "DivX", "H.264", "Nero Digital", "CoreAVC", "3ivx", "HDX4", "libmpeg2",
-			"FFmpeg", "MPEG-4" }, isUnique = false)
+	@DatabaseOptions(as = "encoder", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "x264", "Xvid",
+			"DivX", "H.264", "Nero Digital", "CoreAVC", "3ivx", "HDX4", "libmpeg2", "FFmpeg", "MPEG-4" }, isUnique = false)
 	@ViewInTab(as = "Encoders", tabname = "general", sort = 80, editable = true, type = ViewInTab.TYPE_AUTO)
 	protected ArrayList<String> encoderList = null;
 
@@ -74,8 +76,9 @@ public abstract class MovieModel {
 
 	@ViewInTable(as = "Versions", sort = 40)
 	@ParseOptions(as = "version", type = ParseOptions.TYPE_LIST, typeConf = "db")
-	@DatabaseOptions(as = "version", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "Uncut", "Unrated", "Extended", "Remastered", "Extended Remastered",
-			"Extended Directors Cut", "Jubiläums Edition", "Directors Cut", "SE", "Special edition", "Platinum Edition", "Final Cut" }, isUnique = false)
+	@DatabaseOptions(as = "version", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = { "Uncut",
+			"Unrated", "Extended", "Remastered", "Extended Remastered", "Extended Directors Cut", "Jubiläums Edition",
+			"Directors Cut", "SE", "Special edition", "Platinum Edition", "Final Cut" }, isUnique = false)
 	@ViewInTab(as = "Versions", tabname = "general", sort = 60, editable = true, type = ViewInTab.TYPE_AUTO)
 	protected ArrayList<String> versionList = null;
 
@@ -113,34 +116,36 @@ public abstract class MovieModel {
 	@ViewInTable(as = " ", sort = 0)
 	protected Boolean validPath = null;
 
-	private ConcurrentHashMap<String, Object> additional = null;
+	private HashMap<String, Object> additional = null;
 
 	/**
 	 * 
 	 */
 	public MovieModel() {
-		additional = new ConcurrentHashMap<String, Object>();
+		this.additional = new HashMap<String, Object>();
 	}
 
-	final public Object get(final String s) throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	final public Object get(final String s) throws SecurityException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
 		try {
 			return Helper.call("get" + Helper.ucfirst(s), this);
-		} catch (NoSuchMethodException e) {
-			if (additional == null) {
-				additional = new ConcurrentHashMap<>();
+		} catch(final NoSuchMethodException e) {
+			if(this.additional == null) {
+				this.additional = new HashMap<String, Object>();
 			}
-			return additional.get(s);
+			return this.additional.get(s);
 		}
 	}
 
-	final public void set(final String s, final Object set) throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	final public void set(final String s, final Object set, final Class<?>... c) throws SecurityException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		try {
-			Helper.call("set" + Helper.ucfirst(s), this, set);
-		} catch (NoSuchMethodException e) {
-			if (additional == null) {
-				additional = new ConcurrentHashMap<>();
+			Helper.call("set" + Helper.ucfirst(s), this, set != null ? set : (c.length > 0 ? c[0] : null));
+		} catch(final NoSuchMethodException e) {
+			if(this.additional == null) {
+				this.additional = new HashMap<String, Object>();
 			}
-			additional.put(s, set);
+			this.additional.put(s, set);
 		}
 	}
 
@@ -163,7 +168,7 @@ public abstract class MovieModel {
 	 * @return the versionList
 	 */
 	protected synchronized final ArrayList<String> getVersionList() {
-		if (this.versionList == null) {
+		if(this.versionList == null) {
 			this.versionList = new ArrayList<String>();
 		}
 		return this.versionList;
@@ -181,7 +186,7 @@ public abstract class MovieModel {
 	 * @return the videoList
 	 */
 	protected synchronized final ArrayList<String> getVideoList() {
-		if (this.videoList == null) {
+		if(this.videoList == null) {
 			this.videoList = new ArrayList<String>();
 		}
 		return this.videoList;
@@ -199,7 +204,7 @@ public abstract class MovieModel {
 	 * @return the encoderList
 	 */
 	protected synchronized final ArrayList<String> getEncoderList() {
-		if (this.encoderList == null) {
+		if(this.encoderList == null) {
 			this.encoderList = new ArrayList<String>();
 		}
 		return this.encoderList;
@@ -217,7 +222,7 @@ public abstract class MovieModel {
 	 * @return the langList
 	 */
 	protected synchronized final ArrayList<String> getLangList() {
-		if (this.langList == null) {
+		if(this.langList == null) {
 			this.langList = new ArrayList<String>();
 		}
 		return this.langList;
@@ -303,7 +308,7 @@ public abstract class MovieModel {
 	 * @return the audioList
 	 */
 	protected synchronized final ArrayList<String> getAudioList() {
-		if (this.audioList == null) {
+		if(this.audioList == null) {
 			this.audioList = new ArrayList<String>();
 		}
 		return this.audioList;
@@ -358,7 +363,7 @@ public abstract class MovieModel {
 	 * @return the genreList
 	 */
 	protected synchronized final ArrayList<String> getGenreList() {
-		if (this.genreList == null) {
+		if(this.genreList == null) {
 			this.genreList = new ArrayList<String>();
 		}
 		return this.genreList;

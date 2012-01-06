@@ -11,13 +11,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.controller.ThreadController;
 import com.lars_albrecht.moviedb.model.DefaultMovieModel;
 import com.lars_albrecht.moviedb.model.FieldList;
 import com.lars_albrecht.moviedb.model.FieldModel;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
-import com.lars_albrecht.moviedb.utilities.Debug;
-import com.lars_albrecht.moviedb.utilities.Helper;
 
 /**
  * @author lalbrecht
@@ -35,7 +35,8 @@ public class Parser implements Runnable {
 
 	private String regex = null;
 
-	public Parser(final ThreadController tc, final ArrayList<File> files, final ConcurrentHashMap<String, ArrayList<String>> dbListItems, final FieldList fieldList, final String regex) {
+	public Parser(final ThreadController tc, final ArrayList<File> files,
+			final ConcurrentHashMap<String, ArrayList<String>> dbListItems, final FieldList fieldList, final String regex) {
 		this.tc = tc;
 		this.files = files;
 		this.dbListItems = dbListItems;
@@ -44,8 +45,7 @@ public class Parser implements Runnable {
 	}
 
 	/**
-	 * Parse the file(name) with the given regex and fill out model to add them
-	 * to a list.
+	 * Parse the file(name) with the given regex and fill out model to add them to a list.
 	 * 
 	 * @param filename
 	 * @param tempMovie
@@ -62,30 +62,39 @@ public class Parser implements Runnable {
 		Boolean found = false;
 		try {
 			int i = 0;
-			while (matcherValues.find()) {
+			while(matcherValues.find()) {
 				final String val = matcherValues.group(0).trim();
 				found = false;
-				for (final Entry<String, ArrayList<String>> x : this.dbListItems.entrySet()) {
-					if (Helper.containsIgnoreCase(x.getValue(), matcherValues.group(0).trim())) {
+				for(final Entry<String, ArrayList<String>> x : this.dbListItems.entrySet()) {
+					if(Helper.containsIgnoreCase(x.getValue(), matcherValues.group(0).trim())) {
 						final FieldModel item = this.fieldList.get(this.fieldList.fieldNameInAsList(x.getKey()));
-						Helper.call("get" + Helper.ucfirst(item.getField().getName()), tempMovie);
-						final ArrayList<String> list = (ArrayList<String>) Helper.call("get" + Helper.ucfirst(item.getField().getName()), tempMovie);
-						list.add(matcherValues.group(0).trim());
+						// Helper.call("get" +
+						// Helper.ucfirst(item.getField().getName()),
+						// tempMovie);
+						// tempMovie.get(item.getField().getName());
+						final ArrayList<String> list = (ArrayList<String>) tempMovie.get(item.getField().getName());
+						if(list != null) {
+							list.add(matcherValues.group(0).trim());
 
-						Helper.call("set" + Helper.ucfirst(item.getField().getName()), tempMovie, list);
+							// Helper.call("set" +
+							// Helper.ucfirst(item.getField().getName()),
+							// tempMovie,
+							// list);
+							tempMovie.set(item.getField().getName(), list);
+						}
 
 						found = true;
 						break;
 					}
 				}
-				if (!found) {
+				if(!found) {
 					// notFoundList.add(val);
 					System.out.println("not found: " + matcherValues.group(0));
-					if (i == 0) {
+					if(i == 0) {
 						tempMovie.set("maintitle", val);
-					} else if ((i == 1) && !val.matches("([0-9]{4})")) {
+					} else if((i == 1) && !val.matches("([0-9]{4})")) {
 						tempMovie.set("subtitle", val);
-					} else if (val.matches("([0-9]{4})")) {
+					} else if(val.matches("([0-9]{4})")) {
 						tempMovie.set("year", Integer.parseInt(val));
 					}
 
@@ -100,15 +109,13 @@ public class Parser implements Runnable {
 			tempMovie.set("validPath", Boolean.TRUE);
 
 			this.movies.add(tempMovie);
-		} catch (final NoSuchMethodException e) {
+		} catch(final SecurityException e) {
 			e.printStackTrace();
-		} catch (final SecurityException e) {
+		} catch(final IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
+		} catch(final IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (final IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (final InvocationTargetException e) {
+		} catch(final InvocationTargetException e) {
 			e.printStackTrace();
 		}
 
@@ -122,8 +129,8 @@ public class Parser implements Runnable {
 	 */
 	@Override
 	public void run() {
-		if (this.files != null) {
-			for (final File file : this.files) {
+		if(this.files != null) {
+			for(final File file : this.files) {
 				this.parseMoviename(file);
 			}
 			this.tc.getParserList().remove(Thread.currentThread());

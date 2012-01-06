@@ -21,10 +21,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.gui.tablefilter.AdditionalFilter;
 import com.lars_albrecht.moviedb.model.ComboBoxFilterModel;
-import com.lars_albrecht.moviedb.utilities.Helper;
 
 /**
  * @author lalbrecht
@@ -48,7 +48,7 @@ public class Platform extends JFrame {
 	private JSplitPane splitPaneTop = null;
 
 	private JToolBar tbTools = null;
-	private JButton bValidatePaths = null;
+	private JButton bRefreshTable = null;
 	private JComboBox<ComboBoxFilterModel> cbFilter = null;
 	private DefaultComboBoxModel<ComboBoxFilterModel> mcbmFilter = null;
 	private JRadioButton rbAndSearch = null;
@@ -91,6 +91,7 @@ public class Platform extends JFrame {
 		this.splitPaneBottom = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.controller.getLv(), this.controller.getTv());
 		this.splitPaneBottom.setOneTouchExpandable(true);
 		this.splitPaneBottom.setDividerSize(7);
+		this.splitPaneBottom.setDividerLocation(750);
 
 		this.controller.setAf(new AdditionalFilter(this.controller));
 
@@ -106,12 +107,12 @@ public class Platform extends JFrame {
 		this.cbFilter = new JComboBox<ComboBoxFilterModel>(this.mcbmFilter);
 		this.cbFilter.setEditable(true);
 
-		this.bValidatePaths = new JButton("Refresh");
-		this.bValidatePaths.addActionListener(this.controller);
+		this.bRefreshTable = new JButton("Refresh");
+		this.bRefreshTable.addActionListener(this.controller);
 
 		this.tbTools = new JToolBar("Main toolbar");
 		this.tbTools.setFloatable(Boolean.FALSE);
-		this.tbTools.add(this.bValidatePaths);
+		this.tbTools.add(this.bRefreshTable);
 		this.tbTools.add(this.cbFilter);
 
 		final ButtonGroup bgAndOr = new ButtonGroup();
@@ -343,18 +344,18 @@ public class Platform extends JFrame {
 	}
 
 	/**
-	 * @return the bValidatePaths
+	 * @return the bRefresh
 	 */
-	public synchronized final JButton getbValidatePaths() {
-		return this.bValidatePaths;
+	public synchronized final JButton getbRefreshTable() {
+		return this.bRefreshTable;
 	}
 
 	/**
-	 * @param bValidatePaths
-	 *            the bValidatePaths to set
+	 * @param bRefreshTable
+	 *            the bRefreshTable to set
 	 */
-	public synchronized final void setbValidatePaths(final JButton bValidatePaths) {
-		this.bValidatePaths = bValidatePaths;
+	public synchronized final void setbRefreshTable(final JButton bRefreshTable) {
+		this.bRefreshTable = bRefreshTable;
 	}
 
 	/**
@@ -368,7 +369,7 @@ public class Platform extends JFrame {
 	 * @param miRemoveAll
 	 *            the miRemoveAll to set
 	 */
-	public synchronized final void setMiRemoveAll(JMenuItem miRemoveAll) {
+	public synchronized final void setMiRemoveAll(final JMenuItem miRemoveAll) {
 		this.miRemoveAll = miRemoveAll;
 	}
 

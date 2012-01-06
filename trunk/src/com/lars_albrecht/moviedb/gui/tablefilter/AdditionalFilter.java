@@ -19,11 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 
-import com.lars_albrecht.moviedb.components.labeled.JLabeledList;
-import com.lars_albrecht.moviedb.components.labeled.abstracts.JLabeled;
+import com.lars_albrecht.general.components.labeled.JLabeledList;
+import com.lars_albrecht.general.components.labeled.abstracts.JLabeled;
+import com.lars_albrecht.general.types.KeyValue;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.model.FieldModel;
-import com.lars_albrecht.moviedb.model.KeyValue;
 
 /**
  * @author lalbrecht
@@ -126,6 +126,23 @@ public class AdditionalFilter extends JPanel {
 		gbcP.fill = GridBagConstraints.BOTH;
 		gbcP.anchor = GridBagConstraints.NORTH;
 		p.add(this.spFieldSet, BorderLayout.CENTER);
+	}
+
+	/**
+	 * 
+	 */
+	public void toggleAdvancedSearchFilter() {
+		if(this.cbUseAdvanced.isSelected()) {
+			this.spFieldSet.setVisible(true);
+			if(this.controller.getPf().getSplitPaneTop().getDividerLocation() < 30) {
+				this.controller.getPf().getSplitPaneTop().setDividerLocation(1.0);
+			}
+		} else {
+			this.spFieldSet.setVisible(false);
+			if(this.controller.getPf().getSplitPaneTop().getDividerLocation() > 30) {
+				this.controller.getPf().getSplitPaneTop().setDividerLocation(25);
+			}
+		}
 	}
 
 	/**

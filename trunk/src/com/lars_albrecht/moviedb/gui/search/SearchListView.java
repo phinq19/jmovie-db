@@ -7,6 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -19,8 +20,9 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.controller.Controller;
-import com.lars_albrecht.moviedb.utilities.Helper;
+import com.lars_albrecht.moviedb.controller.ThreadController;
 
 /**
  * @author lalbrecht
@@ -171,6 +173,55 @@ public class SearchListView extends JFrame {
 
 		frame.add(fileListScrollPane, gbc);
 
+	}
+
+	/**
+	 * 
+	 */
+	public void startScanMovies() {
+		final ArrayList<File> temp = new ArrayList<File>();
+		for(int i = 0; i < this.fileListModel.getSize(); i++) {
+			temp.add(new File(this.fileListModel.get(i)));
+		}
+		new ThreadController(this.controller, this.controller.getLv().getTableModel(), this.tfRegExp.getText().split("\n"), temp);
+	}
+
+	/**
+	 * 
+	 */
+	public void addPathToSearchView() {
+		if(this.fcSelect == null) {
+			this.fcSelect = new JFileChooser();
+			// this.slv.getFcSelect().setCurrentDirectory(new
+			// java.io.File("."));
+			if(new File("J:\\files\\video").exists()) {
+				this.fcSelect.setCurrentDirectory(new File("J:\\files\\video"));
+			} else {
+				this.fcSelect.setCurrentDirectory(new File("D:\\lalbrecht\\Programme\\WDT\\workspace\\MD\\testdata"));
+			}
+			this.fcSelect.setDialogTitle("Choose folder...");
+			this.fcSelect.setAcceptAllFileFilterUsed(false);
+			this.fcSelect.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		}
+		if(this.fcSelect.showOpenDialog(this.getRootPane()) == JFileChooser.APPROVE_OPTION) {
+			this.fileListModel.add(0, this.fcSelect.getSelectedFile().toString());
+		} else {
+			// no selection
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void saveSearchOptions() {
+		final ArrayList<File> tempList = new ArrayList<File>();
+		for(int i = 0; i < this.fileListModel.size(); i++) {
+			tempList.add(new File(this.fileListModel.get(i)));
+		}
+		if(tempList.size() > 0) {
+			Controller.options.setPaths(tempList);
+			Controller.options.setFilenameSeperator(this.tfRegExp.getText());
+		}
 	}
 
 	/**

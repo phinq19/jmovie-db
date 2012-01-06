@@ -14,17 +14,18 @@ import java.util.regex.Pattern;
 
 import org.h2.jdbc.JdbcSQLException;
 
+import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.moviedb.annotation.DatabaseOptions;
 import com.lars_albrecht.moviedb.annotation.ParseOptions;
-import com.lars_albrecht.moviedb.components.MovieTableModel;
+import com.lars_albrecht.moviedb.components.movietablemodel.MovieTableModel;
 import com.lars_albrecht.moviedb.database.DB;
 import com.lars_albrecht.moviedb.model.FieldList;
 import com.lars_albrecht.moviedb.model.FieldModel;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
 import com.lars_albrecht.moviedb.thread.Finder;
 import com.lars_albrecht.moviedb.thread.Parser;
-import com.lars_albrecht.moviedb.utilities.Debug;
-import com.lars_albrecht.moviedb.utilities.PropertiesReader;
+import com.lars_albrecht.moviedb.thread.TableRefresh;
 
 /**
  * @author lalbrecht
@@ -43,6 +44,7 @@ public class ThreadController {
 
 	private final ArrayList<Thread> parserList = new ArrayList<Thread>();
 	private final ArrayList<Thread> finderList = new ArrayList<Thread>();
+	private final ArrayList<Thread> tableRefreshList = new ArrayList<Thread>();
 
 	/**
 	 * 
@@ -112,6 +114,13 @@ public class ThreadController {
 			this.finderList.add(new Thread(new Finder(this, files.get(i))));
 			this.finderList.get(this.finderList.size() - 1).start();
 		}
+	}
+
+	public ThreadController(final Controller controller, final MovieTableModel tableModel) {
+		this.controller = controller;
+		this.tableModel = tableModel;
+		this.tableRefreshList.add(new Thread(new TableRefresh(this, this.tableModel)));
+		this.tableRefreshList.get(this.tableRefreshList.size() - 1).start();
 	}
 
 	/**
@@ -218,7 +227,7 @@ public class ThreadController {
 		System.out.println("ParserList: " + this.parserList.size());
 		if((this.parserList.size() == 0) && (this.finderList.size() == 0)) {
 			this.controller.getSbStatus().setText(
-					String.format(PropertiesReader.getInstance().getProperties("application.status.movielist.added"),
+					String.format(RessourceBundleEx.getInstance().getProperty("application.status.movielist.added"),
 							this.moviesAddedCount));
 		}
 	}
@@ -242,6 +251,13 @@ public class ThreadController {
 	 */
 	public synchronized final ArrayList<Thread> getFinderList() {
 		return this.finderList;
+	}
+
+	/**
+	 * @return the tableRefreshList
+	 */
+	public synchronized final ArrayList<Thread> getTableRefreshList() {
+		return this.tableRefreshList;
 	}
 
 }

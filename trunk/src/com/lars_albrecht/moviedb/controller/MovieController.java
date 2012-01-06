@@ -16,14 +16,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 
+import com.lars_albrecht.general.types.KeyValue;
+import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.database.DB;
 import com.lars_albrecht.moviedb.model.DefaultMovieModel;
 import com.lars_albrecht.moviedb.model.FieldList;
 import com.lars_albrecht.moviedb.model.FieldModel;
-import com.lars_albrecht.moviedb.model.KeyValue;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
-import com.lars_albrecht.moviedb.utilities.Debug;
-import com.lars_albrecht.moviedb.utilities.Helper;
 
 /**
  * @author lalbrecht
@@ -31,46 +31,63 @@ import com.lars_albrecht.moviedb.utilities.Helper;
  */
 public class MovieController {
 
+	/**
+	 * Adds a movie to the database.
+	 * 
+	 * @param movie
+	 *            MovieModel
+	 * @return Boolean
+	 * @throws NoSuchMethodException
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws SQLException
+	 */
 	@SuppressWarnings("unchecked")
-	public static Boolean addMovie(final MovieModel movie) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
+	public static Boolean addMovie(final MovieModel movie) throws NoSuchMethodException, SecurityException,
+			IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException {
 		Debug.startTimer("addfilmdb");
 		final FieldList fieldListDb = Controller.flDB;
 		final ConcurrentHashMap<String, Object> tempGeneral = new ConcurrentHashMap<String, Object>();
 		final ConcurrentHashMap<String, ArrayList<String>> list = new ConcurrentHashMap<String, ArrayList<String>>();
-		for (final FieldModel item : fieldListDb) {
-			if ((item.getField().getType() == String.class) || (item.getField().getType() == Integer.class)) {
+		for(final FieldModel item : fieldListDb) {
+			if((item.getField().getType() == String.class) || (item.getField().getType() == Integer.class)) {
 				final Object methodResult = movie.get(item.getField().getName());
-				if (methodResult != null) {
-					tempGeneral.put(item.getAs(), (item.getField().getType() == String.class ? "'" + methodResult + "'" : methodResult));
+				if(methodResult != null) {
+					tempGeneral.put(item.getAs(), (item.getField().getType() == String.class ? "'" + methodResult + "'"
+							: methodResult));
 				}
-			} else if (item.getField().getType() == File.class) {
+			} else if(item.getField().getType() == File.class) {
 				final File methodResult = (File) movie.get(item.getField().getName());
-				if (methodResult != null) {
+				if(methodResult != null) {
 					tempGeneral.put(item.getAs(), "'" + methodResult.getAbsolutePath() + "'");
 				}
-			} else if (item.getField().getType() == ArrayList.class) {
+			} else if(item.getField().getType() == ArrayList.class) {
 				final ArrayList<String> tempList = ((ArrayList<String>) movie.get(item.getField().getName()));
-				System.out.println("--> " + "get" + Helper.ucfirst(item.getField().getName()));
-				System.out.println("--> tempList: " + tempList);
-				if (tempList != null) {
-					for (final String string : tempList) {
-						if (!list.containsKey(item.getAs())) {
+				// System.out.println("--> " + "get" + Helper.ucfirst(item.getField().getName()));
+				// System.out.println("--> tempList: " + tempList);
+				if(tempList != null) {
+					for(final String string : tempList) {
+						if(!list.containsKey(item.getAs())) {
 							list.put(item.getAs(), new ArrayList<String>());
 						}
 						list.get(item.getAs()).add(string);
 					}
 				}
-			} else if (item.getField().getType() == Image.class) {
-				// m = MovieModel.class.getMethod("get" +
-				// Helper.ucfirst(item.getField().getName()));
+			} else if(item.getField().getType() == Image.class) {
+				final Image methodResult = (Image) movie.get(item.getField().getName());
+				if(methodResult != null) {
+					tempGeneral.put(item.getAs(), methodResult);
+				}
 			}
 		}
 		final Integer movieId = MovieController.addMovieGeneral(tempGeneral);
 		MovieController.addMovieListLink(movieId, list);
-		if (Debug.inDebugLevel(Debug.LEVEL_ALL)) {
-			for (final Map.Entry<String, ArrayList<String>> litem : list.entrySet()) {
+		if(Debug.inDebugLevel(Debug.LEVEL_ALL)) {
+			for(final Map.Entry<String, ArrayList<String>> litem : list.entrySet()) {
 				Debug.log(Debug.LEVEL_DEBUG, litem.getKey());
-				for (final String s : litem.getValue()) {
+				for(final String s : litem.getValue()) {
 					Debug.log(Debug.LEVEL_DEBUG, s);
 				}
 				Debug.log(Debug.LEVEL_DEBUG, "--");
@@ -85,34 +102,54 @@ public class MovieController {
 		return true;
 	}
 
-	public static void updateMovie(final MovieModel movie) throws SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, SQLException, NoSuchMethodException {
-		String sql = "DELETE FROM movie WHERE id = ?";
+	/**
+	 * 
+	 * Updates a movie. Currently it removes the old one and add the new one.
+	 * 
+	 * @param movie
+	 *            MovieModel
+	 * @throws SecurityException
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 * @throws SQLException
+	 * @throws NoSuchMethodException
+	 */
+	public static void updateMovie(final MovieModel movie) throws SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException, SQLException, NoSuchMethodException {
+		final String sql = "DELETE FROM movie WHERE id = ?";
 		final ConcurrentHashMap<Integer, Object> temp = new ConcurrentHashMap<Integer, Object>();
-		temp.put(1, movie.get("id"));
-		DB.updatePS(sql, temp);
+		if(movie.get("id") != null) {
+			temp.put(1, movie.get("id"));
+			DB.updatePS(sql, temp);
+		}
 		MovieController.addMovie(movie);
 	}
 
 	/**
 	 * 
+	 * Add the default values (no special table) to the database and returns the id.
+	 * 
 	 * @param dbFields
-	 * @return
+	 *            ConcurrentHashMap<String, Object>
+	 * @return Integer
 	 * @throws SQLException
 	 */
 	private static Integer addMovieGeneral(final ConcurrentHashMap<String, Object> dbFields) throws SQLException {
-		final String sql = "INSERT INTO movie (" + Helper.implode(new ArrayList<Object>(dbFields.keySet()), ",", null, null) + ") " + "VALUES ("
-				+ Helper.repeatString("?", ", ", dbFields.keySet().size()) + ")";
+		final String sql = "INSERT INTO movie (" + Helper.implode(new ArrayList<Object>(dbFields.keySet()), ",", null, null)
+				+ ") " + "VALUES (" + Helper.repeatString("?", ", ", dbFields.keySet().size()) + ")";
 		// Helper.implode(new ArrayList<Object>(dbFields.values()), ",", null,
 		// null)).replace("'", "\'")
 		final ConcurrentHashMap<Integer, Object> temp = new ConcurrentHashMap<Integer, Object>();
 		int i = 1;
-		for (final Entry<String, Object> entry : dbFields.entrySet()) {
+		for(final Entry<String, Object> entry : dbFields.entrySet()) {
 			temp.put(i, entry.getValue());
 			i++;
 		}
+		System.out.println(temp);
 		DB.updatePS(sql, temp);
 		final ResultSet rs = DB.query("CALL IDENTITY()");
-		if (rs.getFetchSize() > 0) {
+		if(rs.getFetchSize() > 0) {
 			return (Integer) rs.getObject(1);
 		} else {
 			// TODO try to get and then return or null
@@ -121,6 +158,7 @@ public class MovieController {
 	}
 
 	/**
+	 * Add a list to a movie.
 	 * 
 	 * @param movieId
 	 *            Long
@@ -128,17 +166,19 @@ public class MovieController {
 	 *            ConcurrentConcurrentHashMap<String, ArrayList<String>>
 	 * @throws SQLException
 	 */
-	private static void addMovieListLink(final Integer movieId, final ConcurrentHashMap<String, ArrayList<String>> list) throws SQLException {
+	private static void addMovieListLink(final Integer movieId, final ConcurrentHashMap<String, ArrayList<String>> list)
+			throws SQLException {
 		String sql = null;
 		ResultSet rs = null;
 		Integer fieldId = null;
-		for (final Entry<String, ArrayList<String>> entry : list.entrySet()) {
-			for (final String value : entry.getValue()) {
+		for(final Entry<String, ArrayList<String>> entry : list.entrySet()) {
+			for(final String value : entry.getValue()) {
 				sql = "SELECT id FROM " + entry.getKey() + " WHERE LOWER(name) = LOWER('" + value + "')";
 				rs = DB.query(sql);
-				if (rs.next()) {
+				if(rs.next()) {
 					fieldId = (Integer) rs.getObject("id");
-					sql = "INSERT INTO movie_" + entry.getKey() + " (movie_id, " + entry.getKey() + "_id) " + "VALUES (" + movieId + ", " + fieldId + ")";
+					sql = "INSERT INTO movie_" + entry.getKey() + " (movie_id, " + entry.getKey() + "_id) " + "VALUES ("
+							+ movieId + ", " + fieldId + ")";
 					DB.update(sql);
 				} else {
 					// System.out.println(movieId + " - " + sql);
@@ -147,8 +187,21 @@ public class MovieController {
 		}
 	}
 
-	public static ArrayList<MovieModel> getMovies() throws SQLException, SecurityException, NoSuchMethodException, IllegalArgumentException, IllegalAccessException, InvocationTargetException,
-			IOException {
+	/**
+	 * Returns all movies as ArrayList<MovieModel>.
+	 * 
+	 * @return ArrayList<MovieModel>
+	 * 
+	 * @throws SQLException
+	 * @throws SecurityException
+	 * @throws NoSuchMethodException
+	 * @throws IllegalArgumentException
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 * @throws IOException
+	 */
+	public static ArrayList<MovieModel> getMovies() throws SQLException, SecurityException, NoSuchMethodException,
+			IllegalArgumentException, IllegalAccessException, InvocationTargetException, IOException {
 		final ArrayList<MovieModel> tempList = new ArrayList<MovieModel>();
 		final FieldList fl = Controller.flDB;
 		MovieModel tempMovie = null;
@@ -158,33 +211,35 @@ public class MovieController {
 		final ResultSet rs = DB.query(sql);
 		ResultSet rsSub = null;
 		Boolean found = null;
-		while (rs.next()) {
+		while(rs.next()) {
 			tempMovie = new DefaultMovieModel();
-			for (final FieldModel field : fl) {
+			for(final FieldModel field : fl) {
 				try {
 					found = Helper.isFieldInResult(rs, field.getAs());
-				} catch (final SQLException e) {
+				} catch(final SQLException e) {
 					e.printStackTrace();
 				}
-				if (found) {
-					if (field.getField().getType() == File.class) {
+				if(found) {
+					if(field.getField().getType() == File.class) {
 						tempMovie.set(field.getField().getName(), new File((String) rs.getObject(field.getAs())));
-					} else if (field.getField().getType() == Image.class) {
-						if (rs.getBinaryStream(field.getAs()) != null) {
-							tempMovie.set(field.getField().getName(), Helper.bufferedImageToImage(ImageIO.read(rs.getBinaryStream(field.getAs()))));
+					} else if(field.getField().getType() == Image.class) {
+						if(rs.getBinaryStream(field.getAs()) != null) {
+							tempMovie.set(field.getField().getName(), Helper.bufferedImageToImage(ImageIO.read(rs
+									.getBinaryStream(field.getAs()))));
 						}
-					} else if (rs.getObject(field.getAs()) != null) {
+					} else if(rs.getObject(field.getAs()) != null) {
 						tempMovie.set(field.getField().getName(), rs.getObject(field.getAs()));
 					}
-				} else if (field.getField().getType() == ArrayList.class) {
-					subSql = "SELECT " + field.getAs() + ".id, " + field.getAs() + ".name FROM " + field.getAs() + ", movie_" + field.getAs() + " WHERE movie_id = " + tempMovie.get("id")
-							+ " AND movie_" + field.getAs() + "." + field.getAs() + "_id = " + field.getAs() + ".id";
+				} else if(field.getField().getType() == ArrayList.class) {
+					subSql = "SELECT " + field.getAs() + ".id, " + field.getAs() + ".name FROM " + field.getAs() + ", movie_"
+							+ field.getAs() + " WHERE movie_id = " + tempMovie.get("id") + " AND movie_" + field.getAs() + "."
+							+ field.getAs() + "_id = " + field.getAs() + ".id";
 					rsSub = DB.query(subSql);
 					final ArrayList<String> tempRsList = new ArrayList<String>();
-					while (rsSub.next()) {
+					while(rsSub.next()) {
 						tempRsList.add(rsSub.getString("name"));
 					}
-					if (tempRsList.size() > 0) {
+					if(tempRsList.size() > 0) {
 						tempMovie.set(field.getField().getName(), tempRsList);
 					}
 				} else {
@@ -198,18 +253,31 @@ public class MovieController {
 		return tempList;
 	}
 
+	/**
+	 * Returns a list of listvalues like genres.
+	 * 
+	 * @param listName
+	 *            String
+	 * @return ArrayList<KeyValue<Integer, String>>
+	 * @throws SQLException
+	 */
 	public static ArrayList<KeyValue<Integer, String>> getList(final String listName) throws SQLException {
 		final ArrayList<KeyValue<Integer, String>> tempList = new ArrayList<KeyValue<Integer, String>>();
 		final String sql = "SELECT * FROM " + listName.replace("List", "") + " as l";
 		final ResultSet rs = DB.query(sql);
 
-		while (rs.next()) {
+		while(rs.next()) {
 			tempList.add(new KeyValue<Integer, String>(rs.getInt("id"), rs.getString("name")));
 		}
 
 		return tempList;
 	}
 
+	/**
+	 * Removes all movies from database.
+	 * 
+	 * @throws SQLException
+	 */
 	public static void removeAllMovies() throws SQLException {
 		final String sql = "DELETE FROM movie";
 		DB.update(sql);

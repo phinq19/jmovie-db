@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.database.DB;
 import com.lars_albrecht.moviedb.exceptions.OptionsNotLoadedException;
 import com.lars_albrecht.moviedb.exceptions.OptionsNotSavedException;
 import com.lars_albrecht.moviedb.model.Options;
-import com.lars_albrecht.moviedb.utilities.Helper;
 
 /**
  * @author lalbrecht

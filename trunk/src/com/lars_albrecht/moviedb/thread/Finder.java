@@ -6,9 +6,9 @@ package com.lars_albrecht.moviedb.thread;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.moviedb.controller.ThreadController;
 import com.lars_albrecht.moviedb.filter.MovieFilenameFilter;
-import com.lars_albrecht.moviedb.utilities.Debug;
 
 /**
  * @author lalbrecht

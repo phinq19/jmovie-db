@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.moviedb.apiscraper.themoviedb.model;
 
+import java.awt.Image;
 import java.util.ArrayList;
 
 import com.lars_albrecht.moviedb.annotation.DatabaseOptions;
@@ -48,6 +49,9 @@ public class TheMovieDBMovieModel extends MovieModel {
 	@ViewInTab(as = "People", tabname = "tmdb", sort = 80, editable = false, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "people", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = {}, isUnique = false)
 	private ArrayList<String> people = null;
+
+	@DatabaseOptions(as = "cover", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
+	protected Image cover = null;
 
 	@DatabaseOptions(as = "descriptionshort", type = DatabaseOptions.TYPE_FIELD, additionalType = "LONGVARCHAR", defaultValues = {}, isUnique = false)
 	protected String descriptionShort = null;

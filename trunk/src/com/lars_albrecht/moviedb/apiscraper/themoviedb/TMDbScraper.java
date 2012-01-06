@@ -3,16 +3,20 @@
  */
 package com.lars_albrecht.moviedb.apiscraper.themoviedb;
 
+import java.awt.Toolkit;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.model.TheMovieDBMovieModel;
-import com.lars_albrecht.moviedb.utilities.Helper;
+import com.moviejukebox.themoviedb.TheMovieDb;
+import com.moviejukebox.themoviedb.model.Country;
 import com.moviejukebox.themoviedb.model.MovieDB;
+import com.moviejukebox.themoviedb.model.Person;
 
 /**
  * @author lalbrecht
@@ -23,10 +27,10 @@ public class TMDbScraper implements IApiScraperPlugin {
 	private final String apiKey = "d2bfb8abb70809759df091b8d23876af";
 	private final String langKey = "de";
 
-	com.moviejukebox.themoviedb.TheMovieDb tmdb = null;
+	private TheMovieDb tmdb = null;
 
 	public TMDbScraper() {
-		this.tmdb = new com.moviejukebox.themoviedb.TheMovieDb(this.apiKey);
+		this.tmdb = new TheMovieDb(this.apiKey);
 	}
 
 	/*
@@ -52,10 +56,10 @@ public class TMDbScraper implements IApiScraperPlugin {
 	 */
 	@Override
 	public TheMovieDBMovieModel getMovieFromStringYear(final String s, final Integer year) {
-		List<MovieDB> searchResults = this.tmdb.moviedbSearch(s, this.langKey);
+		final List<MovieDB> searchResults = this.tmdb.moviedbSearch(s, this.langKey);
 		MovieDB m = null;
 		if (searchResults.size() > 1) {
-			m = findMovie(searchResults, s, (year != null ? Integer.toString(year) : null));
+			m = this.findMovie(searchResults, s, (year != null ? Integer.toString(year) : null));
 		} else if (searchResults.size() == 1) {
 			m = searchResults.get(0);
 		}
@@ -77,12 +81,12 @@ public class TMDbScraper implements IApiScraperPlugin {
 	 *            The year of the title to search for
 	 * @return The matching movie
 	 */
-	private MovieDB findMovie(Collection<MovieDB> movieList, String title, String year) {
-		if (movieList == null || movieList.isEmpty()) {
+	private MovieDB findMovie(final Collection<MovieDB> movieList, final String title, final String year) {
+		if ((movieList == null) || movieList.isEmpty()) {
 			return null;
 		}
 
-		for (MovieDB moviedb : movieList) {
+		for (final MovieDB moviedb : movieList) {
 			if (this.compareMovies(moviedb, title, year)) {
 				return moviedb;
 			}
@@ -102,7 +106,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 	 *            The year of the movie to compare
 	 * @return True if there is a match, False otherwise.
 	 */
-	private boolean compareMovies(MovieDB moviedb, String title, String year) {
+	private boolean compareMovies(final MovieDB moviedb, final String title, final String year) {
 		if ((moviedb == null) || (!Helper.isValidString(title))) {
 			return false;
 		}
@@ -110,7 +114,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 		if (Helper.isValidString(year)) {
 			if (Helper.isValidString(moviedb.getReleaseDate())) {
 				// Compare with year
-				String movieYear = moviedb.getReleaseDate().substring(0, 4);
+				final String movieYear = moviedb.getReleaseDate().substring(0, 4);
 				if (movieYear.equals(year)
 						&& (moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title) || moviedb.getAlternativeName().equalsIgnoreCase(title) || (moviedb
 								.getTitle().contains("-") && moviedb.getTitle().split("-")[0].trim().equalsIgnoreCase(title)))) {
@@ -162,7 +166,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 	}
 
 	private TheMovieDBMovieModel returnInfosFromMovie(final MovieDB m) {
-
+		ArrayList<String> tempList = new ArrayList<String>();
 		final TheMovieDBMovieModel movie = new TheMovieDBMovieModel();
 		try {
 			// Helper.getFieldsFromClass(MovieDB.class);
@@ -176,14 +180,26 @@ public class TMDbScraper implements IApiScraperPlugin {
 			// }
 
 			movie.setAlternativeName(m.getAlternativeName());
-			movie.setBudget((m.getBudget() != null && !m.getBudget().equals("") ? Integer.parseInt(m.getBudget()) : null));
+			movie.setBudget(((m.getBudget() != null) && !m.getBudget().equals("") ? Integer.parseInt(m.getBudget()) : null));
 			movie.setOriginalName(m.getOriginalName());
-			movie.setRating((m.getRating() != null && !m.getRating().equals("") ? new Double(m.getRating()).intValue() : null));
-			movie.setRuntime((m.getRuntime() != null && !m.getRuntime().equals("") ? Integer.parseInt(m.getRuntime()) : null));
+			movie.setRating(((m.getRating() != null) && !m.getRating().equals("") ? new Double(m.getRating()).intValue() : null));
+			movie.setRuntime(((m.getRuntime() != null) && !m.getRuntime().equals("") ? Integer.parseInt(m.getRuntime()) : null));
 			movie.setTmdbId(Integer.parseInt(m.getId()));
 			movie.set("descriptionShort", m.getOverview());
-			movie.setCountries(new ArrayList(m.getCountries()));
-			movie.setPeople(new ArrayList(m.getPeople()));
+			tempList.clear();
+			for (Country c : m.getCountries()) {
+				tempList.add(c.getName());
+			}
+			movie.setCountries(tempList);
+			tempList.clear();
+			for (Person p : m.getPeople()) {
+				tempList.add(p.getName());
+			}
+			movie.setPeople(tempList);
+
+			if (m.getArtwork().size() > 0) {
+				movie.set("cover", Toolkit.getDefaultToolkit().getImage(m.getArtwork().get(0).getUrl()));
+			}
 
 			// movie.set("maintitle", m.getTitle());
 			//
@@ -233,9 +249,9 @@ public class TMDbScraper implements IApiScraperPlugin {
 		// resultMap.put("type", m.getType());
 		// resultMap.put("url", m.getUrl());
 		// resultMap.put("version", m.getVersion());
-		catch (IllegalAccessException e) {
+		catch (final IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (final InvocationTargetException e) {
 			e.printStackTrace();
 		}
 

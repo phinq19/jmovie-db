@@ -4,27 +4,45 @@
 package com.lars_albrecht.moviedb.gui.splitview;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Image;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Map;
 
+import javax.swing.Action;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.lars_albrecht.moviedb.components.MovieTableModel;
-import com.lars_albrecht.moviedb.components.celleditors.MovieCellEditor;
-import com.lars_albrecht.moviedb.components.cellrenderer.MovieValidRenderer;
+import com.lars_albrecht.general.components.imagepanel.JImage;
+import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
+import com.lars_albrecht.moviedb.components.interfaces.IMovieTabComponent;
+import com.lars_albrecht.moviedb.components.labeled.JLabeledComboBoxMovie;
+import com.lars_albrecht.moviedb.components.labeled.JLabeledListMovie;
+import com.lars_albrecht.moviedb.components.labeled.JLabeledTextAreaMovie;
+import com.lars_albrecht.moviedb.components.labeled.JLabeledTextInputMovie;
+import com.lars_albrecht.moviedb.components.movietablemodel.HidableTableColumnModel;
+import com.lars_albrecht.moviedb.components.movietablemodel.MovieTableModel;
+import com.lars_albrecht.moviedb.components.movietablemodel.celleditors.MovieCellEditor;
+import com.lars_albrecht.moviedb.components.movietablemodel.cellrenderer.MovieValidRenderer;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.controller.MovieController;
+import com.lars_albrecht.moviedb.controller.ThreadController;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
-import com.lars_albrecht.moviedb.utilities.PropertiesReader;
 
 /**
  * @author lalbrecht
@@ -106,6 +124,15 @@ public class TableView extends JPanel {
 		this.table.getSelectionModel().addListSelectionListener(this.controller);
 		this.table.addMouseListener(this.controller);
 
+		final HidableTableColumnModel htcm = new HidableTableColumnModel(this.table.getColumnModel());
+		final JPopupMenu popup = new JPopupMenu();
+		final Action[] columnActions = htcm.createColumnActions();
+		for (final Action act : columnActions) {
+			popup.add(new JCheckBoxMenuItem(act));
+		} // for
+			// this.table.getTableHeader().setComponentPopupMenu(popup);
+		this.table.setComponentPopupMenu(popup);
+
 		final TableColumn tc = this.table.getColumn(this.table.getColumnName(0));
 		tc.setMinWidth(15);
 		tc.setMaxWidth(15);
@@ -117,6 +144,98 @@ public class TableView extends JPanel {
 		gbc.gridy = 1;
 		gbc.fill = GridBagConstraints.BOTH;
 		panel.add(this.tableScrollPane, gbc);
+	}
+
+	/**
+	 * 
+	 */
+	public void doTableDoubleClick() {
+		// System.out.println(this.lv.getTable().getValueAt(modelRow,
+		// 1));
+		// System.out.println(this.lv.getTableModel().getMovies().get(modelRow));
+		// System.out.println(this.lv.getTable().getSelectionModel().getMinSelectionIndex());
+		// System.out.println(this.lv.getTable().getSelectionModel().getMaxSelectionIndex());
+		// System.out.println(String.format("Selected Row in view: %d. " +
+		// "Selected Row in model: %d.", viewRow, modelRow));
+
+		final int modelRow = this.table.convertRowIndexToModel(this.table.getSelectedRow());
+		Controller.loadedMovie = this.tableModel.getMovies().get(modelRow);
+		for (final Map.Entry<String, Component> entry : this.controller.getTv().getComponentList().entrySet()) {
+			try {
+				final Object result = Controller.loadedMovie.get(entry.getKey());
+				Object resultForComponent = null;
+				if (result != null) {
+					// prepare selection / text for component
+					if ((result instanceof ArrayList)) {
+						resultForComponent = Helper.implode((ArrayList<?>) result, ", ", null, null);
+					} else if ((result instanceof File)) {
+						resultForComponent = ((File) result).getAbsolutePath();
+					} else if ((result instanceof String)) {
+						resultForComponent = result;
+					} else if (result instanceof Integer) {
+						resultForComponent = Integer.toString((Integer) result);
+					} else if ((result instanceof Image)) {
+						resultForComponent = result;
+					}
+				} else {
+					// System.out.println(entry.getKey() + " is null");
+				}
+
+				// set selection / text to component
+				if ((entry.getValue() instanceof JLabeledTextInputMovie) || (entry.getValue() instanceof JLabeledTextAreaMovie)) {
+
+					((IMovieTabComponent) entry.getValue()).select(resultForComponent);
+				} else if ((entry.getValue() instanceof JLabeledComboBoxMovie) || (entry.getValue() instanceof JLabeledListMovie)) {
+					((IMovieTabComponent) entry.getValue()).select(result);
+				} else {
+					if (entry.getValue() instanceof JImage) {
+						((JImage) entry.getValue()).setImage((Image) resultForComponent);
+					}
+					// System.out.println(": " + entry.getValue().getClass());
+				}
+
+			} catch (final SecurityException e) {
+				e.printStackTrace();
+			} catch (final IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (final IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (final InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * 
+	 */
+	public void refreshTableItems() {
+		// set new status
+		if (this.tableModel.getMovies().size() > 0) {
+			for (final MovieModel movie : this.tableModel.getMovies()) {
+				try {
+					if (((File) movie.get("file")).getAbsoluteFile().exists()) {
+						movie.set("validPath", Boolean.TRUE);
+					} else {
+						movie.set("validPath", Boolean.FALSE);
+					}
+				} catch (final SecurityException e) {
+					e.printStackTrace();
+				} catch (final IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (final IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (final InvocationTargetException e) {
+					e.printStackTrace();
+				}
+			}
+			this.tableModel.callListenersChange(new TableModelEvent(this.tableModel, 0, this.tableModel.getMovies().size() - 1, TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
+		}
+
+		if ((Controller.options.getPaths().size() > 0) && !Controller.options.getFilenameSeperator().equals("")) {
+			// add new movies from defaultfilestack
+			new ThreadController(this.controller, this.tableModel, null, Controller.options.getPaths());
+		}
 	}
 
 	/**
@@ -139,7 +258,7 @@ public class TableView extends JPanel {
 			this.tableModel.addMovie(movie);
 		}
 
-		this.controller.getSbStatus().setText(String.format(PropertiesReader.getInstance().getProperties("application.status.movielist.loaded"), i));
+		this.controller.getSbStatus().setText(String.format(RessourceBundleEx.getInstance().getProperty("application.status.movielist.loaded"), i));
 	}
 
 	/**
