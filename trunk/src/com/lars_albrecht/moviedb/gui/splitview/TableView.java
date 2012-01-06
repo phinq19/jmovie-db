@@ -4,17 +4,13 @@
 package com.lars_albrecht.moviedb.gui.splitview;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Map;
 
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
@@ -27,14 +23,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.lars_albrecht.general.components.imagepanel.JImage;
-import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
-import com.lars_albrecht.moviedb.components.interfaces.IMovieTabComponent;
-import com.lars_albrecht.moviedb.components.labeled.JLabeledComboBoxMovie;
-import com.lars_albrecht.moviedb.components.labeled.JLabeledListMovie;
-import com.lars_albrecht.moviedb.components.labeled.JLabeledTextAreaMovie;
-import com.lars_albrecht.moviedb.components.labeled.JLabeledTextInputMovie;
 import com.lars_albrecht.moviedb.components.movietablemodel.HidableTableColumnModel;
 import com.lars_albrecht.moviedb.components.movietablemodel.MovieTableModel;
 import com.lars_albrecht.moviedb.components.movietablemodel.celleditors.MovieCellEditor;
@@ -160,50 +149,7 @@ public class TableView extends JPanel {
 
 		final int modelRow = this.table.convertRowIndexToModel(this.table.getSelectedRow());
 		Controller.loadedMovie = this.tableModel.getMovies().get(modelRow);
-		for (final Map.Entry<String, Component> entry : this.controller.getTv().getComponentList().entrySet()) {
-			try {
-				final Object result = Controller.loadedMovie.get(entry.getKey());
-				Object resultForComponent = null;
-				if (result != null) {
-					// prepare selection / text for component
-					if ((result instanceof ArrayList)) {
-						resultForComponent = Helper.implode((ArrayList<?>) result, ", ", null, null);
-					} else if ((result instanceof File)) {
-						resultForComponent = ((File) result).getAbsolutePath();
-					} else if ((result instanceof String)) {
-						resultForComponent = result;
-					} else if (result instanceof Integer) {
-						resultForComponent = Integer.toString((Integer) result);
-					} else if ((result instanceof Image)) {
-						resultForComponent = result;
-					}
-				} else {
-					// System.out.println(entry.getKey() + " is null");
-				}
-
-				// set selection / text to component
-				if ((entry.getValue() instanceof JLabeledTextInputMovie) || (entry.getValue() instanceof JLabeledTextAreaMovie)) {
-
-					((IMovieTabComponent) entry.getValue()).select(resultForComponent);
-				} else if ((entry.getValue() instanceof JLabeledComboBoxMovie) || (entry.getValue() instanceof JLabeledListMovie)) {
-					((IMovieTabComponent) entry.getValue()).select(result);
-				} else {
-					if (entry.getValue() instanceof JImage) {
-						((JImage) entry.getValue()).setImage((Image) resultForComponent);
-					}
-					// System.out.println(": " + entry.getValue().getClass());
-				}
-
-			} catch (final SecurityException e) {
-				e.printStackTrace();
-			} catch (final IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (final IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (final InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}
+		this.controller.getTv().refreshLoadedMovie();
 	}
 
 	/**

@@ -26,6 +26,8 @@ import com.lars_albrecht.general.types.KeyValue;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.annotation.ViewInTab;
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
+import com.lars_albrecht.moviedb.components.interfaces.IMovieTabComponent;
+import com.lars_albrecht.moviedb.components.labeled.JLabeledComboBoxMovie;
 import com.lars_albrecht.moviedb.components.labeled.JLabeledListMovie;
 import com.lars_albrecht.moviedb.components.labeled.JLabeledTextAreaMovie;
 import com.lars_albrecht.moviedb.components.labeled.JLabeledTextInputMovie;
@@ -167,7 +169,11 @@ public class TabView extends JTabbedPane {
 					//
 					// TODO get movie from movie / threaded / if there is a
 					// id, use it
-					final MovieModel m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle"), (Integer) Controller.loadedMovie.get("year"));
+					MovieModel m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle"), (Integer) Controller.loadedMovie.get("year"));
+					if (m == null) {
+						m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle") + " " + (String) Controller.loadedMovie.get("subtitle"),
+								(Integer) Controller.loadedMovie.get("year"));
+					}
 					if (m != null) {
 						final FieldList fieldlist = Helper.getDBFieldModelFromClass(m.getClass());
 						for (final FieldModel fieldModel : fieldlist) {
@@ -181,6 +187,8 @@ public class TabView extends JTabbedPane {
 						}
 						// TODO set infos in tabview (reload movie)
 						MovieController.updateMovie(Controller.loadedMovie);
+						this.controller.getLv().getTable().repaint();
+						this.refreshLoadedMovie();
 					}
 				} catch (final SecurityException e1) {
 					e1.printStackTrace();
@@ -212,6 +220,56 @@ public class TabView extends JTabbedPane {
 	 */
 	public synchronized final void setComponentList(final ConcurrentHashMap<String, Component> componentList) {
 		this.componentList = componentList;
+	}
+
+	/**
+	 * 
+	 */
+	public void refreshLoadedMovie() {
+		for (final Map.Entry<String, Component> entry : this.controller.getTv().getComponentList().entrySet()) {
+			try {
+				final Object result = Controller.loadedMovie.get(entry.getKey());
+				Object resultForComponent = null;
+				if (result != null) {
+					// prepare selection / text for component
+					if ((result instanceof ArrayList)) {
+						resultForComponent = Helper.implode((ArrayList<?>) result, ", ", null, null);
+					} else if ((result instanceof File)) {
+						resultForComponent = ((File) result).getAbsolutePath();
+					} else if ((result instanceof String)) {
+						resultForComponent = result;
+					} else if (result instanceof Integer) {
+						resultForComponent = Integer.toString((Integer) result);
+					} else if ((result instanceof Image)) {
+						resultForComponent = result;
+					}
+				} else {
+					// System.out.println(entry.getKey() + " is null");
+				}
+
+				// set selection / text to component
+				System.out.println(entry.getValue());
+				if ((entry.getValue() instanceof JLabeledTextInputMovie) || (entry.getValue() instanceof JLabeledTextAreaMovie)) {
+					((IMovieTabComponent) entry.getValue()).select(resultForComponent);
+				} else if ((entry.getValue() instanceof JLabeledComboBoxMovie) || (entry.getValue() instanceof JLabeledListMovie)) {
+					((IMovieTabComponent) entry.getValue()).select(result);
+				} else {
+					if (entry.getValue() instanceof JImage) {
+						((JImage) entry.getValue()).setImage((Image) resultForComponent);
+					}
+					// System.out.println(": " + entry.getValue().getClass());
+				}
+
+			} catch (final SecurityException e) {
+				e.printStackTrace();
+			} catch (final IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (final IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (final InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

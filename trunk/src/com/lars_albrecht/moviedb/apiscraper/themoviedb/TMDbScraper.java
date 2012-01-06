@@ -203,14 +203,11 @@ public class TMDbScraper implements IApiScraperPlugin {
 			}
 			movie.setPeople(tempList);
 
-			if (m.getArtwork().size() > 0) {
-				for (Artwork a : m.getArtwork()) {
-					System.out.println(a.getUrl());
-				}
+			if (m.getArtwork().size() > 0 && m.getFirstArtwork(Artwork.ARTWORK_TYPE_POSTER, Artwork.ARTWORK_SIZE_MID) != null) {
 
 				BufferedImage bi;
 				try {
-					bi = ImageIO.read(new URL(m.getArtwork().get(0).getUrl()));
+					bi = ImageIO.read(new URL(m.getFirstArtwork(Artwork.ARTWORK_TYPE_POSTER, Artwork.ARTWORK_SIZE_MID).getUrl()));
 					movie.set("cover", Helper.bufferedImageToImage(bi));
 					// ImageIO.write(bi, "jpeg", new File("testpic.jpg"));
 				} catch (MalformedURLException e) {
