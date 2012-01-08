@@ -80,6 +80,7 @@ public class DB {
 
 	public static void commit() throws SQLException {
 		if (DB.connection != null) {
+			Debug.log(Debug.LEVEL_DEBUG, "DB COMMIT");
 			DB.connection.commit();
 		}
 	}

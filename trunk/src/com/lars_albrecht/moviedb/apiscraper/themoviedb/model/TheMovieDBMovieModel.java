@@ -21,14 +21,14 @@ public class TheMovieDBMovieModel extends MovieModel {
 	@DatabaseOptions(as = "tmdbid", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	private Integer tmdbId = null;
 
-	@ViewInTab(as = "Alternative Name", tabname = "tmdb", sort = 20, editable = false, type = ViewInTab.TYPE_AUTO)
-	@DatabaseOptions(as = "alternativename", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
-	private String alternativeName = null;
-
-	@ViewInTab(as = "Original Name", tabname = "tmdb", sort = 30, editable = false, type = ViewInTab.TYPE_AUTO)
+	@ViewInTab(as = "Original Name", tabname = "tmdb", sort = 20, editable = false, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "originalname", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	@ViewInTable(as = "Original Name", sort = 10000)
 	private String originalName = null;
+
+	@ViewInTab(as = "Alternative Name", tabname = "tmdb", sort = 30, editable = false, type = ViewInTab.TYPE_AUTO)
+	@DatabaseOptions(as = "alternativename", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
+	private String alternativeName = null;
 
 	@ViewInTab(as = "Runtime", tabname = "tmdb", sort = 40, editable = false, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "runtime", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
@@ -38,15 +38,19 @@ public class TheMovieDBMovieModel extends MovieModel {
 	@DatabaseOptions(as = "budget", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	private Integer budget = null;
 
-	@ViewInTab(as = "Rating", tabname = "tmdb", sort = 630, editable = false, type = ViewInTab.TYPE_AUTO)
+	@ViewInTab(as = "Rating", tabname = "tmdb", sort = 60, editable = false, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "rating", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	private Integer rating = null;
 
-	@ViewInTab(as = "Countries", tabname = "tmdb", sort = 70, editable = false, type = ViewInTab.TYPE_AUTO)
+	@ViewInTab(as = "Homepage", tabname = "tmdb", sort = 70, editable = false, type = ViewInTab.TYPE_AUTO)
+	@DatabaseOptions(as = "homepage", type = DatabaseOptions.TYPE_FIELD, additionalType = "LONGVARCHAR", defaultValues = {}, isUnique = false)
+	protected String homepage = null;
+
+	@ViewInTab(as = "Countries", tabname = "tmdb", sort = 80, editable = false, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "countries", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = {}, isUnique = false)
 	private ArrayList<String> countries = null;
 
-	@ViewInTab(as = "People", tabname = "tmdb", sort = 80, editable = false, type = ViewInTab.TYPE_AUTO)
+	@ViewInTab(as = "People", tabname = "tmdb", sort = 90, editable = false, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "people", type = DatabaseOptions.TYPE_TABLE, additionalType = "", defaultValues = {}, isUnique = false)
 	private ArrayList<String> people = null;
 
@@ -174,6 +178,21 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 */
 	public synchronized final void setPeople(final ArrayList<String> people) {
 		this.people = people;
+	}
+
+	/**
+	 * @return the homepage
+	 */
+	public synchronized final String getHomepage() {
+		return this.homepage;
+	}
+
+	/**
+	 * @param homepage
+	 *            the homepage to set
+	 */
+	public synchronized final void setHomepage(String homepage) {
+		this.homepage = homepage;
 	}
 
 }

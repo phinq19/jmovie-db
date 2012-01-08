@@ -525,6 +525,7 @@ public class Helper {
 	}
 
 	/**
+	 * Test if the given string is a valid string (not null and not equals "").
 	 * 
 	 * @param str
 	 *            String
@@ -535,5 +536,38 @@ public class Helper {
 			return false;
 		}
 		return true;
+	}
+
+	final static String WRITEIMAGE_JPEG = "jpeg";
+	final static String WRITEIMAGE_PNG = "jpeg";
+	final static String WRITEIMAGE_GIF = "jpeg";
+
+	/**
+	 * Writes a given image to filesystem.
+	 * 
+	 * @param image
+	 *            Image
+	 * @param type
+	 *            String
+	 * @throws IOException
+	 */
+	public static void writeImage(final Image image, final String type, final File newFile, final Boolean overWrite) throws IOException {
+		if (overWrite == Boolean.TRUE || (overWrite == Boolean.FALSE && newFile.exists() == Boolean.FALSE)) {
+			ImageIO.write(toBufferedImage(image), type, newFile);
+		}
+	}
+
+	/**
+	 * Reads an image from filesystem.
+	 * 
+	 * @param f
+	 *            File
+	 * @return Image
+	 */
+	public static Image readImage(final File f) {
+		if (f.exists() && f.isFile() && f.canRead()) {
+			return Toolkit.getDefaultToolkit().getImage(f.getAbsolutePath());
+		}
+		return null;
 	}
 }

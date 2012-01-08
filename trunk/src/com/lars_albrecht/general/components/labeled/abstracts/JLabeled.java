@@ -33,18 +33,17 @@ public abstract class JLabeled extends JPanel {
 	 * @param paddingy
 	 * @param widthHeight
 	 */
-	public JLabeled(final String labelText, final Integer labelPosition, final Dimension labelWidthHeight,
-			final Integer paddingx, final Integer paddingy, final Dimension widthHeight) {
+	public JLabeled(final String labelText, final Integer labelPosition, final Dimension labelWidthHeight, final Integer paddingx, final Integer paddingy, final Dimension widthHeight) {
 		super();
 		this.labelText = labelText != null ? labelText : "";
 		this.setLayout(new BorderLayout(paddingx, paddingy));
 		this.setPreferredSize(widthHeight);
 		this.label = new JLabel(this.labelText);
-		if(labelWidthHeight != null) {
+		if (labelWidthHeight != null) {
 			this.label.setPreferredSize(labelWidthHeight);
 		}
 
-		switch(labelPosition) {
+		switch (labelPosition) {
 		case 0:
 			this.add(this.label, BorderLayout.NORTH);
 			break;

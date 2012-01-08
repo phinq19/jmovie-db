@@ -17,27 +17,26 @@ import com.lars_albrecht.general.components.labeled.abstracts.JLabeled;
  * @author lalbrecht
  * 
  */
-@SuppressWarnings( { "serial" })
+@SuppressWarnings({ "serial" })
 public class JLabeledList<V> extends JLabeled {
 
 	private JList<V> lList = null;
 
-	public JLabeledList(final String labelText, final Integer labelPosition, final Dimension labelWidthHeight,
-			final Dimension widthHeight, final Integer paddingx, final Integer paddingy) {
+	public JLabeledList(final String labelText, final Integer labelPosition, final Dimension labelWidthHeight, final Dimension widthHeight, final Integer paddingx, final Integer paddingy) {
 		super(labelText, labelPosition, labelWidthHeight, paddingx, paddingy, widthHeight);
 		this.lList = new JList<V>();
 		this.init();
 	}
 
-	public JLabeledList(final String labelText, final ListModel<V> lLm, final Integer labelPosition,
-			final Dimension labelWidthHeight, final Dimension widthHeight, final Integer paddingx, final Integer paddingy) {
+	public JLabeledList(final String labelText, final ListModel<V> lLm, final Integer labelPosition, final Dimension labelWidthHeight, final Dimension widthHeight, final Integer paddingx,
+			final Integer paddingy) {
 		super(labelText, labelPosition, labelWidthHeight, paddingx, paddingy, widthHeight);
 		this.lList = new JList<V>(lLm);
 		this.init();
 	}
 
-	public JLabeledList(final String labelText, final Vector<? extends V> lV, final Integer labelPosition,
-			final Dimension labelWidthHeight, final Dimension widthHeight, final Integer paddingx, final Integer paddingy) {
+	public JLabeledList(final String labelText, final Vector<? extends V> lV, final Integer labelPosition, final Dimension labelWidthHeight, final Dimension widthHeight, final Integer paddingx,
+			final Integer paddingy) {
 		super(labelText, labelPosition, labelWidthHeight, paddingx, paddingy, widthHeight);
 		this.lList = new JList<V>(lV);
 		this.init();

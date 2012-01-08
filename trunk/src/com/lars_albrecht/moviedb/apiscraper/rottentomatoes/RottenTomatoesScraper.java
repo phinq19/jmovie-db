@@ -7,9 +7,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
-import com.lars_albrecht.moviedb.model.DefaultMovieModel;
+import com.lars_albrecht.moviedb.apiscraper.rottentomatoes.model.RottenTomatoesModel;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
 import com.moviejukebox.rottentomatoes.RottenTomatoes;
+import com.moviejukebox.rottentomatoes.model.Artwork;
+import com.moviejukebox.rottentomatoes.model.Link;
 import com.moviejukebox.rottentomatoes.model.Movie;
 
 /**
@@ -100,7 +102,14 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 
 	private MovieModel returnInfosFromMovie(final Movie m) {
 
-		final MovieModel movie = new DefaultMovieModel();
+		final RottenTomatoesModel movie = new RottenTomatoesModel();
+		System.out.println(m.getSynopsis());
+		System.out.println(m.getYear());
+		System.out.println(m.getCertification());
+		System.out.println(m.getRuntime());
+		for ( iterable_element : m.getGenres().toArray()) {
+			
+		}
 		// movie.setMaintitle(m.getTitle());
 		// movie.setId(m.getId());
 

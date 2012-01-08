@@ -33,6 +33,7 @@ import com.lars_albrecht.moviedb.components.labeled.JLabeledTextAreaMovie;
 import com.lars_albrecht.moviedb.components.labeled.JLabeledTextInputMovie;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.controller.MovieController;
+import com.lars_albrecht.moviedb.exceptions.NoMovieIDException;
 import com.lars_albrecht.moviedb.model.FieldList;
 import com.lars_albrecht.moviedb.model.FieldModel;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
@@ -44,6 +45,11 @@ public class TabView extends JTabbedPane {
 
 	private ConcurrentHashMap<String, Component> componentList = null;
 
+	/**
+	 * 
+	 * @param controller
+	 *            Controller
+	 */
 	public TabView(final Controller controller) {
 		this.controller = controller;
 		this.addComponents(this);
@@ -51,11 +57,21 @@ public class TabView extends JTabbedPane {
 		this.setVisible(true);
 	}
 
+	/**
+	 * 
+	 * @param panel
+	 *            JTabbedPane
+	 */
 	private void addComponents(final JTabbedPane panel) {
 		this.componentList = new ConcurrentHashMap<String, Component>();
 		this.addTabs(panel);
 	}
 
+	/**
+	 * 
+	 * @param panel
+	 *            JTabbedPane
+	 */
 	private void addTabs(final JTabbedPane panel) {
 		final ConcurrentHashMap<String, Object> tempTab = new ConcurrentHashMap<String, Object>();
 		final FieldList fl = Controller.flTabs;
@@ -129,7 +145,23 @@ public class TabView extends JTabbedPane {
 		}
 
 		// add tabs
-		i = 0;
+		this.addTabsToTablist(tempTab, panel);
+
+		// for (final Map.Entry<String, Component> tabEntry :
+		// this.componentList.entrySet()) {
+		// System.out.println(tabEntry.getKey() + " - " + tabEntry.getValue());
+		// }
+
+	}
+
+	/**
+	 * 
+	 * @param tempTab
+	 *            ConcurrentHashMap<String, Object>
+	 * @param panel
+	 *            JTabbedPane
+	 */
+	private void addTabsToTablist(final ConcurrentHashMap<String, Object> tempTab, final JTabbedPane panel) {
 		for (final Map.Entry<String, Object> tabEntry : tempTab.entrySet()) {
 			if (tabEntry.getValue() instanceof JPanel) {
 				final GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
@@ -147,19 +179,14 @@ public class TabView extends JTabbedPane {
 				final GridBagConstraints gbcRootPanel = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0);
 				t.add(filledPanel, gbcRootPanel);
 				panel.addTab(Helper.ucfirst(tabEntry.getKey()), new JScrollPane(t));
-				i++;
 			}
 		}
-		// for (final Map.Entry<String, Component> tabEntry :
-		// this.componentList.entrySet()) {
-		// System.out.println(tabEntry.getKey() + " - " + tabEntry.getValue());
-		// }
-
 	}
 
 	/**
 	 * 
 	 * @param o
+	 *            Object
 	 */
 	public void refreshMovieApiScraper(final Object o) {
 		final String pluginName = ((String) Helper.getKeyFromMapObject(this.componentList, o)).substring("refresh".length());
@@ -170,7 +197,7 @@ public class TabView extends JTabbedPane {
 					// TODO get movie from movie / threaded / if there is a
 					// id, use it
 					MovieModel m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle"), (Integer) Controller.loadedMovie.get("year"));
-					if (m == null) {
+					if (m == null && Controller.loadedMovie.get("subtitle") != null) {
 						m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle") + " " + (String) Controller.loadedMovie.get("subtitle"),
 								(Integer) Controller.loadedMovie.get("year"));
 					}
@@ -201,6 +228,8 @@ public class TabView extends JTabbedPane {
 				} catch (final NoSuchMethodException e1) {
 					e1.printStackTrace();
 				} catch (final SQLException e1) {
+					e1.printStackTrace();
+				} catch (NoMovieIDException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -248,7 +277,6 @@ public class TabView extends JTabbedPane {
 				}
 
 				// set selection / text to component
-				System.out.println(entry.getValue());
 				if ((entry.getValue() instanceof JLabeledTextInputMovie) || (entry.getValue() instanceof JLabeledTextAreaMovie)) {
 					((IMovieTabComponent) entry.getValue()).select(resultForComponent);
 				} else if ((entry.getValue() instanceof JLabeledComboBoxMovie) || (entry.getValue() instanceof JLabeledListMovie)) {

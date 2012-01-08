@@ -20,6 +20,7 @@ import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.model.TheMovieDBMovieModel;
 import com.moviejukebox.themoviedb.TheMovieDb;
 import com.moviejukebox.themoviedb.model.Artwork;
+import com.moviejukebox.themoviedb.model.Category;
 import com.moviejukebox.themoviedb.model.Country;
 import com.moviejukebox.themoviedb.model.MovieDB;
 import com.moviejukebox.themoviedb.model.Person;
@@ -209,75 +210,27 @@ public class TMDbScraper implements IApiScraperPlugin {
 				try {
 					bi = ImageIO.read(new URL(m.getFirstArtwork(Artwork.ARTWORK_TYPE_POSTER, Artwork.ARTWORK_SIZE_MID).getUrl()));
 					movie.set("cover", Helper.bufferedImageToImage(bi));
-					// ImageIO.write(bi, "jpeg", new File("testpic.jpg"));
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-
-				// BufferedImage bi = Helper.toBufferedImage(); // retrieve
-				// // image
-				// File outputfile = new File("saved.png");
-				// try {
-				// ImageIO.write(bi, "jpg", outputfile);
-				// } catch (IOException e) {
-				// e.printStackTrace();
-				// }
-
-				// movie.set("cover",
-				// Toolkit.getDefaultToolkit().createImage(m.getArtwork().get(0).getUrl()));
 			}
 
-			// movie.set("maintitle", m.getTitle());
-			//
-			// movie.set("tmdbId", m.getId());
-			// // movie.setId(Integer.parseInt(m.getId()));
-			// movie.set("descriptionShort", m.getOverview());
-			// for (final Category category : m.getCategories()) {
-			// movie.getGenreList().add(category.getName());
-			// }
+			movie.setHomepage(m.getHomepage());
 
-			// if (m.getReleaseDate() != null) {
-			// movie.set("year",
-			// Integer.parseInt(m.getReleaseDate().substring(0, 4)));
-			// }
+			System.out.println("Categories: " + m.getCategories().size());
+			for (Category c : m.getCategories()) {
+				System.out.println(c.getName());
+				System.out.println(c.getType());
+				System.out.println("-----");
+			}
 
 		} catch (final SecurityException e) {
 			e.printStackTrace();
 		} catch (final IllegalArgumentException e) {
 			e.printStackTrace();
-		}
-		// TODO Auto-generated catch block
-		// resultMap = new HashMap<String, Object>();
-		// resultMap.put("adult", m.getAdult());
-		// resultMap.put("alternativeName", m.getAlternativeName());
-		// resultMap.put("budget", m.getBudget());
-		// resultMap.put("categories", m.getCategories());
-		// resultMap.put("certification", m.getCertification());
-		// resultMap.put("countries", m.getCountries());
-		// resultMap.put("homepage", m.getHomepage());
-		// resultMap.put("id", m.getId());
-		// resultMap.put("imdb", m.getImdb());
-		// resultMap.put("language", m.getLanguage());
-		// resultMap.put("originalName", m.getOriginalName());
-		// resultMap.put("overview", m.getOverview());
-		// resultMap.put("people", m.getPeople());
-		// resultMap.put("popularity", m.getPopularity());
-		// resultMap.put("productionCountries", m.getProductionCountries());
-		// resultMap.put("rating", m.getRating());
-		// resultMap.put("releaseDate", m.getReleaseDate());
-		// resultMap.put("revenue", m.getRevenue());
-		// resultMap.put("runtime", m.getRuntime());
-		// resultMap.put("studios", m.getStudios());
-		// resultMap.put("tagline", m.getTagline());
-		// resultMap.put("title", m.getTitle());
-		// resultMap.put("trailer", m.getTrailer());
-		// resultMap.put("translated", m.getTranslated());
-		// resultMap.put("type", m.getType());
-		// resultMap.put("url", m.getUrl());
-		// resultMap.put("version", m.getVersion());
-		catch (final IllegalAccessException e) {
+		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (final InvocationTargetException e) {
 			e.printStackTrace();

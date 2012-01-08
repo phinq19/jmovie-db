@@ -21,8 +21,8 @@ public class JLabeledTextInput extends JLabeled {
 
 	private String inputText = null;
 
-	public JLabeledTextInput(final String labelText, final String inputText, final Integer labelPosition,
-			final Dimension labelWidthHeight, final Dimension widthHeight, final Integer paddingx, final Integer paddingy) {
+	public JLabeledTextInput(final String labelText, final String inputText, final Integer labelPosition, final Dimension labelWidthHeight, final Dimension widthHeight, final Integer paddingx,
+			final Integer paddingy) {
 		super(labelText, labelPosition, labelWidthHeight, paddingx, paddingy, widthHeight);
 
 		this.inputText = inputText != null ? inputText : "";
