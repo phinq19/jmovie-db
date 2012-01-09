@@ -3,15 +3,14 @@
  */
 package com.lars_albrecht.moviedb.apiscraper.rottentomatoes;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.rottentomatoes.model.RottenTomatoesModel;
-import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
 import com.moviejukebox.rottentomatoes.RottenTomatoes;
-import com.moviejukebox.rottentomatoes.model.Artwork;
-import com.moviejukebox.rottentomatoes.model.Link;
 import com.moviejukebox.rottentomatoes.model.Movie;
 
 /**
@@ -31,13 +30,12 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
-	 * getMovieFromKey(java.lang.String)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getMovieFromKey(java.lang.String)
 	 */
 	@Override
-	public MovieModel getMovieFromKey(final String key) {
+	public RottenTomatoesModel getMovieFromKey(final String key) {
 		final Movie m = this.rt.movieInfo(Integer.parseInt(key));
-		if (m != null) {
+		if(m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -46,20 +44,19 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
-	 * getMovieFromString(java.lang.String, java.lang.Integer)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getMovieFromString(java.lang.String, java.lang.Integer)
 	 */
 	@Override
-	public MovieModel getMovieFromStringYear(final String s, final Integer year) {
-		final Set<Movie> x = this.rt.moviesSearch(s);
+	public RottenTomatoesModel getMovieFromStringYear(final String s, final Integer year) {
+		final Set<Movie> movieSet = this.rt.moviesSearch(s);
 		Movie m = null;
-		for (final Movie movie : x) {
-			if (movie.getYear() == year) {
+		for(final Movie movie : movieSet) {
+			if((((year != null) && ((movie.getYear() == year))) || (year == null))) {
 				m = movie;
 				break;
 			}
 		}
-		if (m != null) {
+		if(m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -68,47 +65,52 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
-	 * getPluginName()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getPluginName()
 	 */
 	@Override
 	public String getPluginName() {
-		return "TMDb";
+		return "RT";
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle
-	 * ()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle ()
 	 */
 	@Override
 	public String getTabTitle() {
-		return "The Movie DB - TMDb";
+		return "Rotten Tomatoes - RT";
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion
-	 * ()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion ()
 	 */
 	@Override
 	public String getVersion() {
 		return "1.0.0.0";
 	}
 
-	private MovieModel returnInfosFromMovie(final Movie m) {
+	private RottenTomatoesModel returnInfosFromMovie(final Movie m) {
 
 		final RottenTomatoesModel movie = new RottenTomatoesModel();
-		System.out.println(m.getSynopsis());
-		System.out.println(m.getYear());
-		System.out.println(m.getCertification());
-		System.out.println(m.getRuntime());
-		for ( iterable_element : m.getGenres().toArray()) {
-			
+		System.out.println(m);
+		System.out.println(m.getGenres());
+
+		try {
+			movie.setRtId(m.getId());
+			movie.setCertification(m.getCertification());
+			movie.set("year", m.getYear());
+			movie.set("genreList", new ArrayList<String>(m.getGenres()));
+		} catch(final SecurityException e) {
+			e.printStackTrace();
+		} catch(final IllegalAccessException e) {
+			e.printStackTrace();
+		} catch(final IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch(final InvocationTargetException e) {
+			e.printStackTrace();
 		}
 		// movie.setMaintitle(m.getTitle());
 		// movie.setId(m.getId());
@@ -142,8 +144,8 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	}
 
 	@Override
-	public Class<? extends MovieModel> getMovieModelInstance() {
-		return null;
+	public Class<? extends RottenTomatoesModel> getMovieModelInstance() {
+		return new RottenTomatoesModel().getClass();
 	}
 
 }

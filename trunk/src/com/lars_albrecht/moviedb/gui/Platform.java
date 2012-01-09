@@ -71,7 +71,10 @@ public class Platform extends JFrame {
 	private void setFrameSettings(final JFrame frame) {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		final Point centerPos = Helper.getScreenCenterPoint(800, 700);
-		frame.setBounds(centerPos.x, centerPos.y, 800, 700);
+		frame.setBounds((Controller.options.getxYMainWindow() != null ? Controller.options.getxYMainWindow().x : centerPos.x),
+				(Controller.options.getxYMainWindow() != null ? Controller.options.getxYMainWindow().y : centerPos.y),
+				(Controller.options.getWidthHeightMainWindow() != null ? Controller.options.getWidthHeightMainWindow().x : 800),
+				(Controller.options.getWidthHeightMainWindow() != null ? Controller.options.getWidthHeightMainWindow().y : 700));
 
 		frame.addWindowListener(this.controller);
 
@@ -91,7 +94,8 @@ public class Platform extends JFrame {
 		this.splitPaneBottom = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.controller.getLv(), this.controller.getTv());
 		this.splitPaneBottom.setOneTouchExpandable(true);
 		this.splitPaneBottom.setDividerSize(7);
-		this.splitPaneBottom.setDividerLocation(750);
+		this.splitPaneBottom.setDividerLocation((Controller.options.getSliderBottomPos() != null ? Controller.options
+				.getSliderBottomPos() : 750));
 
 		this.controller.setAf(new AdditionalFilter(this.controller));
 

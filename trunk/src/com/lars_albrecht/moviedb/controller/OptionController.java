@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.moviedb.controller;
 
+import java.awt.Point;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -23,9 +24,12 @@ import com.lars_albrecht.moviedb.model.Options;
 public class OptionController {
 
 	/**
+	 * Adds an option to the database.
 	 * 
 	 * @param optionName
+	 *            String
 	 * @param optionValues
+	 *            ArrayList<?>
 	 * @throws SQLException
 	 */
 	@SuppressWarnings( { "unchecked" })
@@ -39,6 +43,8 @@ public class OptionController {
 				}
 			} else if(optionValues.get(0).getClass() == String.class) {
 				tempList.addAll((Collection<? extends String>) optionValues);
+			} else if(optionValues.get(0).getClass() == Integer.class) {
+				tempList.addAll((Collection<? extends String>) optionValues);
 			}
 
 			sql = "MERGE INTO options (name, values) KEY(name) VALUES('" + optionName + "', '"
@@ -48,9 +54,11 @@ public class OptionController {
 	}
 
 	/**
+	 * Returns an option from the database.
 	 * 
 	 * @param optionName
-	 * @return
+	 *            String
+	 * @return ArrayList<String>
 	 * @throws SQLException
 	 */
 	private static ArrayList<String> getOption(final String optionName) throws SQLException {
@@ -63,6 +71,12 @@ public class OptionController {
 		return null;
 	}
 
+	/**
+	 * Load the options and returns the fullfilled optionsclass.
+	 * 
+	 * @return Options
+	 * @throws OptionsNotLoadedException
+	 */
 	public static Options loadOptions() throws OptionsNotLoadedException {
 		final Options tempOptions = new Options();
 		ArrayList<String> optionListTemp = null;
@@ -83,17 +97,51 @@ public class OptionController {
 				tempOptions.setFilenameSeperator(optionListTemp.get(0));
 			}
 
+			optionListTemp = OptionController.getOption("widthHeightMainWindow");
+			if((optionListTemp != null) && (optionListTemp.size() > 0)) {
+				tempOptions.setWidthHeightMainWindow(new Point(Integer.parseInt(optionListTemp.get(0)), Integer
+						.parseInt(optionListTemp.get(1))));
+			}
+
+			optionListTemp = OptionController.getOption("xYMainWindow");
+			if((optionListTemp != null) && (optionListTemp.size() > 0)) {
+				tempOptions.setxYMainWindow(new Point(Integer.parseInt(optionListTemp.get(0)), Integer.parseInt(optionListTemp
+						.get(1))));
+			}
+
+			optionListTemp = OptionController.getOption("sliderBottomPos");
+			if((optionListTemp != null) && (optionListTemp.size() > 0)) {
+				tempOptions.setSliderBottomPos(Integer.parseInt(optionListTemp.get(0)));
+			}
+
 		} catch(final SQLException e) {
 			throw new OptionsNotLoadedException("Options not loaded: " + e.getMessage());
 		}
 		return tempOptions;
 	}
 
+	/**
+	 * Saves the options.
+	 * 
+	 * @param options
+	 *            Options
+	 * @throws OptionsNotSavedException
+	 */
 	public static void saveOptions(final Options options) throws OptionsNotSavedException {
 		// paths
 		try {
 			OptionController.addOption("paths", options.getPaths());
 			OptionController.addOption("filenameseperator", new ArrayList<String>(Arrays.asList(options.getFilenameSeperator())));
+			final ArrayList<Object> tempList = new ArrayList<Object>();
+			tempList.add(options.getWidthHeightMainWindow().x);
+			tempList.add(options.getWidthHeightMainWindow().y);
+			OptionController.addOption("widthHeightMainWindow", tempList);
+			tempList.clear();
+			tempList.add(options.getxYMainWindow().x);
+			tempList.add(options.getxYMainWindow().y);
+			OptionController.addOption("xYMainWindow", tempList);
+
+			OptionController.addOption("sliderBottomPos", new ArrayList<Integer>(Arrays.asList(options.getSliderBottomPos())));
 		} catch(final SQLException e) {
 			e.printStackTrace();
 		}

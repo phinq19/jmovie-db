@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.DefaultListModel;
@@ -94,13 +95,13 @@ public class TabView extends JTabbedPane {
 			final Dimension preferredLabelSize = new Dimension(100, 20);
 			if ((((fieldModel.getType() == ViewInTab.TYPE_AUTO) && (fieldModel.getField().getType() == Integer.class))) || (fieldModel.getType() == ViewInTab.TYPE_INT)) {
 				final JLabeledTextInputMovie tfTemp = new JLabeledTextInputMovie(fieldModel.getAs(), "", JLabeled.LABELPOSITION_LEFT, preferredLabelSize, null, 10, 10);
-				tfTemp.setEnabled(Boolean.FALSE);
+				tfTemp.setEnabled((Boolean) fieldModel.getAdditional().get("editable"));
 				tempPanel.add(tfTemp, gbc);
 				this.componentList.put(fieldModel.getField().getName(), tfTemp);
 			} else if ((((fieldModel.getType() == ViewInTab.TYPE_AUTO) && ((fieldModel.getField().getType() == String.class) || (fieldModel.getField().getType() == File.class))))
 					|| (fieldModel.getType() == ViewInTab.TYPE_INPUT)) {
 				final JLabeledTextInputMovie tfTemp = new JLabeledTextInputMovie(fieldModel.getAs(), "", JLabeled.LABELPOSITION_LEFT, preferredLabelSize, null, 10, 10);
-				tfTemp.setEnabled(Boolean.FALSE);
+				tfTemp.setEnabled((Boolean) fieldModel.getAdditional().get("editable"));
 				tempPanel.add(tfTemp, gbc);
 				this.componentList.put(fieldModel.getField().getName(), tfTemp);
 			} else if ((((fieldModel.getType() == ViewInTab.TYPE_AUTO) && (fieldModel.getField().getType() == ArrayList.class))) || (fieldModel.getType() == ViewInTab.TYPE_SELECT)) {
@@ -113,7 +114,7 @@ public class TabView extends JTabbedPane {
 					}
 					final JLabeledListMovie<KeyValue<Integer, String>> tfTemp = new JLabeledListMovie<KeyValue<Integer, String>>(fieldModel.getAs(), listModel, JLabeled.LABELPOSITION_LEFT,
 							preferredLabelSize, null, 10, 10);
-					tfTemp.setEnabled(Boolean.FALSE);
+					tfTemp.setEnabled((Boolean) fieldModel.getAdditional().get("editable"));
 					tempPanel.add(tfTemp, gbc);
 					this.componentList.put(fieldModel.getField().getName(), tfTemp);
 					i++;
@@ -121,7 +122,7 @@ public class TabView extends JTabbedPane {
 			} else if (fieldModel.getType() == ViewInTab.TYPE_AREA) {
 				gbc.gridheight = 2;
 				final JLabeledTextAreaMovie tfTemp = new JLabeledTextAreaMovie(fieldModel.getAs(), "", JLabeled.LABELPOSITION_LEFT, preferredLabelSize, new Dimension(100, 100), 10, 10);
-				tfTemp.setEnabled(Boolean.FALSE);
+				tfTemp.setEnabled((Boolean) fieldModel.getAdditional().get("editable"));
 				tfTemp.getTaText().setLineWrap(Boolean.TRUE);
 				tfTemp.getTaText().setWrapStyleWord(Boolean.TRUE);
 				tempPanel.add(tfTemp, gbc);
@@ -166,6 +167,12 @@ public class TabView extends JTabbedPane {
 			if (tabEntry.getValue() instanceof JPanel) {
 				final GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
 				final JPanel filledPanel = (JPanel) tabEntry.getValue();
+				if (tabEntry.getKey().equalsIgnoreCase("general")) {
+					final JButton bSaveButton = new JButton("Save");
+					bSaveButton.addActionListener(this.controller);
+					this.componentList.put("save", bSaveButton);
+					filledPanel.add(bSaveButton, gbc);
+				}
 				for (int j = 0; j < Controller.apiScraper.size(); j++) {
 					if (Controller.apiScraper.get(j).getTabTitle().equals(tabEntry.getKey())) {
 						final JButton bRefreshButton = new JButton("Refresh");
@@ -181,6 +188,8 @@ public class TabView extends JTabbedPane {
 				panel.addTab(Helper.ucfirst(tabEntry.getKey()), new JScrollPane(t));
 			}
 		}
+
+		this.setSelectedIndex(this.getTabCount() - 1);
 	}
 
 	/**
@@ -196,10 +205,16 @@ public class TabView extends JTabbedPane {
 					//
 					// TODO get movie from movie / threaded / if there is a
 					// id, use it
-					MovieModel m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle"), (Integer) Controller.loadedMovie.get("year"));
-					if (m == null && Controller.loadedMovie.get("subtitle") != null) {
+					MovieModel m = null;
+					if (Helper.isValidString((String) Controller.loadedMovie.get("originalName"))) {
+						m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("originalName"), (Integer) Controller.loadedMovie.get("year"));
+					}
+					if ((m == null) && Helper.isValidString((String) (Controller.loadedMovie.get("subtitle")))) {
 						m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle") + " " + (String) Controller.loadedMovie.get("subtitle"),
 								(Integer) Controller.loadedMovie.get("year"));
+					}
+					if (m == null) {
+						m = apiScraper.getMovieFromStringYear((String) Controller.loadedMovie.get("maintitle"), (Integer) Controller.loadedMovie.get("year"));
 					}
 					if (m != null) {
 						final FieldList fieldlist = Helper.getDBFieldModelFromClass(m.getClass());
@@ -229,7 +244,7 @@ public class TabView extends JTabbedPane {
 					e1.printStackTrace();
 				} catch (final SQLException e1) {
 					e1.printStackTrace();
-				} catch (NoMovieIDException e1) {
+				} catch (final NoMovieIDException e1) {
 					e1.printStackTrace();
 				}
 			}
@@ -261,7 +276,7 @@ public class TabView extends JTabbedPane {
 				Object resultForComponent = null;
 				if (result != null) {
 					// prepare selection / text for component
-					if ((result instanceof ArrayList)) {
+					if ((result instanceof ArrayList<?>)) {
 						resultForComponent = Helper.implode((ArrayList<?>) result, ", ", null, null);
 					} else if ((result instanceof File)) {
 						resultForComponent = ((File) result).getAbsolutePath();
@@ -279,7 +294,7 @@ public class TabView extends JTabbedPane {
 				// set selection / text to component
 				if ((entry.getValue() instanceof JLabeledTextInputMovie) || (entry.getValue() instanceof JLabeledTextAreaMovie)) {
 					((IMovieTabComponent) entry.getValue()).select(resultForComponent);
-				} else if ((entry.getValue() instanceof JLabeledComboBoxMovie) || (entry.getValue() instanceof JLabeledListMovie)) {
+				} else if ((entry.getValue() instanceof JLabeledComboBoxMovie<?>) || (entry.getValue() instanceof JLabeledListMovie<?>)) {
 					((IMovieTabComponent) entry.getValue()).select(result);
 				} else {
 					if (entry.getValue() instanceof JImage) {
@@ -300,4 +315,15 @@ public class TabView extends JTabbedPane {
 		}
 	}
 
+	/**
+	 * 
+	 */
+	public void saveMovie() {
+		System.out.println(this.getComponentList().size());
+		for (final Entry<String, Component> entry : this.getComponentList().entrySet()) {
+			if (entry.getValue().isEnabled()) {
+				System.out.println(entry.getKey());
+			}
+		}
+	}
 }

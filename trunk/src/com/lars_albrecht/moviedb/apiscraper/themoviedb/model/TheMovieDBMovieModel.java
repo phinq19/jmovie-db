@@ -8,7 +8,6 @@ import java.util.ArrayList;
 
 import com.lars_albrecht.moviedb.annotation.DatabaseOptions;
 import com.lars_albrecht.moviedb.annotation.ViewInTab;
-import com.lars_albrecht.moviedb.annotation.ViewInTable;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
 
 /**
@@ -17,14 +16,9 @@ import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
  */
 public class TheMovieDBMovieModel extends MovieModel {
 
-	@ViewInTab(as = "The MovieDB Id", tabname = "tmdb", sort = 10, editable = false, type = ViewInTab.TYPE_AUTO)
+	@ViewInTab(as = "The MovieDB Id", tabname = "tmdb", sort = 10, editable = true, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "tmdbid", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	private Integer tmdbId = null;
-
-	@ViewInTab(as = "Original Name", tabname = "tmdb", sort = 20, editable = false, type = ViewInTab.TYPE_AUTO)
-	@DatabaseOptions(as = "originalname", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
-	@ViewInTable(as = "Original Name", sort = 10000)
-	private String originalName = null;
 
 	@ViewInTab(as = "Alternative Name", tabname = "tmdb", sort = 30, editable = false, type = ViewInTab.TYPE_AUTO)
 	@DatabaseOptions(as = "alternativename", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
@@ -60,6 +54,9 @@ public class TheMovieDBMovieModel extends MovieModel {
 	@DatabaseOptions(as = "descriptionshort", type = DatabaseOptions.TYPE_FIELD, additionalType = "LONGVARCHAR", defaultValues = {}, isUnique = false)
 	protected String descriptionShort = null;
 
+	@DatabaseOptions(as = "originalname", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
+	protected String originalName = null;
+
 	/**
 	 * @return the tmdbId
 	 */
@@ -88,21 +85,6 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 */
 	public synchronized final void setAlternativeName(final String alternativeName) {
 		this.alternativeName = alternativeName;
-	}
-
-	/**
-	 * @return the originalName
-	 */
-	public synchronized final String getOriginalName() {
-		return this.originalName;
-	}
-
-	/**
-	 * @param originalName
-	 *            the originalName to set
-	 */
-	public synchronized final void setOriginalName(final String originalName) {
-		this.originalName = originalName;
 	}
 
 	/**
@@ -191,7 +173,7 @@ public class TheMovieDBMovieModel extends MovieModel {
 	 * @param homepage
 	 *            the homepage to set
 	 */
-	public synchronized final void setHomepage(String homepage) {
+	public synchronized final void setHomepage(final String homepage) {
 		this.homepage = homepage;
 	}
 

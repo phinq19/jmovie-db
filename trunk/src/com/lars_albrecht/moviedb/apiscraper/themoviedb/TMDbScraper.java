@@ -20,7 +20,6 @@ import com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin;
 import com.lars_albrecht.moviedb.apiscraper.themoviedb.model.TheMovieDBMovieModel;
 import com.moviejukebox.themoviedb.TheMovieDb;
 import com.moviejukebox.themoviedb.model.Artwork;
-import com.moviejukebox.themoviedb.model.Category;
 import com.moviejukebox.themoviedb.model.Country;
 import com.moviejukebox.themoviedb.model.MovieDB;
 import com.moviejukebox.themoviedb.model.Person;
@@ -43,13 +42,12 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
-	 * getMovieFromKey(java.lang.String)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getMovieFromKey(java.lang.String)
 	 */
 	@Override
 	public TheMovieDBMovieModel getMovieFromKey(final String key) {
 		final MovieDB m = this.tmdb.moviedbGetInfo(key, this.langKey);
-		if (m != null) {
+		if(m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -58,20 +56,19 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
-	 * getMovieFromString(java.lang.String, java.lang.Integer)
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getMovieFromString(java.lang.String, java.lang.Integer)
 	 */
 	@Override
 	public TheMovieDBMovieModel getMovieFromStringYear(final String s, final Integer year) {
 		final List<MovieDB> searchResults = this.tmdb.moviedbSearch(s, this.langKey);
 		MovieDB m = null;
-		if (searchResults.size() > 1) {
+		if(searchResults.size() > 1) {
 			m = this.findMovie(searchResults, s, (year != null ? Integer.toString(year) : null));
-		} else if (searchResults.size() == 1) {
+		} else if(searchResults.size() == 1) {
 			m = searchResults.get(0);
 		}
 		System.out.println(m);
-		if (m != null) {
+		if(m != null) {
 			return this.returnInfosFromMovie(m);
 		}
 		return null;
@@ -89,12 +86,12 @@ public class TMDbScraper implements IApiScraperPlugin {
 	 * @return The matching movie
 	 */
 	private MovieDB findMovie(final Collection<MovieDB> movieList, final String title, final String year) {
-		if ((movieList == null) || movieList.isEmpty()) {
+		if((movieList == null) || movieList.isEmpty()) {
 			return null;
 		}
 
-		for (final MovieDB moviedb : movieList) {
-			if (this.compareMovies(moviedb, title, year)) {
+		for(final MovieDB moviedb : movieList) {
+			if(this.compareMovies(moviedb, title, year)) {
 				return moviedb;
 			}
 		}
@@ -114,23 +111,25 @@ public class TMDbScraper implements IApiScraperPlugin {
 	 * @return True if there is a match, False otherwise.
 	 */
 	private boolean compareMovies(final MovieDB moviedb, final String title, final String year) {
-		if ((moviedb == null) || (!Helper.isValidString(title))) {
+		if((moviedb == null) || (!Helper.isValidString(title))) {
 			return false;
 		}
 
-		if (Helper.isValidString(year)) {
-			if (Helper.isValidString(moviedb.getReleaseDate())) {
+		if(Helper.isValidString(year)) {
+			if(Helper.isValidString(moviedb.getReleaseDate())) {
 				// Compare with year
 				final String movieYear = moviedb.getReleaseDate().substring(0, 4);
-				if (movieYear.equals(year)
-						&& (moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title) || moviedb.getAlternativeName().equalsIgnoreCase(title) || (moviedb
-								.getTitle().contains("-") && moviedb.getTitle().split("-")[0].trim().equalsIgnoreCase(title)))) {
+				if(movieYear.equals(year)
+						&& (moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title)
+								|| moviedb.getAlternativeName().equalsIgnoreCase(title) || (moviedb.getTitle().contains("-") && moviedb
+								.getTitle().split("-")[0].trim().equalsIgnoreCase(title)))) {
 					return true;
 				}
 			}
 		} else {
 			// Compare without year
-			if (moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title) || moviedb.getAlternativeName().equalsIgnoreCase(title)) {
+			if(moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title)
+					|| moviedb.getAlternativeName().equalsIgnoreCase(title)) {
 				return true;
 			}
 		}
@@ -140,8 +139,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#
-	 * getPluginName()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin# getPluginName()
 	 */
 	@Override
 	public String getPluginName() {
@@ -151,9 +149,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle
-	 * ()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getTabTitle ()
 	 */
 	@Override
 	public String getTabTitle() {
@@ -163,9 +159,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see
-	 * com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion
-	 * ()
+	 * @see com.lars_albrecht.moviedb.apiscraper.interfaces.IApiScraperPlugin#getVersion ()
 	 */
 	@Override
 	public String getVersion() {
@@ -173,7 +167,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 	}
 
 	private TheMovieDBMovieModel returnInfosFromMovie(final MovieDB m) {
-		ArrayList<String> tempList = new ArrayList<String>();
+		final ArrayList<String> tempList = new ArrayList<String>();
 		final TheMovieDBMovieModel movie = new TheMovieDBMovieModel();
 		try {
 			// Helper.getFieldsFromClass(MovieDB.class);
@@ -188,51 +182,51 @@ public class TMDbScraper implements IApiScraperPlugin {
 
 			movie.setAlternativeName(m.getAlternativeName());
 			movie.setBudget(((m.getBudget() != null) && !m.getBudget().equals("") ? Integer.parseInt(m.getBudget()) : null));
-			movie.setOriginalName(m.getOriginalName());
+			movie.set("originalName", m.getOriginalName());
 			movie.setRating(((m.getRating() != null) && !m.getRating().equals("") ? new Double(m.getRating()).intValue() : null));
 			movie.setRuntime(((m.getRuntime() != null) && !m.getRuntime().equals("") ? Integer.parseInt(m.getRuntime()) : null));
 			movie.setTmdbId(Integer.parseInt(m.getId()));
 			movie.set("descriptionShort", m.getOverview());
 			tempList.clear();
-			for (Country c : m.getCountries()) {
+			for(final Country c : m.getCountries()) {
 				tempList.add(c.getName());
 			}
 			movie.setCountries(tempList);
 			tempList.clear();
-			for (Person p : m.getPeople()) {
+			for(final Person p : m.getPeople()) {
 				tempList.add(p.getName());
 			}
 			movie.setPeople(tempList);
 
-			if (m.getArtwork().size() > 0 && m.getFirstArtwork(Artwork.ARTWORK_TYPE_POSTER, Artwork.ARTWORK_SIZE_MID) != null) {
+			if((m.getArtwork().size() > 0) && (m.getFirstArtwork(Artwork.ARTWORK_TYPE_POSTER, Artwork.ARTWORK_SIZE_MID) != null)) {
 
 				BufferedImage bi;
 				try {
 					bi = ImageIO.read(new URL(m.getFirstArtwork(Artwork.ARTWORK_TYPE_POSTER, Artwork.ARTWORK_SIZE_MID).getUrl()));
 					movie.set("cover", Helper.bufferedImageToImage(bi));
-				} catch (MalformedURLException e) {
+				} catch(final MalformedURLException e) {
 					e.printStackTrace();
-				} catch (IOException e) {
+				} catch(final IOException e) {
 					e.printStackTrace();
 				}
 			}
 
 			movie.setHomepage(m.getHomepage());
 
-			System.out.println("Categories: " + m.getCategories().size());
-			for (Category c : m.getCategories()) {
-				System.out.println(c.getName());
-				System.out.println(c.getType());
-				System.out.println("-----");
-			}
+			// System.out.println("Categories: " + m.getCategories().size());
+			// for(final Category c : m.getCategories()) {
+			// System.out.println(c.getName());
+			// System.out.println(c.getType());
+			// System.out.println("-----");
+			// }
 
-		} catch (final SecurityException e) {
+		} catch(final SecurityException e) {
 			e.printStackTrace();
-		} catch (final IllegalArgumentException e) {
+		} catch(final IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
+		} catch(final IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (final InvocationTargetException e) {
+		} catch(final InvocationTargetException e) {
 			e.printStackTrace();
 		}
 
