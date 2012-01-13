@@ -29,4 +29,6 @@ public interface IApiScraperPlugin {
 
 	Class<? extends MovieModel> getMovieModelInstance();
 
+	String getIdFieldName();
+
 }

@@ -443,7 +443,6 @@ public class Helper {
 				// TODO THROW Exception
 			}
 		} catch(final IOException e) {
-			System.out.println(34);
 			e.printStackTrace();
 		}
 		return byteArrayOutputStream.toByteArray();

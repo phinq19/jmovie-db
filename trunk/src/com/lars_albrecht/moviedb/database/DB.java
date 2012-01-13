@@ -40,7 +40,7 @@ public class DB {
 	 * @throws SQLException
 	 */
 	public static synchronized final Connection getConnection() throws SQLException {
-		if ((DB.connection == null) || !DB.connection.isValid(500) || DB.connection.isClosed() || DB.connection.isReadOnly()) {
+		if((DB.connection == null) || !DB.connection.isValid(500) || DB.connection.isClosed() || DB.connection.isReadOnly()) {
 			DB.connection = DB.createConnection();
 		}
 		return DB.connection;
@@ -57,10 +57,10 @@ public class DB {
 			Class.forName(DB.Strdb);
 			con = DriverManager.getConnection(DB.dbUrl + DB.dbName + DB.dboptions, DB.dbUsername, DB.dbPassword);
 
-		} catch (final ClassNotFoundException e) {
+		} catch(final ClassNotFoundException e) {
 			System.err.println("Driver not found \"" + e.getMessage() + "\"");
 			return null;
-		} catch (final SQLException e) {
+		} catch(final SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -73,13 +73,13 @@ public class DB {
 	 * @throws SQLException
 	 */
 	public static void closeConnection() throws SQLException {
-		if (DB.connection != null) {
+		if(DB.connection != null) {
 			DB.connection.close();
 		}
 	}
 
 	public static void commit() throws SQLException {
-		if (DB.connection != null) {
+		if(DB.connection != null) {
 			Debug.log(Debug.LEVEL_DEBUG, "DB COMMIT");
 			DB.connection.commit();
 		}
@@ -123,11 +123,12 @@ public class DB {
 	 * @return ResultSet
 	 * @throws SQLException
 	 */
-	public static synchronized ResultSet queryPS(final String expression, final ConcurrentHashMap<Integer, Object> values) throws SQLException {
+	public static synchronized ResultSet queryPS(final String expression, final ConcurrentHashMap<Integer, Object> values)
+			throws SQLException {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		st = DB.getConnection().prepareStatement(expression);
-		for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
+		for(final Map.Entry<Integer, Object> entry : values.entrySet()) {
 			st.setObject(entry.getKey(), entry.getValue());
 		}
 
@@ -146,7 +147,7 @@ public class DB {
 		Statement st = null;
 		st = DB.getConnection().createStatement(); // statements
 		final int i = st.executeUpdate(expression); // run the query
-		if (i == -1) {
+		if(i == -1) {
 			Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
 		}
 
@@ -160,24 +161,25 @@ public class DB {
 	 * @param values
 	 * @throws SQLException
 	 */
-	public static synchronized void updatePS(final String expression, final ConcurrentHashMap<Integer, Object> values) throws SQLException {
+	public static synchronized void updatePS(final String expression, final ConcurrentHashMap<Integer, Object> values)
+			throws SQLException {
 		PreparedStatement st = null;
 		st = DB.getConnection().prepareStatement(expression); // statements
-		for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
+		for(final Map.Entry<Integer, Object> entry : values.entrySet()) {
 			final Object object = entry.getValue();
-			if (object instanceof Image) {
+			if(object instanceof Image) {
 				st.setBytes(entry.getKey(), Helper.getBytesFromImage((Image) object));
-			} else if (object.getClass() == Integer.class) {
+			} else if(object.getClass() == Integer.class) {
 				st.setInt(entry.getKey(), ((Integer) object).intValue());
-			} else if (object.getClass() == String.class) {
+			} else if(object.getClass() == String.class) {
 				st.setString(entry.getKey(), ((String) entry.getValue()).substring(1, ((String) entry.getValue()).length() - 1));
 			}
 		}
 
-		System.out.println(expression);
-		System.out.println(values);
+		// System.out.println(expression);
+		// System.out.println(values);
 		final int result = st.executeUpdate(); // run the query
-		if (result == -1) {
+		if(result == -1) {
 			Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
 		}
 
@@ -198,8 +200,8 @@ public class DB {
 		// assume we are pointing to BEFORE the first row
 		// rs.next() points to next row and returns true
 		// or false if there is no next row, which breaks the loop
-		for (; rs.next();) {
-			for (i = 0; i < colmax; ++i) {
+		for(; rs.next();) {
+			for(i = 0; i < colmax; ++i) {
 				o = rs.getObject(i + 1); // Is SQL the first column is indexed
 
 				// with 1 not 0
@@ -233,7 +235,7 @@ public class DB {
 	public static ArrayList<String> getTables() throws SQLException {
 		final ResultSet rs = DB.query("SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'PUBLIC';");
 		final ArrayList<String> temp = new ArrayList<String>();
-		for (; rs.next();) {
+		for(; rs.next();) {
 			temp.add(rs.getString("TABLE_NAME"));
 		}
 		DB.closeConnection();
@@ -248,12 +250,13 @@ public class DB {
 	 * @return ArrayList<ConcurrentHashMap<String, Object>>
 	 * @throws SQLException
 	 */
-	public static ArrayList<ConcurrentHashMap<String, Object>> returnResultFromItems(final String sql, final ArrayList<String> fields) throws SQLException {
+	public static ArrayList<ConcurrentHashMap<String, Object>> returnResultFromItems(final String sql,
+			final ArrayList<String> fields) throws SQLException {
 		final ArrayList<ConcurrentHashMap<String, Object>> resultSet = new ArrayList<ConcurrentHashMap<String, Object>>();
 		final ResultSet rs = DB.query(sql);
-		for (; rs.next();) {
+		for(; rs.next();) {
 			final ConcurrentHashMap<String, Object> temp = new ConcurrentHashMap<String, Object>();
-			for (final String string : fields) {
+			for(final String string : fields) {
 				temp.put(string, rs.getObject(string));
 			}
 			resultSet.add(temp);
@@ -270,7 +273,7 @@ public class DB {
 	public static ArrayList<String> getColumnsFromTable(final String tableName) throws SQLException {
 		final ResultSet rs = DB.query("SHOW COLUMNS FROM " + tableName);
 		final ArrayList<String> tempList = new ArrayList<String>();
-		while (rs.next()) {
+		while(rs.next()) {
 			tempList.add(rs.getString("COLUMN_NAME"));
 		}
 

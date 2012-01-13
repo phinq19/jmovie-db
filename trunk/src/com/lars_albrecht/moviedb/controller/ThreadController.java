@@ -54,13 +54,14 @@ public class ThreadController {
 	 * @param userPattern
 	 * @param files
 	 */
-	public ThreadController(final Controller controller, final MovieTableModel tableModel, final String[] userPattern, final ArrayList<File> files) {
+	public ThreadController(final Controller controller, final MovieTableModel tableModel, final String[] userPattern,
+			final ArrayList<File> files) {
 		this.controller = controller;
 		this.tableModel = tableModel;
 		// final ArrayList<String> regexList = new ArrayList<String>();
 		this.regexList = new ConcurrentHashMap<String, ArrayList<String>>();
 
-		this.dbListItems = this.getDBListItems();
+		this.dbListItems = ThreadController.getDBListItems();
 
 		// Contains the names of the given regular expression.
 		ArrayList<String> nameList = null;
@@ -68,8 +69,8 @@ public class ThreadController {
 		// Contains all fields in MovieModel.class.
 		this.fieldList = Controller.flParse;
 
-		if (userPattern != null) {
-			for (final String matcherStr : userPattern) {
+		if(userPattern != null) {
+			for(final String matcherStr : userPattern) {
 				String regex = matcherStr;
 				final Pattern pattern = Pattern.compile("%(.*?)%");
 				final Matcher matcherNames = pattern.matcher(matcherStr);
@@ -77,18 +78,20 @@ public class ThreadController {
 				Integer pos = null;
 				nameList = new ArrayList<String>();
 
-				while (matcherNames.find()) {
+				while(matcherNames.find()) {
 					foundStr = matcherNames.group().replaceAll("%", "");
 					pos = this.fieldList.fieldNameInAsList(foundStr);
-					if ((pos > -1) && (this.fieldList.get(pos).getType() == ParseOptions.TYPE_REGEX)) {
+					if((pos > -1) && (this.fieldList.get(pos).getType() == ParseOptions.TYPE_REGEX)) {
 						regex = regex.replaceFirst(matcherNames.group(), this.fieldList.get(pos).getTypeConf());
-					} else if ((pos > -1) && (this.fieldList.get(pos).getType() == ParseOptions.TYPE_LIST)) {
-						regex = regex.replaceFirst(matcherNames.group(), "(" + this.dbListItems.get(this.fieldList.get(pos).getAs()).toString().replaceAll(",", "|").replaceAll("\\[|\\]|\\s", "")
-								+ ")");
+					} else if((pos > -1) && (this.fieldList.get(pos).getType() == ParseOptions.TYPE_LIST)) {
+						regex = regex.replaceFirst(matcherNames.group(), "("
+								+ this.dbListItems.get(this.fieldList.get(pos).getAs()).toString().replaceAll(",", "|")
+										.replaceAll("\\[|\\]|\\s", "") + ")");
 						// Debug.log(Debug.LEVEL_DEBUG, matcherNames.group());
 						// Debug.log(Debug.LEVEL_DEBUG, regex);
 					} else {
-						if ((foundStr.indexOf("_") > -1) && ((pos = this.fieldList.fieldNameInAsList(foundStr.substring(0, foundStr.indexOf("_")))) > -1)
+						if((foundStr.indexOf("_") > -1)
+								&& ((pos = this.fieldList.fieldNameInAsList(foundStr.substring(0, foundStr.indexOf("_")))) > -1)
 								&& (this.fieldList.get(pos).getType() == ParseOptions.TYPE_REGEX)) {
 							regex = regex.replaceFirst(matcherNames.group(), this.fieldList.get(pos).getTypeConf());
 						} else {
@@ -107,7 +110,7 @@ public class ThreadController {
 
 		}
 
-		for (int i = 0; i < files.size(); i++) {
+		for(int i = 0; i < files.size(); i++) {
 			Debug.log(Debug.LEVEL_DEBUG, "start find and parse");
 			this.finderList.add(new Thread(new Finder(this, files.get(i))));
 			this.finderList.get(this.finderList.size() - 1).start();
@@ -131,8 +134,9 @@ public class ThreadController {
 		// this.parserList.get(this.parserList.size() - 1).start();
 
 		// final String regex = "((?!-\\s).)+";
-		System.out.println("USE REGEX: " + Controller.options.getFilenameSeperator());
-		this.parserList.add(new Thread(new Parser(this, fileList, this.dbListItems, this.fieldList, Controller.options.getFilenameSeperator())));
+		// System.out.println("USE REGEX: " + Controller.options.getFilenameSeperator());
+		this.parserList.add(new Thread(new Parser(this, fileList, this.dbListItems, this.fieldList, Controller.options
+				.getFilenameSeperator())));
 		this.parserList.get(this.parserList.size() - 1).start();
 	}
 
@@ -140,7 +144,7 @@ public class ThreadController {
 	 * 
 	 * @return ConcurrentHashMap<String, ArrayList<String>>
 	 */
-	private ConcurrentHashMap<String, ArrayList<String>> getDBListItems() {
+	public static ConcurrentHashMap<String, ArrayList<String>> getDBListItems() {
 		final FieldList fieldList = Controller.flParse;
 		final ConcurrentHashMap<String, ArrayList<String>> list = new ConcurrentHashMap<String, ArrayList<String>>();
 		try {
@@ -148,25 +152,25 @@ public class ThreadController {
 			String sql = null;
 			DatabaseOptions dbo = null;
 			ArrayList<String> itemList = null;
-			for (final FieldModel item : fieldList) {
+			for(final FieldModel item : fieldList) {
 				dbo = null;
 				itemList = new ArrayList<String>();
-				if (item.getField().getType() == ArrayList.class) {
-					if ((dbo = item.getField().getAnnotation(DatabaseOptions.class)) != null) {
+				if(item.getField().getType() == ArrayList.class) {
+					if((dbo = item.getField().getAnnotation(DatabaseOptions.class)) != null) {
 						sql = "SELECT name FROM " + dbo.as();
 						rs = DB.query(sql);
-						while (rs.next()) {
+						while(rs.next()) {
 							itemList.add(rs.getString("name"));
 						}
 						list.put(item.getAs(), itemList);
 					}
 				}
 			}
-		} catch (final SecurityException e) {
+		} catch(final SecurityException e) {
 			e.printStackTrace();
-		} catch (final IllegalArgumentException e) {
+		} catch(final IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (final SQLException e) {
+		} catch(final SQLException e) {
 			e.printStackTrace();
 		}
 		return list;
@@ -178,59 +182,64 @@ public class ThreadController {
 	 */
 	public synchronized void addMovies(final ArrayList<MovieModel> movies) {
 		int addCounter = 0;
-		for (final MovieModel movie : movies) {
+		final ArrayList<MovieModel> notAddedList = new ArrayList<MovieModel>();
+		for(final MovieModel movie : movies) {
 			Integer movieId = null;
 			try {
 				// add movie to database
 				movieId = MovieController.addMovie(movie);
-			} catch (final JdbcSQLException e) {
+			} catch(final JdbcSQLException e) {
 				try {
-					System.out.println("not added: " + movie.get("maintitle"));
-				} catch (final SecurityException e1) {
+					System.out.println(e.getErrorCode());
+					notAddedList.add(movie);
+					Debug.log(Debug.LEVEL_INFO, "not added: " + movie.get("maintitle"));
+				} catch(final SecurityException e1) {
 					e1.printStackTrace();
-				} catch (final IllegalAccessException e1) {
+				} catch(final IllegalAccessException e1) {
 					e1.printStackTrace();
-				} catch (final IllegalArgumentException e1) {
+				} catch(final IllegalArgumentException e1) {
 					e1.printStackTrace();
-				} catch (final InvocationTargetException e1) {
+				} catch(final InvocationTargetException e1) {
 					e1.printStackTrace();
 				}
-			} catch (final NoSuchMethodException e) {
+			} catch(final NoSuchMethodException e) {
 				e.printStackTrace();
-			} catch (final IllegalAccessException e) {
+			} catch(final IllegalAccessException e) {
 				e.printStackTrace();
-			} catch (final InvocationTargetException e) {
+			} catch(final InvocationTargetException e) {
 				e.printStackTrace();
-			} catch (final SQLException e) {
+			} catch(final SQLException e) {
 				e.printStackTrace();
-			} catch (final SecurityException e) {
+			} catch(final SecurityException e) {
 				e.printStackTrace();
-			} catch (final IllegalArgumentException e) {
+			} catch(final IllegalArgumentException e) {
 				e.printStackTrace();
-			} catch (NoMovieIDException e) {
+			} catch(final NoMovieIDException e) {
 				e.printStackTrace();
 			}
-			if (movieId != null && movieId > -1) {
+			if((movieId != null) && (movieId > -1)) {
 				try {
 					movie.set("id", movieId);
 					// add movie to table
 					this.tableModel.addMovie(movie);
 					addCounter++;
-				} catch (final IllegalArgumentException e) {
+				} catch(final IllegalArgumentException e) {
 					e.printStackTrace();
-				} catch (final SecurityException e) {
+				} catch(final SecurityException e) {
 					e.printStackTrace();
-				} catch (IllegalAccessException e) {
+				} catch(final IllegalAccessException e) {
 					e.printStackTrace();
-				} catch (InvocationTargetException e) {
+				} catch(final InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			}
 		}
 		this.moviesAddedCount += addCounter;
-		System.out.println("ParserList: " + this.parserList.size());
-		if ((this.parserList.size() == 0) && (this.finderList.size() == 0)) {
-			this.controller.getSbStatus().setText(String.format(RessourceBundleEx.getInstance().getProperty("application.status.movielist.added"), this.moviesAddedCount));
+		// System.out.println("ParserList: " + this.parserList.size());
+		if((this.parserList.size() == 0) && (this.finderList.size() == 0)) {
+			this.controller.getSbStatus().setText(
+					String.format(RessourceBundleEx.getInstance().getProperty("application.status.movielist.added"),
+							this.moviesAddedCount));
 		}
 	}
 

@@ -51,8 +51,7 @@ public class Finder implements Runnable {
 					// TODO new Thread?
 					this.getMoviesFromFolders(tempList);
 				}
-				if(file.exists() && !file.isDirectory() && file.isFile()
-						&& (new MovieFilenameFilter().accept(file, file.getName()))) {
+				if(file.exists() && !file.isDirectory() && file.isFile() && (new MovieFilenameFilter().accept(file))) {
 					tempFileList.add(file);
 				}
 			}

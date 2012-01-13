@@ -22,6 +22,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JToolBar;
 
 import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.gui.tablefilter.AdditionalFilter;
 import com.lars_albrecht.moviedb.model.ComboBoxFilterModel;
@@ -55,7 +56,7 @@ public class Platform extends JFrame {
 	private JRadioButton rbOrSearch = null;
 
 	public Platform(final Controller controller) {
-		super("MovieDB");
+		super(RessourceBundleEx.getInstance().getProperty("application.frame.platform.title"));
 		this.controller = controller;
 
 		this.setFrameSettings(this);
@@ -111,7 +112,8 @@ public class Platform extends JFrame {
 		this.cbFilter = new JComboBox<ComboBoxFilterModel>(this.mcbmFilter);
 		this.cbFilter.setEditable(true);
 
-		this.bRefreshTable = new JButton("Refresh");
+		this.bRefreshTable = new JButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.button.refresh.title"));
 		this.bRefreshTable.addActionListener(this.controller);
 
 		this.tbTools = new JToolBar("Main toolbar");
@@ -120,8 +122,10 @@ public class Platform extends JFrame {
 		this.tbTools.add(this.cbFilter);
 
 		final ButtonGroup bgAndOr = new ButtonGroup();
-		this.rbAndSearch = new JRadioButton("AND", Boolean.TRUE);
-		this.rbOrSearch = new JRadioButton("OR");
+		this.rbAndSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.radio.and.title"), Boolean.TRUE);
+		this.rbOrSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.radio.or.title"));
 
 		bgAndOr.add(this.rbAndSearch);
 		bgAndOr.add(this.rbOrSearch);
@@ -165,28 +169,32 @@ public class Platform extends JFrame {
 		mainMenu = new JMenuBar();
 
 		// file menu
-		this.mFile = new JMenu("Datei");
+		this.mFile = new JMenu(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menu.file.title"));
 
-		this.miAdd = new JMenuItem("Hinzufügen");
+		this.miAdd = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.add.title"));
 		this.miAdd.addActionListener(this.controller);
 		this.mFile.add(this.miAdd);
 
-		this.miSearch = new JMenuItem("Suchen");
+		this.miSearch = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.search.title"));
 		this.miSearch.addActionListener(this.controller);
 		this.mFile.add(this.miSearch);
 
-		this.miRemoveAll = new JMenuItem("Remove all");
+		this.miRemoveAll = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.removeall.title"));
 		this.miRemoveAll.addActionListener(this.controller);
 		this.mFile.add(this.miRemoveAll);
 
-		this.miClose = new JMenuItem("Beenden");
+		this.miClose = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.close.title"));
 		this.miClose.addActionListener(this.controller);
 		this.mFile.add(this.miClose);
 
 		// Help menu
-		this.mhelp = new JMenu("Hilfe");
+		this.mhelp = new JMenu(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menu.help.title"));
 
-		this.miAbout = new JMenuItem("Über");
+		this.miAbout = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.about.title"));
 		this.miAbout.addActionListener(this.controller);
 		this.mhelp.add(this.miAbout);
 

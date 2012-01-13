@@ -21,6 +21,9 @@ public class RottenTomatoesModel extends MovieModel {
 	@DatabaseOptions(as = "certification", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	private String certification = null;
 
+	@DatabaseOptions(as = "cryear", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
+	protected Integer year = null;
+
 	/**
 	 * @return the rtId
 	 */

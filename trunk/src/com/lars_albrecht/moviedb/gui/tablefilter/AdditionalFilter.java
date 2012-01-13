@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import com.lars_albrecht.general.components.labeled.JLabeledList;
 import com.lars_albrecht.general.components.labeled.abstracts.JLabeled;
 import com.lars_albrecht.general.types.KeyValue;
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.model.FieldModel;
 
@@ -76,8 +77,10 @@ public class AdditionalFilter extends JPanel {
 
 		final Box bAndOr = Box.createHorizontalBox();
 		final ButtonGroup bgAndOr = new ButtonGroup();
-		this.rbAndSearch = new JRadioButton("AND", Boolean.TRUE);
-		this.rbOrSearch = new JRadioButton("OR");
+		this.rbAndSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
+				"application.panel.additionalfilter.radio.and.title"), Boolean.TRUE);
+		this.rbOrSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
+				"application.panel.additionalfilter.radio.or.title"));
 		bgAndOr.add(this.rbAndSearch);
 		bgAndOr.add(this.rbOrSearch);
 
@@ -94,8 +97,9 @@ public class AdditionalFilter extends JPanel {
 		this.pFieldSet.add(bAndOr, gbcFieldSet);
 
 		final DefaultComboBoxModel<KeyValue<Integer, String>> dcbFieldLis = new DefaultComboBoxModel<KeyValue<Integer, String>>();
-		this.useFieldList = new JLabeledList<KeyValue<Integer, String>>("Use following table rows", dcbFieldLis,
-				JLabeled.LABELPOSITION_TOP, new Dimension(125, 20), new Dimension(125, 200), 0, 0);
+		this.useFieldList = new JLabeledList<KeyValue<Integer, String>>(RessourceBundleEx.getInstance().getProperty(
+				"application.panel.additionalfilter.labeledlist.userows.title"), dcbFieldLis, JLabeled.LABELPOSITION_TOP,
+				new Dimension(125, 20), new Dimension(125, 200), 0, 0);
 		for(final FieldModel fieldModel : Controller.flTable) {
 			if(!fieldModel.getAs().equals(" ")) {
 				dcbFieldLis.addElement(new KeyValue<Integer, String>(fieldModel.getSort(), fieldModel.getAs()));
@@ -115,7 +119,8 @@ public class AdditionalFilter extends JPanel {
 		gbcP.weighty = 0;
 		gbcP.fill = GridBagConstraints.NONE;
 		gbcP.anchor = GridBagConstraints.NORTH;
-		this.cbUseAdvanced = new JCheckBox("Use advanced filters");
+		this.cbUseAdvanced = new JCheckBox(RessourceBundleEx.getInstance().getProperty(
+				"application.panel.additionalfilter.check.useadvanced.title"));
 		this.cbUseAdvanced.addActionListener(this.controller);
 		this.cbUseAdvanced.setBorder(BorderFactory.createEtchedBorder());
 		this.cbUseAdvanced.setBackground(p.getBackground());

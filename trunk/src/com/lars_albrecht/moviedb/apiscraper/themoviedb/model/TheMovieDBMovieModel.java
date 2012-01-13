@@ -57,6 +57,12 @@ public class TheMovieDBMovieModel extends MovieModel {
 	@DatabaseOptions(as = "originalname", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	protected String originalName = null;
 
+	@DatabaseOptions(as = "maintitle", type = DatabaseOptions.TYPE_FIELD, additionalType = "VARCHAR(128) NOT NULL", defaultValues = {}, isUnique = false)
+	protected String maintitle = null;
+
+	@DatabaseOptions(as = "cryear", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
+	protected Integer year = null;
+
 	/**
 	 * @return the tmdbId
 	 */

@@ -38,11 +38,33 @@ public class MovieTableModel implements TableModel {
 	public MovieTableModel() {
 		super();
 		this.neededFields = new TreeMap<Integer, Object[]>();
-		for (final FieldModel fieldModel : Controller.flTable) {
+		for(final FieldModel fieldModel : Controller.flTable) {
 			final Field field = fieldModel.getField();
 			final Object[] value = { field, fieldModel.getAs().equals("") ? field.getName() : fieldModel.getAs() };
 			this.neededFields.put(fieldModel.getSort(), value);
 		}
+	}
+
+	/**
+	 * 
+	 * @param movie
+	 * @return Integer
+	 */
+	public Integer indexOf(final MovieModel movie) {
+		return this.movies.indexOf(movie);
+	}
+
+	/**
+	 * 
+	 * @param index
+	 *            Integer
+	 * @return MovieModel
+	 */
+	public MovieModel getMovie(final Integer index) {
+		if(this.movies.size() >= index) {
+			return this.movies.get(index.intValue());
+		}
+		return null;
 	}
 
 	public void addMovie(final MovieModel movie) {
@@ -59,7 +81,7 @@ public class MovieTableModel implements TableModel {
 
 	public void callListenersChange(final TableModelEvent e) {
 		// send event to listeners
-		for (int i = 0, n = this.listeners.size(); i < n; i++) {
+		for(int i = 0, n = this.listeners.size(); i < n; i++) {
 			this.listeners.get(i).tableChanged(e);
 		}
 	}
@@ -76,7 +98,7 @@ public class MovieTableModel implements TableModel {
 
 	@Override
 	public Class<?> getColumnClass(final int columnIndex) {
-		if (((Field) this.neededFields.get(Helper.getKeyFromMapPos(this.neededFields, columnIndex))[0]).getType() == Image.class) {
+		if(((Field) this.neededFields.get(Helper.getKeyFromMapPos(this.neededFields, columnIndex))[0]).getType() == Image.class) {
 			return ImageIcon.class;
 		}
 		return ((Field) this.neededFields.get(Helper.getKeyFromMapPos(this.neededFields, columnIndex))[0]).getType();
@@ -100,7 +122,7 @@ public class MovieTableModel implements TableModel {
 	@SuppressWarnings("unchecked")
 	@Override
 	public Object getValueAt(final int rowIndex, final int columnIndex) {
-		if (this.movies.size() > 0) {
+		if(this.movies.size() > 0) {
 			final MovieModel movie = this.movies.get(rowIndex);
 
 			final Field field = ((Field) this.neededFields.get(Helper.getKeyFromMapPos(this.neededFields, columnIndex))[0]);
@@ -108,31 +130,33 @@ public class MovieTableModel implements TableModel {
 			Object o = null;
 			try {
 				o = movie.get(field.getName());
-			} catch (final IllegalArgumentException e) {
+			} catch(final IllegalArgumentException e) {
 				e.printStackTrace();
-			} catch (final SecurityException e) {
+			} catch(final SecurityException e) {
 				e.printStackTrace();
-			} catch (final IllegalAccessException e) {
+			} catch(final IllegalAccessException e) {
 				e.printStackTrace();
-			} catch (final InvocationTargetException e) {
+			} catch(final InvocationTargetException e) {
 				e.printStackTrace();
 			}
 			Object resultVal = null;
-			if (o == null) {
+			if(o == null) {
 				resultVal = null;
 			} else {
-				if (o.getClass() == String.class) {
+				if(o.getClass() == String.class) {
 					resultVal = o;
-				} else if (o.getClass() == Integer.class) {
+				} else if(o.getClass() == Integer.class) {
 					resultVal = Integer.toString((Integer) o);
-				} else if (o.getClass() == File.class) {
+				} else if(o.getClass() == File.class) {
 					resultVal = ((File) o).getAbsolutePath();
-				} else if (o.getClass() == ArrayList.class) {
-					resultVal = ((ArrayList<Object>) o).size() > 0 ? Helper.implode(((ArrayList<Object>) o), ", ", null, null) : null;
-				} else if (o.getClass() == Boolean.class) {
+				} else if(o.getClass() == ArrayList.class) {
+					resultVal = ((ArrayList<Object>) o).size() > 0 ? Helper.implode(((ArrayList<Object>) o), ", ", null, null)
+							: null;
+				} else if(o.getClass() == Boolean.class) {
 					resultVal = o;
-				} else if (o instanceof Image) {
-					final Point widthHeight = Helper.getProportionalWidthHeightImage(Helper.toBufferedImage((Image) o), 50.0, 50.0);
+				} else if(o instanceof Image) {
+					final Point widthHeight = Helper.getProportionalWidthHeightImage(Helper.toBufferedImage((Image) o), 50.0,
+							50.0);
 					resultVal = new ImageIcon(((Image) o).getScaledInstance(widthHeight.x, widthHeight.y, Image.SCALE_SMOOTH));
 				} else {
 					resultVal = null;

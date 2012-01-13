@@ -51,7 +51,7 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 		final Set<Movie> movieSet = this.rt.moviesSearch(s);
 		Movie m = null;
 		for(final Movie movie : movieSet) {
-			if((((year != null) && ((movie.getYear() == year))) || (year == null))) {
+			if((((year != null) && (movie.getYear() == year)) || (year == null))) {
 				m = movie;
 				break;
 			}
@@ -95,8 +95,10 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	private RottenTomatoesModel returnInfosFromMovie(final Movie m) {
 
 		final RottenTomatoesModel movie = new RottenTomatoesModel();
+		System.out.println("--------------- " + this.getClass().getSimpleName());
 		System.out.println(m);
 		System.out.println(m.getGenres());
+		System.out.println("/--------------- " + this.getClass().getSimpleName());
 
 		try {
 			movie.setRtId(m.getId());
@@ -146,6 +148,11 @@ public class RottenTomatoesScraper implements IApiScraperPlugin {
 	@Override
 	public Class<? extends RottenTomatoesModel> getMovieModelInstance() {
 		return new RottenTomatoesModel().getClass();
+	}
+
+	@Override
+	public String getIdFieldName() {
+		return "rtId";
 	}
 
 }

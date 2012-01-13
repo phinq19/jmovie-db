@@ -10,10 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.Action;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -23,7 +25,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import com.lars_albrecht.general.components.awt.ListPopupMenuAdapter;
+import com.lars_albrecht.general.components.awt.TablePopupMenuAdapter;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
+import com.lars_albrecht.moviedb.components.InfoListView;
 import com.lars_albrecht.moviedb.components.movietablemodel.HidableTableColumnModel;
 import com.lars_albrecht.moviedb.components.movietablemodel.MovieTableModel;
 import com.lars_albrecht.moviedb.components.movietablemodel.celleditors.MovieCellEditor;
@@ -49,6 +54,13 @@ public class TableView extends JPanel {
 	private MovieTableModel tableModel = null;
 	private JScrollPane tableScrollPane = null;
 	private TableRowSorter<TableModel> tableRowSorter = null;
+	private JMenuItem miFind = null;
+
+	private JMenuItem miRemove = new JMenuItem("Remove");
+	private JMenuItem miRemoveFile = new JMenuItem("Remove and delete file");
+	private JMenuItem miOpenPath = new JMenuItem("Open Path");
+
+	private InfoListView<MovieModel> ilv = null;
 
 	public TableView(final Controller controller) {
 		this.controller = controller;
@@ -57,21 +69,21 @@ public class TableView extends JPanel {
 
 		try {
 			this.addMoviesToTableModel();
-		} catch (final IllegalArgumentException e) {
+		} catch(final IllegalArgumentException e) {
 			e.printStackTrace();
-		} catch (final SecurityException e) {
+		} catch(final SecurityException e) {
 			e.printStackTrace();
-		} catch (final IllegalAccessException e) {
+		} catch(final IllegalAccessException e) {
 			e.printStackTrace();
-		} catch (final InvocationTargetException e) {
+		} catch(final InvocationTargetException e) {
 			e.printStackTrace();
-		} catch (final NoSuchMethodException e) {
+		} catch(final NoSuchMethodException e) {
 			e.printStackTrace();
-		} catch (final ClassNotFoundException e) {
+		} catch(final ClassNotFoundException e) {
 			e.printStackTrace();
-		} catch (final SQLException e) {
+		} catch(final SQLException e) {
 			e.printStackTrace();
-		} catch (final IOException e) {
+		} catch(final IOException e) {
 			e.printStackTrace();
 		}
 		this.setVisible(true);
@@ -101,7 +113,7 @@ public class TableView extends JPanel {
 
 		final MovieCellEditor mce = new MovieCellEditor();
 		final Enumeration<TableColumn> columns = this.table.getColumnModel().getColumns();
-		while (columns.hasMoreElements()) {
+		while(columns.hasMoreElements()) {
 			final TableColumn col = columns.nextElement();
 			col.setCellEditor(mce);
 		}
@@ -114,13 +126,27 @@ public class TableView extends JPanel {
 		this.table.addMouseListener(this.controller);
 
 		final HidableTableColumnModel htcm = new HidableTableColumnModel(this.table.getColumnModel());
-		final JPopupMenu popup = new JPopupMenu();
+		final JPopupMenu tablePopmenu = new JPopupMenu();
+
+		this.miRemove = new JMenuItem("Remove");
+		this.miRemove.addActionListener(this.controller);
+		this.miRemoveFile = new JMenuItem("Remove and delete file");
+		this.miRemoveFile.addActionListener(this.controller);
+		this.miOpenPath = new JMenuItem("Open Path");
+		this.miOpenPath.addActionListener(this.controller);
+
+		tablePopmenu.add(this.miRemove);
+		tablePopmenu.add(this.miRemoveFile);
+		tablePopmenu.add(this.miOpenPath);
+
+		tablePopmenu.addSeparator();
 		final Action[] columnActions = htcm.createColumnActions();
-		for (final Action act : columnActions) {
-			popup.add(new JCheckBoxMenuItem(act));
+		for(final Action act : columnActions) {
+			tablePopmenu.add(new JCheckBoxMenuItem(act));
 		} // for
-			// this.table.getTableHeader().setComponentPopupMenu(popup);
-		this.table.setComponentPopupMenu(popup);
+		// this.table.getTableHeader().setComponentPopupMenu(popup);
+		this.table.setComponentPopupMenu(tablePopmenu);
+		tablePopmenu.addPopupMenuListener(new TablePopupMenuAdapter());
 
 		final TableColumn tc = this.table.getColumn(this.table.getColumnName(0));
 		tc.setMinWidth(15);
@@ -155,30 +181,57 @@ public class TableView extends JPanel {
 	/**
 	 * 
 	 */
+	public void refreshTableInfos() {
+		this.tableModel.callListenersChange(new TableModelEvent(this.tableModel, 0, this.tableModel.getMovies().size() - 1,
+				TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
+	}
+
+	/**
+	 * 
+	 */
 	public void refreshTableItems() {
 		// set new status
-		if (this.tableModel.getMovies().size() > 0) {
-			for (final MovieModel movie : this.tableModel.getMovies()) {
+		final ArrayList<MovieModel> notAddedList = new ArrayList<MovieModel>();
+		if(this.tableModel.getMovies().size() > 0) {
+			for(final MovieModel movie : this.tableModel.getMovies()) {
 				try {
-					if (((File) movie.get("file")).getAbsoluteFile().exists()) {
+					if(((File) movie.get("file")).getAbsoluteFile().exists()) {
 						movie.set("validPath", Boolean.TRUE);
 					} else {
 						movie.set("validPath", Boolean.FALSE);
+						notAddedList.add(movie);
 					}
-				} catch (final SecurityException e) {
+				} catch(final SecurityException e) {
 					e.printStackTrace();
-				} catch (final IllegalAccessException e) {
+				} catch(final IllegalAccessException e) {
 					e.printStackTrace();
-				} catch (final IllegalArgumentException e) {
+				} catch(final IllegalArgumentException e) {
 					e.printStackTrace();
-				} catch (final InvocationTargetException e) {
+				} catch(final InvocationTargetException e) {
 					e.printStackTrace();
 				}
 			}
-			this.tableModel.callListenersChange(new TableModelEvent(this.tableModel, 0, this.tableModel.getMovies().size() - 1, TableModelEvent.ALL_COLUMNS, TableModelEvent.UPDATE));
+
+			this.refreshTableInfos();
+			if(notAddedList.size() > 0) {
+				this.ilv = new InfoListView<MovieModel>(RessourceBundleEx.getInstance().getProperty(
+						"application.panel.tableview.infolistview.listnotadded.title"), RessourceBundleEx.getInstance()
+						.getProperty("application.panel.tableview.infolistview.listnotadded.message"));
+
+				// init menu
+				final JPopupMenu infoListViewPopMenu = new JPopupMenu();
+				this.miFind = new JMenuItem("Relocate");
+				this.miFind.addActionListener(this.controller);
+				infoListViewPopMenu.add(this.miFind);
+				infoListViewPopMenu.addPopupMenuListener(new ListPopupMenuAdapter());
+				this.ilv.setPopupMenu(infoListViewPopMenu);
+				this.ilv.fillList(notAddedList);
+				this.ilv.setVisible(Boolean.TRUE);
+			}
+
 		}
 
-		if ((Controller.options.getPaths().size() > 0) && !Controller.options.getFilenameSeperator().equals("")) {
+		if((Controller.options.getPaths().size() > 0) && !Controller.options.getFilenameSeperator().equals("")) {
 			// add new movies from defaultfilestack
 			new ThreadController(this.controller, this.tableModel, null, Controller.options.getPaths());
 		}
@@ -196,15 +249,23 @@ public class TableView extends JPanel {
 	 * @throws SQLException
 	 * @throws IOException
 	 */
-	private void addMoviesToTableModel() throws IllegalArgumentException, SecurityException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, ClassNotFoundException,
-			SQLException, IOException {
+	private void addMoviesToTableModel() throws IllegalArgumentException, SecurityException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException, ClassNotFoundException, SQLException, IOException {
 		int i = 0;
-		for (final MovieModel movie : MovieController.getMovies()) {
+		for(final MovieModel movie : MovieController.getMovies()) {
 			i++;
 			this.tableModel.addMovie(movie);
 		}
 
-		this.controller.getSbStatus().setText(String.format(RessourceBundleEx.getInstance().getProperty("application.status.movielist.loaded"), i));
+		this.controller.getSbStatus().setText(
+				String.format(RessourceBundleEx.getInstance().getProperty("application.status.movielist.loaded"), i));
+	}
+
+	/**
+	 * @return the ilv
+	 */
+	public synchronized final InfoListView<MovieModel> getIlv() {
+		return this.ilv;
 	}
 
 	/**
@@ -250,6 +311,34 @@ public class TableView extends JPanel {
 	 */
 	public synchronized final void setTableRowSorter(final TableRowSorter<TableModel> tableRowSorter) {
 		this.tableRowSorter = tableRowSorter;
+	}
+
+	/**
+	 * @return the miFind
+	 */
+	public synchronized final JMenuItem getMiFind() {
+		return this.miFind;
+	}
+
+	/**
+	 * @return the miRemove
+	 */
+	public synchronized final JMenuItem getMiRemove() {
+		return this.miRemove;
+	}
+
+	/**
+	 * @return the miRemoveFile
+	 */
+	public synchronized final JMenuItem getMiRemoveFile() {
+		return this.miRemoveFile;
+	}
+
+	/**
+	 * @return the miOpenPath
+	 */
+	public synchronized final JMenuItem getMiOpenPath() {
+		return this.miOpenPath;
 	}
 
 }

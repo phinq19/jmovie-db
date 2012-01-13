@@ -21,6 +21,7 @@ import javax.swing.JToolBar;
 import javax.swing.WindowConstants;
 
 import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.moviedb.controller.Controller;
 import com.lars_albrecht.moviedb.controller.ThreadController;
 
@@ -48,7 +49,7 @@ public class SearchListView extends JFrame {
 	private JTextField tfRegExp = null;
 
 	public SearchListView(final Controller controller) {
-		super("SearchListView");
+		super(RessourceBundleEx.getInstance().getProperty("application.frame.searchlistview.title"));
 		this.controller = controller;
 
 		this.setFrameSettings(this);
@@ -75,14 +76,17 @@ public class SearchListView extends JFrame {
 		final GridBagConstraints gbc = new GridBagConstraints();
 
 		// init toolbar
-		this.bAddPath = new JButton("Open");
+		this.bAddPath = new JButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.searchlistview.button.open.title"));
 		this.bAddPath.addActionListener(this.controller);
 
-		this.bStartScan = new JButton("Scan");
+		this.bStartScan = new JButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.searchlistview.button.scan.title"));
 		this.bStartScan.addActionListener(this.controller);
 		this.bStartScan.setEnabled(Boolean.FALSE);
 
-		this.bSave = new JButton("Save");
+		this.bSave = new JButton(RessourceBundleEx.getInstance()
+				.getProperty("application.frame.searchlistview.button.save.title"));
 		this.bSave.addActionListener(this.controller);
 		this.bSave.setEnabled(Boolean.FALSE);
 
@@ -199,7 +203,7 @@ public class SearchListView extends JFrame {
 			} else {
 				this.fcSelect.setCurrentDirectory(new File("D:\\lalbrecht\\Programme\\WDT\\workspace\\MD\\testdata"));
 			}
-			this.fcSelect.setDialogTitle("Choose folder...");
+			this.fcSelect.setDialogTitle(RessourceBundleEx.getInstance().getProperty("application.dialog.folder.title"));
 			this.fcSelect.setAcceptAllFileFilterUsed(false);
 			this.fcSelect.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		}

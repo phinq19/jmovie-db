@@ -414,4 +414,21 @@ public abstract class MovieModel {
 		this.originalName = originalName;
 	}
 
+	@Override
+	public String toString() {
+		try {
+			return this.get("maintitle")
+					+ (Helper.isValidString((String) this.get("subtitle")) ? " - " + this.get("subtitle") : "");
+		} catch(final SecurityException e) {
+			e.printStackTrace();
+		} catch(final IllegalAccessException e) {
+			e.printStackTrace();
+		} catch(final IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch(final InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }

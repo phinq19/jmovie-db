@@ -4,7 +4,7 @@
 package com.lars_albrecht.moviedb.controller;
 
 import java.awt.Color;
-import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -14,13 +14,15 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.RowFilter;
 import javax.swing.UIManager;
@@ -46,6 +48,7 @@ import com.lars_albrecht.moviedb.database.DB;
 import com.lars_albrecht.moviedb.exceptions.NoMovieIDException;
 import com.lars_albrecht.moviedb.exceptions.OptionsNotLoadedException;
 import com.lars_albrecht.moviedb.exceptions.OptionsNotSavedException;
+import com.lars_albrecht.moviedb.filter.MovieFilenameFilter;
 import com.lars_albrecht.moviedb.gui.Platform;
 import com.lars_albrecht.moviedb.gui.search.SearchListView;
 import com.lars_albrecht.moviedb.gui.splitview.TabView;
@@ -55,6 +58,7 @@ import com.lars_albrecht.moviedb.model.FieldList;
 import com.lars_albrecht.moviedb.model.FieldModel;
 import com.lars_albrecht.moviedb.model.Options;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
+import com.lars_albrecht.moviedb.thread.Parser;
 
 /**
  * @author lalbrecht
@@ -118,7 +122,7 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 		for(final IApiScraperPlugin apiScraper : Controller.apiScraper) {
 			Controller.flTable.addAll(Helper.getTableFieldModelFromClass(apiScraper.getMovieModelInstance()));
 			for(final FieldModel fieldModel : Helper.getTabFieldModelFromClass(apiScraper.getMovieModelInstance())) {
-				System.out.println(fieldModel.getAs());
+				// System.out.println(fieldModel.getAs());
 				fieldModel.setName(apiScraper.getTabTitle());
 				Controller.flTabs.add(fieldModel);
 			}
@@ -147,8 +151,9 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 		try {
 			Controller.options = OptionController.loadOptions();
 		} catch(final OptionsNotLoadedException e) {
-			JOptionPane.showMessageDialog(this.pf, "Die Optionen konnten nicht geladen werden", "Optionen wurden nicht geladen",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(this.pf, RessourceBundleEx.getInstance().getProperty(
+					"application.dialog.options.notloaded.message"), RessourceBundleEx.getInstance().getProperty(
+					"application.dialog.options.notloaded.title"), JOptionPane.ERROR_MESSAGE);
 			Debug.log(Debug.LEVEL_ERROR, e.getMessage());
 		}
 
@@ -349,8 +354,9 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 	 * 
 	 */
 	private void removeAllMovies() {
-		if(JOptionPane.showConfirmDialog(this.pf, "Wirklich löschen?", "Löschen?", JOptionPane.YES_NO_OPTION,
-				JOptionPane.QUESTION_MESSAGE) == 0) {
+		if(JOptionPane.showConfirmDialog(this.pf, RessourceBundleEx.getInstance().getProperty(
+				"application.dialog.movies.removeall.message"), RessourceBundleEx.getInstance().getProperty(
+				"application.dialog.movies.removeall.title"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == 0) {
 			try {
 				final int movieCount = this.lv.getTable().getRowCount();
 				MovieController.removeAllMovies();
@@ -395,16 +401,111 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 			this.slv.saveSearchOptions();
 		} else if((this.tv != null) && (this.tv.getComponentList() != null)
 				&& this.tv.getComponentList().containsValue(e.getSource()) && (Controller.loadedMovie != null)
-				&& ((String) Helper.getKeyFromMapObject(this.tv.getComponentList(), e.getSource())).startsWith("refresh")) {
-			this.tv.refreshMovieApiScraper(e.getSource());
+				&& ((String) Helper.getKeyFromMapObject(this.tv.getComponentList(), e.getSource())).startsWith("refresh")
+				&& !((String) Helper.getKeyFromMapObject(this.tv.getComponentList(), e.getSource())).equalsIgnoreCase("refresh")) {
+			this.tv.clickRefreshMovieApiScraper(e.getSource());
 		} else if((this.tv != null) && (this.tv.getComponentList() != null)
 				&& this.tv.getComponentList().containsValue(e.getSource()) && (Controller.loadedMovie != null)
 				&& ((String) Helper.getKeyFromMapObject(this.tv.getComponentList(), e.getSource())).equalsIgnoreCase("save")) {
-			System.out.println(this.tv.getComponentList().size());
-			for(final Entry<String, Component> entry : this.tv.getComponentList().entrySet()) {
-				if(entry.getValue().isEnabled()) {
-					System.out.println(entry.getKey());
+			this.tv.saveMovie();
+		} else if((this.tv != null) && (this.tv.getComponentList() != null)
+				&& this.tv.getComponentList().containsValue(e.getSource()) && (Controller.loadedMovie != null)
+				&& ((String) Helper.getKeyFromMapObject(this.tv.getComponentList(), e.getSource())).equalsIgnoreCase("refresh")) {
+			try {
+				String regex = null;
+				if(Helper.isValidString(Controller.options.getFilenameSeperator())) {
+					regex = Controller.options.getFilenameSeperator();
+				} else {
+					// TODO test
+					regex = (String) JOptionPane.showInputDialog(this.tv, RessourceBundleEx.getInstance().getProperty(
+							"application.dialog.regex.message"), RessourceBundleEx.getInstance().getProperty(
+							"application.dialog.regex.title"), JOptionPane.QUESTION_MESSAGE, null, null, "((?!-\\s).)+");
 				}
+				if(regex != null) {
+					final Integer movieId = (Integer) Controller.loadedMovie.get("id");
+					final Integer movieInList = this.lv.getTableModel().indexOf(Controller.loadedMovie);
+					if(movieInList > -1) {
+						Controller.loadedMovie = new Parser(ThreadController.getDBListItems(), Controller.flParse, regex)
+								.parseMoviename((File) Controller.loadedMovie.get("file"));
+						Controller.loadedMovie.set("id", movieId);
+						this.lv.getTableModel().getMovies().set(movieInList, Controller.loadedMovie);
+						MovieController.updateMovie(Controller.loadedMovie);
+						this.tv.refreshLoadedMovie();
+						this.getLv().refreshTableInfos();
+					}
+				}
+			} catch(final SecurityException e1) {
+				e1.printStackTrace();
+			} catch(final IllegalAccessException e1) {
+				e1.printStackTrace();
+			} catch(final IllegalArgumentException e1) {
+				e1.printStackTrace();
+			} catch(final InvocationTargetException e1) {
+				e1.printStackTrace();
+			} catch(final NoSuchMethodException e1) {
+				e1.printStackTrace();
+			} catch(final SQLException e1) {
+				e1.printStackTrace();
+			} catch(final NoMovieIDException e1) {
+				e1.printStackTrace();
+			}
+		} else if(e.getSource() == this.lv.getMiFind()) {
+			// TODO open window to relocate the movie
+			final List<MovieModel> selectedMovies = this.lv.getIlv().getlList().getSelectedValuesList();
+			final JFileChooser chooser = new JFileChooser();
+			for(final MovieModel movieModel : selectedMovies) {
+				try {
+					chooser.setCurrentDirectory((File) movieModel.get("filepath"));
+					chooser.setDialogTitle(String.format(RessourceBundleEx.getInstance().getProperty(
+							"application.chooser.relocate.title"), movieModel.get("maintitle")));
+					chooser.setFileFilter(new MovieFilenameFilter());
+					if(chooser.showOpenDialog(this.lv) == JFileChooser.APPROVE_OPTION) {
+						movieModel.set("file", chooser.getSelectedFile());
+						movieModel.set("validPath", Boolean.TRUE);
+						MovieController.updateMovie(movieModel);
+						this.getLv().refreshTableInfos();
+					}
+				} catch(final SecurityException e1) {
+					e1.printStackTrace();
+				} catch(final IllegalAccessException e1) {
+					e1.printStackTrace();
+				} catch(final IllegalArgumentException e1) {
+					e1.printStackTrace();
+				} catch(final InvocationTargetException e1) {
+					e1.printStackTrace();
+				} catch(final NoSuchMethodException e1) {
+					e1.printStackTrace();
+				} catch(final SQLException e1) {
+					e1.printStackTrace();
+				} catch(final NoMovieIDException e1) {
+					e1.printStackTrace();
+				}
+			}
+		} else if(e.getSource() == this.lv.getMiOpenPath()) {
+			try {
+				final int[] selectedRows = this.lv.getTable().getSelectedRows();
+				MovieModel tempMovie = null;
+				for(final int selectedRow : selectedRows) {
+					tempMovie = this.lv.getTableModel().getMovie(this.lv.getTable().convertRowIndexToModel(selectedRow));
+					if((tempMovie != null) && (tempMovie.get("file") != null) && ((File) tempMovie.get("file")).exists()) {
+						tempMovie.set("validPath", Boolean.TRUE);
+						this.lv.refreshTableInfos();
+						Desktop.getDesktop().open(new File(((File) tempMovie.get("file")).getParent()));
+					} else if((tempMovie != null) && (tempMovie.get("file") != null) && !((File) tempMovie.get("file")).exists()) {
+						tempMovie.set("validPath", Boolean.FALSE);
+						this.lv.refreshTableInfos();
+					}
+				}
+			} catch(final IOException e1) {
+				e1.printStackTrace();
+			} catch(final SecurityException e1) {
+				e1.printStackTrace();
+			} catch(final IllegalAccessException e1) {
+				e1.printStackTrace();
+			} catch(final IllegalArgumentException e1) {
+				e1.printStackTrace();
+			} catch(final InvocationTargetException e1) {
+				e1.printStackTrace();
 			}
 		}
 	}

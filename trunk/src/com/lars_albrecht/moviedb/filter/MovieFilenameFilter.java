@@ -7,12 +7,20 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 
+import javax.swing.filechooser.FileFilter;
+
 /**
  * @author lalbrecht
  * 
  */
-public class MovieFilenameFilter implements FilenameFilter {
+public class MovieFilenameFilter extends FileFilter implements FilenameFilter {
 
+	/**
+	 * 
+	 * @param dir
+	 * @param name
+	 * @return boolean
+	 */
 	@Override
 	public boolean accept(final File dir, final String name) {
 		final ArrayList<String> ext = new ArrayList<String>();
@@ -35,5 +43,15 @@ public class MovieFilenameFilter implements FilenameFilter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean accept(final File f) {
+		return this.accept(f, f.getName());
+	}
+
+	@Override
+	public String getDescription() {
+		return null;
 	}
 }

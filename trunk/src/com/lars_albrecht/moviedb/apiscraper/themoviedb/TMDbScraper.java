@@ -67,7 +67,6 @@ public class TMDbScraper implements IApiScraperPlugin {
 		} else if(searchResults.size() == 1) {
 			m = searchResults.get(0);
 		}
-		System.out.println(m);
 		if(m != null) {
 			return this.returnInfosFromMovie(m);
 		}
@@ -89,7 +88,6 @@ public class TMDbScraper implements IApiScraperPlugin {
 		if((movieList == null) || movieList.isEmpty()) {
 			return null;
 		}
-
 		for(final MovieDB moviedb : movieList) {
 			if(this.compareMovies(moviedb, title, year)) {
 				return moviedb;
@@ -114,15 +112,18 @@ public class TMDbScraper implements IApiScraperPlugin {
 		if((moviedb == null) || (!Helper.isValidString(title))) {
 			return false;
 		}
-
 		if(Helper.isValidString(year)) {
 			if(Helper.isValidString(moviedb.getReleaseDate())) {
 				// Compare with year
 				final String movieYear = moviedb.getReleaseDate().substring(0, 4);
 				if(movieYear.equals(year)
-						&& (moviedb.getTitle().equalsIgnoreCase(title) || moviedb.getOriginalName().equalsIgnoreCase(title)
-								|| moviedb.getAlternativeName().equalsIgnoreCase(title) || (moviedb.getTitle().contains("-") && moviedb
-								.getTitle().split("-")[0].trim().equalsIgnoreCase(title)))) {
+						&& (moviedb.getTitle().equalsIgnoreCase(title)
+								|| moviedb.getOriginalName().equalsIgnoreCase(title)
+								|| moviedb.getAlternativeName().equalsIgnoreCase(title)
+								|| (moviedb.getTitle().contains("-") && moviedb.getTitle().split("-")[0].trim().equalsIgnoreCase(
+										title)) || moviedb.getTitle().replaceAll("'", "").equalsIgnoreCase(title)
+								|| moviedb.getOriginalName().replaceAll("'", "").equalsIgnoreCase(title) || moviedb
+								.getAlternativeName().replaceAll("'", "").equalsIgnoreCase(title))) {
 					return true;
 				}
 			}
@@ -180,6 +181,7 @@ public class TMDbScraper implements IApiScraperPlugin {
 			// movie.set(fieldModel.getField().getName(), method.invoke(m));
 			// }
 
+			movie.set("maintitle", m.getTitle());
 			movie.setAlternativeName(m.getAlternativeName());
 			movie.setBudget(((m.getBudget() != null) && !m.getBudget().equals("") ? Integer.parseInt(m.getBudget()) : null));
 			movie.set("originalName", m.getOriginalName());
@@ -191,6 +193,8 @@ public class TMDbScraper implements IApiScraperPlugin {
 			for(final Country c : m.getCountries()) {
 				tempList.add(c.getName());
 			}
+			movie.set("year", Integer.parseInt(m.getReleaseDate().substring(0, 4)));
+
 			movie.setCountries(tempList);
 			tempList.clear();
 			for(final Person p : m.getPeople()) {
@@ -246,5 +250,10 @@ public class TMDbScraper implements IApiScraperPlugin {
 	@Override
 	public Class<? extends TheMovieDBMovieModel> getMovieModelInstance() {
 		return new TheMovieDBMovieModel().getClass();
+	}
+
+	@Override
+	public String getIdFieldName() {
+		return "tmdbId";
 	}
 }

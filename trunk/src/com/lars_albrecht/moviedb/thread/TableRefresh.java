@@ -39,7 +39,6 @@ public class TableRefresh implements Runnable {
 
 	private void refreshTable() {
 		// set new status
-		System.out.println(this.tc.getController());
 		if(this.tableModel.getMovies().size() > 0) {
 			for(final MovieModel movie : this.tableModel.getMovies()) {
 				try {

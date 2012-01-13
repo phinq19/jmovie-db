@@ -4,6 +4,8 @@
 package com.lars_albrecht.general.types;
 
 /**
+ * Key/Value-pair.
+ * 
  * @author lalbrecht
  * 
  */
