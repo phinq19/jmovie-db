@@ -429,7 +429,7 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == this.lv.getMiFind()) {
-			// TODO open window to relocate the movie
+			// TODO try to find automatically
 			final List<MovieModel> selectedMovies = this.lv.getIlv().getlList().getSelectedValuesList();
 			final JFileChooser chooser = new JFileChooser();
 			for (final MovieModel movieModel : selectedMovies) {
@@ -459,7 +459,11 @@ public class Controller implements ActionListener, ListDataListener, ListSelecti
 					e1.printStackTrace();
 				}
 			}
+		} else if (e.getSource() == this.lv.getMiRemoveFromList()) {
+			// do something
+			System.out.println("do something here");
 		} else if (e.getSource() == this.lv.getMiOpenPath()) {
+			// TODO try to find the latest existing path
 			try {
 				final int[] selectedRows = this.lv.getTable().getSelectedRows();
 				MovieModel tempMovie = null;

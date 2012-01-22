@@ -91,12 +91,21 @@ public class Platform extends JFrame {
 		this.mainMenu = this.setMainMenuSettings(this.mainMenu);
 		frame.add(this.mainMenu, BorderLayout.NORTH);
 
+		// init TabViewContainer
+		// TODO Repair
+		// JPanel tabViewContainer = new JPanel(new GridBagLayout());
+		// gbc.fill = GridBagConstraints.BOTH;
+		// gbc.gridx = 0;
+		// gbc.gridy = 0;
+		// gbc.weightx = 1;
+		// gbc.weighty = 1;
+		// tabViewContainer.add(this.controller.getTv(), gbc);
+
 		// init splitPanes
-		this.splitPaneBottom = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.controller.getLv(), this.controller.getTv());
+		this.splitPaneBottom = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.controller.getLv(), this.controller.getTv()); // tabViewContainer
 		this.splitPaneBottom.setOneTouchExpandable(true);
 		this.splitPaneBottom.setDividerSize(7);
-		this.splitPaneBottom.setDividerLocation((Controller.options.getSliderBottomPos() != null ? Controller.options
-				.getSliderBottomPos() : 750));
+		this.splitPaneBottom.setDividerLocation((Controller.options.getSliderBottomPos() != null ? Controller.options.getSliderBottomPos() : 750));
 
 		this.controller.setAf(new AdditionalFilter(this.controller));
 
@@ -112,8 +121,7 @@ public class Platform extends JFrame {
 		this.cbFilter = new JComboBox<ComboBoxFilterModel>(this.mcbmFilter);
 		this.cbFilter.setEditable(true);
 
-		this.bRefreshTable = new JButton(RessourceBundleEx.getInstance().getProperty(
-				"application.frame.platform.button.refresh.title"));
+		this.bRefreshTable = new JButton(RessourceBundleEx.getInstance().getProperty("application.frame.platform.button.refresh.title"));
 		this.bRefreshTable.addActionListener(this.controller);
 
 		this.tbTools = new JToolBar("Main toolbar");
@@ -122,10 +130,8 @@ public class Platform extends JFrame {
 		this.tbTools.add(this.cbFilter);
 
 		final ButtonGroup bgAndOr = new ButtonGroup();
-		this.rbAndSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
-				"application.frame.platform.radio.and.title"), Boolean.TRUE);
-		this.rbOrSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
-				"application.frame.platform.radio.or.title"));
+		this.rbAndSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty("application.frame.platform.radio.and.title"), Boolean.TRUE);
+		this.rbOrSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty("application.frame.platform.radio.or.title"));
 
 		bgAndOr.add(this.rbAndSearch);
 		bgAndOr.add(this.rbOrSearch);
@@ -175,26 +181,22 @@ public class Platform extends JFrame {
 		this.miAdd.addActionListener(this.controller);
 		this.mFile.add(this.miAdd);
 
-		this.miSearch = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
-				"application.frame.platform.menuitem.search.title"));
+		this.miSearch = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.search.title"));
 		this.miSearch.addActionListener(this.controller);
 		this.mFile.add(this.miSearch);
 
-		this.miRemoveAll = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
-				"application.frame.platform.menuitem.removeall.title"));
+		this.miRemoveAll = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.removeall.title"));
 		this.miRemoveAll.addActionListener(this.controller);
 		this.mFile.add(this.miRemoveAll);
 
-		this.miClose = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
-				"application.frame.platform.menuitem.close.title"));
+		this.miClose = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.close.title"));
 		this.miClose.addActionListener(this.controller);
 		this.mFile.add(this.miClose);
 
 		// Help menu
 		this.mhelp = new JMenu(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menu.help.title"));
 
-		this.miAbout = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
-				"application.frame.platform.menuitem.about.title"));
+		this.miAbout = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.about.title"));
 		this.miAbout.addActionListener(this.controller);
 		this.mhelp.add(this.miAbout);
 
