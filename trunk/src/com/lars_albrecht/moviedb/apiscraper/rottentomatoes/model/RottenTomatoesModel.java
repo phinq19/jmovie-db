@@ -13,11 +13,11 @@ import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
  */
 public class RottenTomatoesModel extends MovieModel {
 
-	@ViewInTab(as = "Rotten Tomatoes Id", tabname = "rt", sort = 10, editable = true, type = ViewInTab.TYPE_AUTO)
+	@ViewInTab(as = "Rotten Tomatoes Id", tabname = "rt", sort = 10, editable = true, type = ViewInTab.TYPE_AUTO, format = ViewInTab.FORMAT_AUTO)
 	@DatabaseOptions(as = "rtid", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	private Integer rtId = null;
 
-	@ViewInTab(as = "Certification", tabname = "rt", sort = 20, editable = false, type = ViewInTab.TYPE_AUTO)
+	@ViewInTab(as = "Certification", tabname = "rt", sort = 20, editable = false, type = ViewInTab.TYPE_AUTO, format = ViewInTab.FORMAT_AUTO)
 	@DatabaseOptions(as = "certification", type = DatabaseOptions.TYPE_FIELD, additionalType = "", defaultValues = {}, isUnique = false)
 	private String certification = null;
 

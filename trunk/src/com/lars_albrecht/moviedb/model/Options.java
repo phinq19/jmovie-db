@@ -22,6 +22,8 @@ public class Options {
 
 	private Integer sliderBottomPos = null;
 
+	private Boolean refreshOnStartup = null;
+
 	public Options() {
 	}
 
@@ -119,6 +121,21 @@ public class Options {
 	 */
 	public synchronized final void setSliderBottomPos(final Integer sliderBottomPos) {
 		this.sliderBottomPos = sliderBottomPos;
+	}
+
+	/**
+	 * @return the refreshOnStartup
+	 */
+	public synchronized final Boolean getRefreshOnStartup() {
+		return this.refreshOnStartup;
+	}
+
+	/**
+	 * @param refreshOnStartup
+	 *            the refreshOnStartup to set
+	 */
+	public synchronized final void setRefreshOnStartup(final Boolean refreshOnStartup) {
+		this.refreshOnStartup = refreshOnStartup;
 	}
 
 }

@@ -190,9 +190,8 @@ public class ThreadController {
 				movieId = MovieController.addMovie(movie);
 			} catch(final JdbcSQLException e) {
 				try {
-					System.out.println(e.getErrorCode());
 					notAddedList.add(movie);
-					Debug.log(Debug.LEVEL_INFO, "not added: " + movie.get("maintitle"));
+					Debug.log(Debug.LEVEL_INFO, "not added: " + movie.get("maintitle") + " - ERROR CODE: " + e.getErrorCode());
 				} catch(final SecurityException e1) {
 					e1.printStackTrace();
 				} catch(final IllegalAccessException e1) {

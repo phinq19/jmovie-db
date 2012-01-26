@@ -114,6 +114,11 @@ public class OptionController {
 				tempOptions.setSliderBottomPos(Integer.parseInt(optionListTemp.get(0)));
 			}
 
+			optionListTemp = OptionController.getOption("refreshOnStartup");
+			if((optionListTemp != null) && (optionListTemp.size() > 0)) {
+				tempOptions.setRefreshOnStartup(Boolean.parseBoolean(optionListTemp.get(0)));
+			}
+
 		} catch(final SQLException e) {
 			throw new OptionsNotLoadedException("Options not loaded: " + e.getMessage());
 		}

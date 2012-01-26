@@ -40,6 +40,7 @@ public class Platform extends JFrame {
 	private JMenu mFile = null;
 	private JMenuItem miAdd = null;
 	private JMenuItem miSearch = null;
+	private JMenuItem miFindDuplicates = null;
 	private JMenuItem miRemoveAll = null;
 	private JMenuItem miClose = null;
 	private JMenu mhelp = null;
@@ -105,7 +106,8 @@ public class Platform extends JFrame {
 		this.splitPaneBottom = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, this.controller.getLv(), this.controller.getTv()); // tabViewContainer
 		this.splitPaneBottom.setOneTouchExpandable(true);
 		this.splitPaneBottom.setDividerSize(7);
-		this.splitPaneBottom.setDividerLocation((Controller.options.getSliderBottomPos() != null ? Controller.options.getSliderBottomPos() : 750));
+		this.splitPaneBottom.setDividerLocation((Controller.options.getSliderBottomPos() != null ? Controller.options
+				.getSliderBottomPos() : 750));
 
 		this.controller.setAf(new AdditionalFilter(this.controller));
 
@@ -121,7 +123,8 @@ public class Platform extends JFrame {
 		this.cbFilter = new JComboBox<ComboBoxFilterModel>(this.mcbmFilter);
 		this.cbFilter.setEditable(true);
 
-		this.bRefreshTable = new JButton(RessourceBundleEx.getInstance().getProperty("application.frame.platform.button.refresh.title"));
+		this.bRefreshTable = new JButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.button.refresh.title"));
 		this.bRefreshTable.addActionListener(this.controller);
 
 		this.tbTools = new JToolBar("Main toolbar");
@@ -130,8 +133,10 @@ public class Platform extends JFrame {
 		this.tbTools.add(this.cbFilter);
 
 		final ButtonGroup bgAndOr = new ButtonGroup();
-		this.rbAndSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty("application.frame.platform.radio.and.title"), Boolean.TRUE);
-		this.rbOrSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty("application.frame.platform.radio.or.title"));
+		this.rbAndSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.radio.and.title"), Boolean.TRUE);
+		this.rbOrSearch = new JRadioButton(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.radio.or.title"));
 
 		bgAndOr.add(this.rbAndSearch);
 		bgAndOr.add(this.rbOrSearch);
@@ -181,22 +186,31 @@ public class Platform extends JFrame {
 		this.miAdd.addActionListener(this.controller);
 		this.mFile.add(this.miAdd);
 
-		this.miSearch = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.search.title"));
+		this.miSearch = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.search.title"));
 		this.miSearch.addActionListener(this.controller);
 		this.mFile.add(this.miSearch);
 
-		this.miRemoveAll = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.removeall.title"));
+		this.miFindDuplicates = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.findduplicates.title"));
+		this.miFindDuplicates.addActionListener(this.controller);
+		this.mFile.add(this.miFindDuplicates);
+
+		this.miRemoveAll = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.removeall.title"));
 		this.miRemoveAll.addActionListener(this.controller);
 		this.mFile.add(this.miRemoveAll);
 
-		this.miClose = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.close.title"));
+		this.miClose = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.close.title"));
 		this.miClose.addActionListener(this.controller);
 		this.mFile.add(this.miClose);
 
 		// Help menu
 		this.mhelp = new JMenu(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menu.help.title"));
 
-		this.miAbout = new JMenuItem(RessourceBundleEx.getInstance().getProperty("application.frame.platform.menuitem.about.title"));
+		this.miAbout = new JMenuItem(RessourceBundleEx.getInstance().getProperty(
+				"application.frame.platform.menuitem.about.title"));
 		this.miAbout.addActionListener(this.controller);
 		this.mhelp.add(this.miAbout);
 
@@ -385,6 +399,21 @@ public class Platform extends JFrame {
 	 */
 	public synchronized final void setMiRemoveAll(final JMenuItem miRemoveAll) {
 		this.miRemoveAll = miRemoveAll;
+	}
+
+	/**
+	 * @return the miFindDuplicates
+	 */
+	public synchronized final JMenuItem getMiFindDuplicates() {
+		return this.miFindDuplicates;
+	}
+
+	/**
+	 * @param miFindDuplicates
+	 *            the miFindDuplicates to set
+	 */
+	public synchronized final void setMiFindDuplicates(final JMenuItem miFindDuplicates) {
+		this.miFindDuplicates = miFindDuplicates;
 	}
 
 }

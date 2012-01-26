@@ -43,6 +43,7 @@ public class MovieTableModel implements TableModel {
 			final Object[] value = { field, fieldModel.getAs().equals("") ? field.getName() : fieldModel.getAs() };
 			this.neededFields.put(fieldModel.getSort(), value);
 		}
+
 	}
 
 	/**
@@ -88,7 +89,7 @@ public class MovieTableModel implements TableModel {
 
 	@Override
 	public boolean isCellEditable(final int row, final int column) {
-		return column > 0 ? true : false;
+		return column > 1 ? true : false;
 	}
 
 	@Override

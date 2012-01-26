@@ -13,12 +13,18 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ViewInTab {
+
 	final public static int TYPE_AUTO = 0;
 	final public static int TYPE_INPUT = 1;
 	final public static int TYPE_AREA = 2;
 	final public static int TYPE_SELECT = 3;
 	final public static int TYPE_INT = 4;
 	final public static int TYPE_IMAGE = 5;
+	final public static int TYPE_CHECK = 6;
+	final public static int TYPE_RATER = 7;
+
+	final public static int FORMAT_AUTO = 0;
+	final public static int FORMAT_FILESIZE = 1;
 
 	String as();
 
@@ -29,4 +35,6 @@ public @interface ViewInTab {
 	boolean editable();
 
 	int type();
+
+	int format();
 }

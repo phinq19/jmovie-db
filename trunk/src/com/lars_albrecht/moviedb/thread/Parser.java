@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.moviedb.controller.ThreadController;
 import com.lars_albrecht.moviedb.model.DefaultMovieModel;
@@ -104,7 +103,7 @@ public class Parser implements Runnable {
 						tempMovie.set("year", Integer.parseInt(val));
 					}
 
-					// TODO each fieldmodel where TYPE = TYPE_REGEX
+					// TODO try each fieldmodel where TYPE = TYPE_REGEX
 
 				}
 				i++;
@@ -112,6 +111,7 @@ public class Parser implements Runnable {
 
 			// defaults
 			tempMovie.set("file", file);
+			tempMovie.set("filesize", file.length());
 			tempMovie.set("validPath", Boolean.TRUE);
 		} catch(final SecurityException e) {
 			e.printStackTrace();
@@ -132,14 +132,10 @@ public class Parser implements Runnable {
 	 * @param tempMovie
 	 */
 	private void parse(final File file) {
-		Debug.startTimer("parseMovie2");
 		final MovieModel tempMovie = this.parseMoviename(file);
 		if(tempMovie != null) {
 			this.movies.add(tempMovie);
 		}
-
-		Debug.endTimer("parseMovie2");
-		Debug.log(Debug.LEVEL_DEBUG, "parseMovie2 " + Debug.getFormattedTime("parseMovie2"));
 	}
 
 	/**
@@ -151,6 +147,7 @@ public class Parser implements Runnable {
 			for(final File file : this.files) {
 				this.parse(file);
 			}
+			// TODO refactor
 			this.tc.getParserList().remove(Thread.currentThread());
 			this.tc.addMovies(this.movies);
 		} else {

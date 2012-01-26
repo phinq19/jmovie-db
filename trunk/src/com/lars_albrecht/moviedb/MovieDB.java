@@ -21,7 +21,7 @@ public class MovieDB {
 	 * Constructor.
 	 */
 	public MovieDB() {
-
+		// TODO REMOVE THIS DEBUG / DEMO / TEST CODE
 		// final ConcurrentHashMap<Integer, Object> x = new
 		// ConcurrentHashMap<Integer, Object>();
 		//

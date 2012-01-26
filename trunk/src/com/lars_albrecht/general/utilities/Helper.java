@@ -26,27 +26,23 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-
-import com.lars_albrecht.moviedb.annotation.DatabaseOptions;
-import com.lars_albrecht.moviedb.annotation.FilterOptions;
-import com.lars_albrecht.moviedb.annotation.ParseOptions;
-import com.lars_albrecht.moviedb.annotation.ViewInTab;
-import com.lars_albrecht.moviedb.annotation.ViewInTable;
-import com.lars_albrecht.moviedb.model.FieldList;
-import com.lars_albrecht.moviedb.model.FieldModel;
 
 /**
  * @author lalbrecht
@@ -87,8 +83,24 @@ public class Helper {
 		if(text.length() == 0) {
 			return text;
 		}
-
 		return Character.toUpperCase(text.charAt(0)) + text.substring(1);
+	}
+
+	/**
+	 * Make a string's first character lowercase.
+	 * 
+	 * @param text
+	 *            String
+	 * @return String
+	 */
+	public static String lcfirst(final String text) {
+		if(text == null) {
+			return null;
+		}
+		if(text.length() == 0) {
+			return text;
+		}
+		return Character.toLowerCase(text.charAt(0)) + text.substring(1);
 	}
 
 	/**
@@ -124,112 +136,6 @@ public class Helper {
 		final ArrayList<Field> tempList = new ArrayList<Field>();
 		for(final Field field : fields) {
 			tempList.add(field);
-		}
-		return tempList;
-	}
-
-	/**
-	 * 
-	 * @param cClass
-	 *            Class<?>
-	 * @return FieldList
-	 */
-	public static FieldList getTableFieldModelFromClass(final Class<?> cClass) {
-		final FieldList tempList = new FieldList();
-		if(cClass != null) {
-			final Field[] fields = cClass.getDeclaredFields();
-			for(final Field field : fields) {
-				final ViewInTable vit = field.getAnnotation(ViewInTable.class);
-				if(vit != null) {
-					tempList.add(new FieldModel(field, vit.as(), null, null, vit.sort(), null, null));
-				}
-			}
-		}
-		return tempList;
-	}
-
-	/**
-	 * 
-	 * @param cClass
-	 *            Class<?>
-	 * @return FieldList
-	 */
-	public static FieldList getFilterFieldModelFromClass(final Class<?> cClass) {
-		final FieldList tempList = new FieldList();
-		if(cClass != null) {
-			final Field[] fields = cClass.getDeclaredFields();
-			for(final Field field : fields) {
-				final FilterOptions fo = field.getAnnotation(FilterOptions.class);
-				if(fo != null) {
-					tempList.add(new FieldModel(field, fo.as(), null, null, fo.sort(), null, null));
-				}
-			}
-		}
-		return tempList;
-	}
-
-	/**
-	 * 
-	 * @param cClass
-	 *            Class<?>
-	 * @return FieldList
-	 */
-	public static FieldList getParseFieldModelFromClass(final Class<?> cClass) {
-		final FieldList tempList = new FieldList();
-		if(cClass != null) {
-			final Field[] fields = cClass.getDeclaredFields();
-			for(final Field field : fields) {
-				final ParseOptions po = field.getAnnotation(ParseOptions.class);
-				if(po != null) {
-					tempList.add(new FieldModel(field, po.as(), po.type(), po.typeConf(), null, null, null));
-				}
-			}
-		}
-		return tempList;
-	}
-
-	/**
-	 * 
-	 * @param cClass
-	 *            Class<?>
-	 * @return FieldList
-	 */
-	public static FieldList getDBFieldModelFromClass(final Class<?> cClass) {
-		final FieldList tempList = new FieldList();
-		if(cClass != null) {
-			final Field[] fields = cClass.getDeclaredFields();
-			for(final Field field : fields) {
-				final DatabaseOptions dbo = field.getAnnotation(DatabaseOptions.class);
-				if(dbo != null) {
-					final ConcurrentHashMap<String, Object> additionalList = new ConcurrentHashMap<String, Object>();
-					additionalList.put("additionalType", dbo.additionalType());
-					additionalList.put("defaultValues", dbo.defaultValues());
-					additionalList.put("isUnique", dbo.isUnique());
-					tempList.add(new FieldModel(field, dbo.as(), dbo.type(), null, null, null, additionalList));
-				}
-			}
-		}
-		return tempList;
-	}
-
-	/**
-	 * 
-	 * @param cClass
-	 *            Class<?>
-	 * @return FieldList
-	 */
-	public static FieldList getTabFieldModelFromClass(final Class<?> cClass) {
-		final FieldList tempList = new FieldList();
-		if(cClass != null) {
-			final Field[] fields = cClass.getDeclaredFields();
-			for(final Field field : fields) {
-				final ViewInTab vit = field.getAnnotation(ViewInTab.class);
-				if(vit != null) {
-					final ConcurrentHashMap<String, Object> additionalList = new ConcurrentHashMap<String, Object>();
-					additionalList.put("editable", vit.editable());
-					tempList.add(new FieldModel(field, vit.as(), vit.type(), null, vit.sort(), vit.tabname(), additionalList));
-				}
-			}
 		}
 		return tempList;
 	}
@@ -517,8 +423,31 @@ public class Helper {
 			return "VARCHAR(512)";
 		} else if(type == Image.class) {
 			return "BLOB";
+		} else if(type == Boolean.class) {
+			return "BOOLEAN";
+		} else if(type == Float.class) {
+			return "REAL";
+		} else if(type == Long.class) {
+			return "BIGINT";
+		} else if(type == Byte.class) {
+			return "TINYINT";
+		} else if(type == Short.class) {
+			return "SMALLINT";
+		} else if(type == BigDecimal.class) {
+			return "DECIMAL";
+		} else if(type == Double.class) {
+			return "DOUBLE";
+		} else if((type == Time.class)) {
+			return "TIME";
+		} else if((type == Date.class)) {
+			return "DATE";
+		} else if(type == Timestamp.class) {
+			return "TIMESTAMP";
+		} else if(type == byte[].class) {
+			return "BINARY";
+		} else if(type == Object[].class) {
+			return "ARRAY";
 		}
-
 		return null;
 	}
 
@@ -605,4 +534,23 @@ public class Helper {
 		}
 		return null;
 	}
+
+	/**
+	 * Returns a human readable string with the filesize.
+	 * 
+	 * @see "http://stackoverflow.com/questions/3263892/format-file-size-as-mb-gb-etc"
+	 * 
+	 * @param size
+	 *            long
+	 * @return String
+	 */
+	public static String getHumanreadableFileSize(final long size) {
+		if(size <= 0) {
+			return "0";
+		}
+		final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+		final int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
+	}
+
 }

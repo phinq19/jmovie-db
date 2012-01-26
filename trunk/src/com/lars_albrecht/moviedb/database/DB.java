@@ -4,14 +4,20 @@
 package com.lars_albrecht.moviedb.database;
 
 import java.awt.Image;
+import java.math.BigDecimal;
+import java.sql.Array;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -129,7 +135,11 @@ public class DB {
 		ResultSet rs = null;
 		st = DB.getConnection().prepareStatement(expression);
 		for(final Map.Entry<Integer, Object> entry : values.entrySet()) {
+			// st = DB.addDynamicValue(st, entry.getKey(), entry.getValue()); // TODO check why it will not save lists with this -> see logs with image org.h2.jdbc.JdbcSQLException: Serialisierung
+			// fehlgeschlagen, Grund: "java.io.NotSerializableException: sun.awt.image.ToolkitImage" - Serialization failed, cause: "java.io.NotSerializableException: sun.awt.image.ToolkitImage"
+			// [90026-162]
 			st.setObject(entry.getKey(), entry.getValue());
+			// st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
 		}
 
 		rs = st.executeQuery();
@@ -147,6 +157,7 @@ public class DB {
 		Statement st = null;
 		st = DB.getConnection().createStatement(); // statements
 		final int i = st.executeUpdate(expression); // run the query
+		System.out.println(expression);
 		if(i == -1) {
 			Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
 		}
@@ -166,14 +177,7 @@ public class DB {
 		PreparedStatement st = null;
 		st = DB.getConnection().prepareStatement(expression); // statements
 		for(final Map.Entry<Integer, Object> entry : values.entrySet()) {
-			final Object object = entry.getValue();
-			if(object instanceof Image) {
-				st.setBytes(entry.getKey(), Helper.getBytesFromImage((Image) object));
-			} else if(object.getClass() == Integer.class) {
-				st.setInt(entry.getKey(), ((Integer) object).intValue());
-			} else if(object.getClass() == String.class) {
-				st.setString(entry.getKey(), ((String) entry.getValue()).substring(1, ((String) entry.getValue()).length() - 1));
-			}
+			st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
 		}
 
 		// System.out.println(expression);
@@ -186,6 +190,60 @@ public class DB {
 		st.close();
 	}
 
+	/**
+	 * Sets a dynamic object in a PreparedStatement.
+	 * 
+	 * @param pst
+	 *            PreparedStatement
+	 * @param index
+	 *            int
+	 * @param objectToSet
+	 *            Object
+	 * @return PreparedStatement
+	 * @throws SQLException
+	 */
+	private static PreparedStatement addDynamicValue(final PreparedStatement pst, final int index, final Object objectToSet)
+			throws SQLException {
+		if(objectToSet.getClass() == Integer.class) {
+			pst.setInt(index, ((Integer) objectToSet).intValue());
+		} else if(objectToSet.getClass() == String.class) {
+			pst.setString(index, ((String) objectToSet).substring(1, ((String) objectToSet).length() - 1));
+		} else if(objectToSet instanceof Image) {
+			pst.setBytes(index, Helper.getBytesFromImage((Image) objectToSet));
+		} else if(objectToSet.getClass() == Boolean.class) {
+			pst.setBoolean(index, ((Boolean) objectToSet));
+		} else if(objectToSet.getClass() == Float.class) {
+			pst.setFloat(index, ((Float) objectToSet).floatValue());
+		} else if(objectToSet.getClass() == Long.class) {
+			pst.setLong(index, ((Long) objectToSet).longValue());
+		} else if(objectToSet.getClass() == Byte.class) {
+			pst.setByte(index, ((Byte) objectToSet).byteValue());
+		} else if(objectToSet.getClass() == Short.class) {
+			pst.setShort(index, ((Short) objectToSet).shortValue());
+		} else if(objectToSet.getClass() == BigDecimal.class) {
+			pst.setBigDecimal(index, ((BigDecimal) objectToSet));
+		} else if(objectToSet.getClass() == Double.class) {
+			pst.setDouble(index, ((Double) objectToSet).shortValue());
+		} else if(objectToSet.getClass() == Time.class) {
+			pst.setTime(index, ((Time) objectToSet));
+		} else if(objectToSet.getClass() == Date.class) {
+			pst.setDate(index, ((Date) objectToSet));
+		} else if(objectToSet.getClass() == Timestamp.class) {
+			pst.setTimestamp(index, ((Timestamp) objectToSet));
+		} else if(objectToSet.getClass() == byte[].class) {
+			pst.setBytes(index, ((byte[]) objectToSet));
+		} else if(objectToSet.getClass() == Object[].class) {
+			pst.setArray(index, (Array) Arrays.asList(((Object[]) objectToSet)));
+		}
+		return pst;
+	}
+
+	/**
+	 * 
+	 * @param rs
+	 *            ResultSet
+	 * @throws SQLException
+	 */
 	public static void dump(final ResultSet rs) throws SQLException {
 
 		// the order of the rows in a cursor
