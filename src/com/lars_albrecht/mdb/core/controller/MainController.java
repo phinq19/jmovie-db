@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.FinderListener;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
@@ -29,6 +30,13 @@ public class MainController implements FinderListener {
 	}
 
 	private void init() {
+		RessourceBundleEx.getInstance().setPrefix("mdb");
+		System.out.println(RessourceBundleEx.getInstance().getProperty(
+				"application.name")
+				+ " ("
+				+ RessourceBundleEx.getInstance().getProperty(
+						"application.version") + ")");
+
 		this.fController = new FinderController(this);
 		this.fController.addFinderEventListener(this);
 
@@ -36,8 +44,9 @@ public class MainController implements FinderListener {
 		this.dataHandler = new DataHandler(this);
 		this.globalVars = new ConcurrentHashMap<String, Object>();
 
-		final ArrayList<File> tempList = new ArrayList<File>();
-		tempList.add(new File("D:\\test\\"));
+		final ArrayList<?> tempList = TypeHandler
+				.castStringListToFileList(RessourceBundleEx.getInstance()
+						.getProperties("module.finder.path"));
 		this.globalVars.put("searchPathList", tempList);
 	}
 
@@ -86,44 +95,24 @@ public class MainController implements FinderListener {
 
 	@Override
 	public void finderFoundDir(final FinderEvent e) {
-		System.out.println("Found Dir: " + e.getFiles().toString());
 	}
 
 	@Override
 	public void finderFoundFile(final FinderEvent e) {
-		System.out.println("Found File: " + e.getFiles().toString());
 	}
 
 	@Override
 	public void finderPreAdd(final FinderEvent e) {
-		System.out.println("PreAdd: " + e.getFiles().toString());
 	}
 
 	@Override
 	public void finderAfterAdd(final FinderEvent e) {
-		System.out.println("AfterAdd: " + e.getFiles().toString());
 	}
 
 	@Override
 	public void finderAddFinish(final FinderEvent e) {
 		this.startCollect(e.getFiles());
+		System.out.println("Found " + e.getFiles().size() + " files");
 	}
-
-	// this.persistFoundFiles(e.getFiles());
-	/*
-	 * @Deprecated private void persistFoundFiles(final ArrayList<File>
-	 * foundFilesList) { // persist FileItem tempFileItem = null; // TODO
-	 * uncomment if "dh.persist()" can handle an arraylist of fileitem // final
-	 * ArrayList<FileItem> fileItemList = new ArrayList<FileItem>(); for (final
-	 * File item : foundFilesList) { tempFileItem = new FileItem(item.getName(),
-	 * item.getAbsolutePath(), item.getParent(), item.length(),
-	 * Helper.getFileExtension(item.getPath())); try {
-	 * this.dataHandler.persist(tempFileItem); } catch (final Exception e1) {
-	 * e1.printStackTrace(); } // fileItemList.add(tempFileItem); } //
-	 * dh.persist(fileItemList); /*
-	 * this.finderMulticaster.finderAfterPersist((new FinderEvent(this,
-	 * FinderEvent.FINDER_AFTERPERSIST, foundFilesList)));
-	 */
-	/* } */
 
 }

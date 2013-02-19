@@ -7,7 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.lars_albrecht.general.ChecksumSHA1;
+import com.lars_albrecht.general.utilities.ChecksumSHA1;
 
 /**
  * @author albrela
@@ -79,6 +79,7 @@ public class FileItem implements IPersistable {
 		return this.id;
 	}
 
+	@Override
 	public void setId(final Integer id) {
 		this.id = id;
 	}
@@ -191,7 +192,8 @@ public class FileItem implements IPersistable {
 			result.setExt((String) map.get("ext"));
 		}
 
-		if (map.containsKey("filehash")) {
+		if (map.containsKey("filehash") && map.get("filehash") != ""
+				&& !map.get("filehash").equals("")) {
 			result.setFilehash((String) map.get("filehash"));
 		}
 
@@ -209,4 +211,95 @@ public class FileItem implements IPersistable {
 	public String getDatabaseTable() {
 		return "fileInformation";
 	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((this.dir == null) ? 0 : this.dir.hashCode());
+		result = prime * result
+				+ ((this.ext == null) ? 0 : this.ext.hashCode());
+		result = prime * result
+				+ ((this.filehash == null) ? 0 : this.filehash.hashCode());
+		result = prime * result
+				+ ((this.fullpath == null) ? 0 : this.fullpath.hashCode());
+		result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+		result = prime * result
+				+ ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result
+				+ ((this.size == null) ? 0 : this.size.hashCode());
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof FileItem)) {
+			return false;
+		}
+		final FileItem other = (FileItem) obj;
+		if (this.dir == null) {
+			if (other.dir != null) {
+				return false;
+			}
+		} else if (!this.dir.equals(other.dir)) {
+			return false;
+		}
+		if (this.ext == null) {
+			if (other.ext != null) {
+				return false;
+			}
+		} else if (!this.ext.equals(other.ext)) {
+			return false;
+		}
+		if (this.filehash == null) {
+			if (other.filehash != null) {
+				return false;
+			}
+		} else if (!this.filehash.equals(other.filehash)) {
+			return false;
+		}
+		if (this.fullpath == null) {
+			if (other.fullpath != null) {
+				return false;
+			}
+		} else if (!this.fullpath.equals(other.fullpath)) {
+			return false;
+		}
+		if (this.id != null && other.id != null && !this.id.equals(other.id)) {
+			return false;
+		}
+		if (this.name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		if (this.size == null) {
+			if (other.size != null) {
+				return false;
+			}
+		} else if (!this.size.equals(other.size)) {
+			return false;
+		}
+		return true;
+	}
+
 }

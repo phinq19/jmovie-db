@@ -6,9 +6,10 @@ package com.lars_albrecht.mdb.core.handler;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.lars_albrecht.general.Helper;
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.Key;
+import com.lars_albrecht.mdb.core.models.TypeInformation;
 import com.lars_albrecht.mdb.core.models.Value;
 
 /**
@@ -49,6 +50,30 @@ public class TypeHandler {
 		for (final Object oItem : oList) {
 			if (oItem instanceof Value) {
 				resultList.add((Value<?>) oItem);
+			}
+		}
+
+		return resultList;
+	}
+
+	public static ArrayList<TypeInformation> castObjectListToTypeInformationList(
+			final ArrayList<Object> oList) {
+		final ArrayList<TypeInformation> resultList = new ArrayList<TypeInformation>();
+		for (final Object oItem : oList) {
+			if (oItem instanceof TypeInformation) {
+				resultList.add((TypeInformation) oItem);
+			}
+		}
+
+		return resultList;
+	}
+
+	public static ArrayList<File> castStringListToFileList(
+			final ArrayList<String> oList) {
+		final ArrayList<File> resultList = new ArrayList<File>();
+		for (final String oItem : oList) {
+			if (oItem instanceof String) {
+				resultList.add(new File(oItem));
 			}
 		}
 

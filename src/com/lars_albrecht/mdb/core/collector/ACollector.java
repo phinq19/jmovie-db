@@ -13,8 +13,8 @@ import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.Key;
 import com.lars_albrecht.mdb.core.models.KeyValue;
+import com.lars_albrecht.mdb.core.models.TypeInformation;
 import com.lars_albrecht.mdb.core.models.Value;
-import com.lars_albrecht.mdb.database.DB;
 
 /**
  * @author albrela
@@ -29,6 +29,12 @@ public abstract class ACollector implements Runnable {
 	private ArrayList<Value<?>>											valuesToAdd				= null;
 	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>	fileAttributeListToAdd	= null;
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @param mainController
+	 * @param controller
+	 */
 	public ACollector(final MainController mainController,
 			final CollectorController controller) {
 		this.mainController = mainController;
@@ -37,13 +43,38 @@ public abstract class ACollector implements Runnable {
 		this.valuesToAdd = new ArrayList<Value<?>>();
 	}
 
+	/**
+	 * Start the collect method.
+	 */
 	public abstract void doCollect();
 
+	/**
+	 * Returns the keys to add.
+	 * 
+	 * @return ArrayList<Key<String>>
+	 */
 	public abstract ArrayList<Key<String>> getKeysToAdd();
 
+	/**
+	 * Returns the values to add.
+	 * 
+	 * @return ArrayList<Value<?>>
+	 */
 	public abstract ArrayList<Value<?>> getValuesToAdd();
 
+	/**
+	 * Returns a list of file attributes to add to the database.
+	 * 
+	 * @return ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>
+	 */
 	public abstract ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>> getFileAttributeListToAdd();
+
+	/**
+	 * Returns the name of the collector.
+	 * 
+	 * @return String
+	 */
+	public abstract String getInfoType();
 
 	@Override
 	public final void run() {
@@ -60,103 +91,104 @@ public abstract class ACollector implements Runnable {
 		this.fileItems = fileItems;
 	}
 
+	@SuppressWarnings("unchecked")
 	private void persistKeys() {
-		for (final Key<String> key : this.keysToAdd) {
-			try {
-				this.mainController.getDataHandler().persist(key);
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
+		try {
+			this.mainController
+					.getDataHandler()
+					.getKeys()
+					.addAll((ArrayList<Key<String>>) this.mainController
+							.getDataHandler().persist(this.keysToAdd));
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private void persistValues() {
-		for (final Value<?> value : this.valuesToAdd) {
-			try {
-				this.mainController.getDataHandler().persist(value);
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
+		try {
+			this.mainController
+					.getDataHandler()
+					.getValues()
+					.addAll((ArrayList<Value<Object>>) this.mainController
+							.getDataHandler().persist(this.valuesToAdd));
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 	}
 
-	private void persistAttributes() {
+	private void persistFileItemsAndAttributes() {
+		FileItem tempItem = null;
 		for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd
 				.entrySet()) {
-			// persist fileItem:
-			int itemId = -1;
 			try {
-				System.out.println(entry.getKey());
-				if ((itemId = this.mainController.getDataHandler().persist(
-						entry.getKey())) > -1) {
-					entry.getKey().setId(itemId);
-
-					// persist fileAttributeList
-					for (final FileAttributeList fileAttributes : entry
-							.getValue()) {
-						for (final KeyValue<String, Object> keyValue : fileAttributes
-								.getKeyValues()) {
-							final int keyId = this.mainController
-									.getDataHandler()
-									.getKeys()
-									.get(this.mainController.getDataHandler()
-											.getKeys()
-											.indexOf(keyValue.getKey()))
-									.getId();
-							final int valueId = this.mainController
-									.getDataHandler()
-									.getValues()
-									.get(this.mainController.getDataHandler()
-											.getValues()
-											.indexOf(keyValue.getValue()))
-									.getId();
-
-							System.out.println("itemId: " + itemId);
-							System.out.println("keyId: " + keyId);
-							System.out.println("valueId: " + valueId);
-							String sql = "";
-							sql += "INSERT INTO 'typeInformation' (file_id, key_id, value_id) VALUES(?, ?, ?);";
-							final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
-							values.put(1, itemId);
-							values.put(2, keyId);
-							values.put(3, valueId);
-							DB.updatePS(sql, values);
-
-						}
-					}
-
+				if ((tempItem = this.persistFileItem(entry.getKey())) != null
+						&& tempItem.getId() > -1) {
+					this.persistAttributes(tempItem.getId(), entry.getValue());
 					this.mainController.getDataHandler().getFileItems()
-							.add(entry.getKey());
+							.add(tempItem);
 				}
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
 
+	private FileItem persistFileItem(final FileItem fileItem) throws Exception {
+		final ArrayList<FileItem> fileItems = this.mainController
+				.getDataHandler().getFileItems();
+		int pos = -1;
+		if ((pos = fileItems.indexOf(fileItem)) > -1) {
+			return fileItems.get(pos);
+		} else {
+			return (FileItem) this.mainController.getDataHandler().persist(
+					fileItem);
+		}
+
+	}
+
+	/**
+	 * 
+	 * @param fileItemId
+	 * @param fileAttributeListList
+	 * @throws Exception
+	 */
+	private void persistAttributes(final int fileItemId,
+			final ArrayList<FileAttributeList> fileAttributeListList)
+			throws Exception {
+		if (fileAttributeListList.size() > 0) {
+			TypeInformation tempTypeInfo = null;
+			final ArrayList<Key<?>> keys = this.mainController.getDataHandler()
+					.getKeys();
+			final ArrayList<Value<?>> values = this.mainController
+					.getDataHandler().getValues();
+			final ArrayList<TypeInformation> typeInfo = this.mainController
+					.getDataHandler().getTypeInformation();
+			for (final FileAttributeList fileAttributes : fileAttributeListList) {
+				for (final KeyValue<String, Object> keyValue : fileAttributes
+						.getKeyValues()) {
+					final int keyId = keys.get(keys.indexOf(keyValue.getKey()))
+							.getId();
+					final int valueId = values.get(
+							values.indexOf(keyValue.getValue())).getId();
+					if (fileItemId > -1 && keyId > -1 && valueId > -1) {
+						tempTypeInfo = new TypeInformation(fileItemId, keyId,
+								valueId);
+
+						if (typeInfo.indexOf(tempTypeInfo) <= -1) {
+							this.mainController.getDataHandler().persist(
+									tempTypeInfo);
+						}
+					}
+				}
+			}
 		}
 	}
 
 	private void persist() {
 		this.persistKeys();
 		this.persistValues();
-		this.persistAttributes();
+		this.persistFileItemsAndAttributes();
 	}
 
-	public abstract String getInfoType();
-
-	/*
-	 * protected final void persistKeyValues(final Integer itemId, final
-	 * ArrayList<KeyValue> keyValues) { if (itemId > 0 && keyValues != null) {
-	 * System.out.println("Persist for fileItem: " + itemId); for (final
-	 * KeyValue keyValue : keyValues) { } }
-	 * 
-	 * if (this.fileArguments != null && this.fileArguments.size() > 0) {
-	 * System.out.println("Persist for fileItem: " + itemId); for (final
-	 * Map.Entry<String, ArrayList<KeyValue<String, Object>>> item :
-	 * this.fileArguments .entrySet()) { final ArrayList<KeyValue<String,
-	 * Object>> tempList = item .getValue(); for (final KeyValue<String, Object>
-	 * keyValue : tempList) { final DataHandler dh = new DataHandler();
-	 * dh.persistKeyValue(itemId, keyValue, item.getKey()); } } }
-	 * 
-	 * }
-	 */
 }

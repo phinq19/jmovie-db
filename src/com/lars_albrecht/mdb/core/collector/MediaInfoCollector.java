@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.lars_albrecht.general.Helper;
+import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.controller.CollectorController;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
@@ -90,7 +91,7 @@ public class MediaInfoCollector extends ACollector {
 		for (final Map.Entry<String, ArrayList<KeyValue<String, Object>>> section : sectionsWithKeyValue
 				.entrySet()) {
 			resultList.add(new FileAttributeList(section.getValue(), section
-					.getKey()));
+					.getKey(), item.getId()));
 		}
 
 		return resultList;
@@ -157,10 +158,13 @@ public class MediaInfoCollector extends ACollector {
 
 	private String getDataStrForFile(final String filepath) {
 		final ProcExec pe = new ProcExec();
-		final String command = "D:\\lalbrecht\\Programme\\MediaInfo-CLI\\MediaInfo.exe";
-		final String templatePath = "mediainfotemplate.tmpl";
+
+		final String command = RessourceBundleEx.getInstance().getProperty(
+				"module.collector.mediainfo.path.cliexe");
+		final String templatePath = RessourceBundleEx.getInstance()
+				.getProperty("module.collector.mediainfo.path.template");
 		final String[] parameters = {
-				"--Inform=file://" + templatePath, "D:\\test\\default.avi"
+				"--Inform=file://" + templatePath, filepath
 		};
 		String line = null;
 

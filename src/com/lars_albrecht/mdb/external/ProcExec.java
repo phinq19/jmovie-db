@@ -7,7 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import com.lars_albrecht.general.Helper;
+import com.lars_albrecht.general.utilities.Helper;
 
 /**
  * @author albrela
