@@ -1,9 +1,0 @@
-#summary One-sentence summary of this page.
-
-= Details =
-
-Actually it is not possible to define own pattern to match with "your" files.
-
-Two types of adding to database:
-  # Define own pattern(s) before search starts
-  # Find moviename automatically and add movie throug imdb (possible)
