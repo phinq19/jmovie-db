@@ -499,7 +499,10 @@ public class Helper {
 	 * @throws IllegalArgumentException
 	 * @throws InvocationTargetException
 	 */
-	public static Object call(final String methodName, final Object obj, final Object... params) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
+	public static Object call(final String methodName, final Object obj, final Object... params) throws NoSuchMethodException,
+			SecurityException,
+			IllegalAccessException,
+			IllegalArgumentException,
 			InvocationTargetException {
 		final ArrayList<Class<?>> types = new ArrayList<Class<?>>();
 		final ArrayList<Object> values = new ArrayList<Object>();
@@ -534,9 +537,9 @@ public class Helper {
 		return true;
 	}
 
-	final static String WRITEIMAGE_JPEG = "jpeg";
-	final static String WRITEIMAGE_PNG = "jpeg";
-	final static String WRITEIMAGE_GIF = "jpeg";
+	final static String	WRITEIMAGE_JPEG	= "jpeg";
+	final static String	WRITEIMAGE_PNG	= "jpeg";
+	final static String	WRITEIMAGE_GIF	= "jpeg";
 
 	/**
 	 * Writes a given image to filesystem.
@@ -580,7 +583,9 @@ public class Helper {
 		if (size <= 0) {
 			return "0";
 		}
-		final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+		final String[] units = new String[] {
+				"B", "KB", "MB", "GB", "TB"
+		};
 		final int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
 		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}

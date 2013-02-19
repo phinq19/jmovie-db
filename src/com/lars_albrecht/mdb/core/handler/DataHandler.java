@@ -38,7 +38,6 @@ public class DataHandler {
 	}
 
 	public void reloadData() {
-		System.out.println("RELOAD");
 		this.loadKeys();
 		this.loadValues();
 		this.loadTypeInformation();
@@ -130,7 +129,7 @@ public class DataHandler {
 			if (object.getId() != null) {
 				where = " WHERE id=" + object.getId();
 			}
-			if (limit != null) {
+			if (limit != null && limit > 0) {
 				limitStr = " LIMIT " + limit;
 			}
 			final String sql = "SELECT * FROM " + object.getDatabaseTable() + where + limitStr;
@@ -363,6 +362,31 @@ public class DataHandler {
 
 		} catch (final SQLException e) {
 			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	/**
+	 * currently UNUSED
+	 * 
+	 * @param fullpath
+	 * @return
+	 */
+	public boolean fileItemFullpathPersisted(final String fullpath) {
+		boolean result = false;
+		ResultSet rs = null;
+		if (!this.fileItems.contains(new FileItem(fullpath))) {
+			final String sql = "SELECT fi.id FROM fileInformation AS fi WHERE fi.fullpath = " + fullpath + " LIMIT 1";
+
+			try {
+				rs = DB.query(sql);
+				if (rs.next()) {
+					result = true;
+				}
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return result;

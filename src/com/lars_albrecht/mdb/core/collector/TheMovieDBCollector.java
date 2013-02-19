@@ -21,6 +21,7 @@ import com.lars_albrecht.mdb.core.models.Value;
 import com.moviejukebox.themoviedb.MovieDbException;
 import com.moviejukebox.themoviedb.TheMovieDb;
 import com.moviejukebox.themoviedb.model.Genre;
+import com.moviejukebox.themoviedb.model.Language;
 import com.moviejukebox.themoviedb.model.MovieDb;
 
 /**
@@ -143,6 +144,11 @@ public class TheMovieDBCollector extends ACollector {
 						.getOverview())));
 			}
 
+			if (movie.getTagline() != null) {
+				keyValueList.add(new KeyValue<String, Object>(new Key<String>("tagline", infoType, "general"), new Value<Object>(movie
+						.getTagline())));
+			}
+
 			// add movie facts
 			if (new Long(movie.getBudget()) != null) {
 				keyValueList.add(new KeyValue<String, Object>(new Key<String>("budget", infoType, "facts"), new Value<Object>(movie
@@ -166,11 +172,11 @@ public class TheMovieDBCollector extends ACollector {
 				keyValueList.add(new KeyValue<String, Object>(new Key<String>("revenue", infoType, "facts"), new Value<Object>(movie
 						.getRevenue())));
 			}
-			// TODO try to get the right language or fill with all
 			if (movie.getSpokenLanguages() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("language", infoType, "facts"), new Value<Object>(movie
-						.getSpokenLanguages().toString())));
-
+				for (final Language language : movie.getSpokenLanguages()) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("language", infoType, "facts"), new Value<Object>(
+							language.getName())));
+				}
 			}
 			if (movie.getHomepage() != null) {
 				keyValueList.add(new KeyValue<String, Object>(new Key<String>("homepage", infoType, "facts"), new Value<Object>(movie
@@ -179,7 +185,6 @@ public class TheMovieDBCollector extends ACollector {
 
 			if (movie.getGenres() != null) {
 				for (final Genre genre : movie.getGenres()) {
-					genre.getName();
 					keyValueList.add(new KeyValue<String, Object>(new Key<String>("genre", infoType, "genre"), new Value<Object>(genre
 							.getName())));
 				}
@@ -190,8 +195,8 @@ public class TheMovieDBCollector extends ACollector {
 					this.keysToAdd.add(keyValue.getKey());
 				}
 
-				if (keyValue != null && keyValue.getValue() != null) {
-					this.getValuesToAdd().add(keyValue.getValue());
+				if (keyValue != null && keyValue.getValue() != null && !this.valuesToAdd.contains(keyValue.getValue())) {
+					this.valuesToAdd.add(keyValue.getValue());
 				}
 			}
 
@@ -205,11 +210,11 @@ public class TheMovieDBCollector extends ACollector {
 
 	private MovieDb findMovie(final String[] titles, final Integer year) {
 		ArrayList<MovieDb> tempList = null;
+		TheMovieDb tmdb = null;
 		try {
-			final TheMovieDb tmdb = new TheMovieDb(this.apiKey);
+			tmdb = new TheMovieDb(this.apiKey);
+			// tmdb.getConfiguration().setBaseUrl("http://api.themoviedb.org/3/");
 			// search with different combinations to find the movie.
-			System.out.println("BASE URL: " + tmdb.getConfiguration().getBaseUrl());
-			tmdb.getConfiguration().setBaseUrl("http://api.themoviedb.org/3/");
 			// implode titles to one title
 			String searchTitle = Helper.implode(titles, " - ", null, null);
 			if (searchTitle != null) {
@@ -254,14 +259,24 @@ public class TheMovieDBCollector extends ACollector {
 		} catch (final MovieDbException e) {
 			e.printStackTrace();
 		}
-
 		// TODO if more than one result in list, than try to find the right
+		int id = -1;
 		if (tempList != null && tempList.size() > 0) {
 			if (tempList.size() > 1) {
-				return tempList.get(0);
+				id = tempList.get(0).getId();
 			} else {
-				return tempList.get(0);
+				id = tempList.get(0).getId();
 			}
+			tempList = null;
+
+			MovieDb loadedMovie = null;
+			try {
+				loadedMovie = tmdb.getMovieInfo(id, this.langKey);
+			} catch (final MovieDbException e) {
+				e.printStackTrace();
+			}
+			return loadedMovie;
+
 		} else {
 			return null;
 		}
