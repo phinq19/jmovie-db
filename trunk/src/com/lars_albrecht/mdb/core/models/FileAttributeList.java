@@ -15,11 +15,7 @@ public class FileAttributeList {
 	private ArrayList<KeyValue<String, Object>>	keyValues	= new ArrayList<KeyValue<String, Object>>();
 	private String								sectionName	= null;
 	private int									hash		= -1;
-
-	public FileAttributeList generateHash() {
-		this.hash = this.keyValues.hashCode();
-		return this;
-	}
+	private Integer								fileId		= null;
 
 	/**
 	 * @param id
@@ -28,12 +24,13 @@ public class FileAttributeList {
 	 */
 	public FileAttributeList(final Integer id,
 			final ArrayList<KeyValue<String, Object>> keyValues,
-			final String sectionName, final int hash) {
+			final String sectionName, final int hash, final Integer fileId) {
 		super();
 		this.id = id;
 		this.keyValues = keyValues;
 		this.sectionName = sectionName;
 		this.hash = hash;
+		this.fileId = fileId;
 	}
 
 	/**
@@ -42,11 +39,12 @@ public class FileAttributeList {
 	 */
 	public FileAttributeList(
 			final ArrayList<KeyValue<String, Object>> keyValues,
-			final String sectionName, final int hash) {
+			final String sectionName, final int hash, final Integer fileId) {
 		super();
 		this.keyValues = keyValues;
 		this.sectionName = sectionName;
 		this.hash = hash;
+		this.fileId = fileId;
 	}
 
 	/**
@@ -54,10 +52,16 @@ public class FileAttributeList {
 	 */
 	public FileAttributeList(
 			final ArrayList<KeyValue<String, Object>> keyValues,
-			final String sectionName) {
+			final String sectionName, final Integer fileId) {
 		super();
 		this.keyValues = keyValues;
 		this.sectionName = sectionName;
+		this.fileId = fileId;
+	}
+
+	public FileAttributeList generateHash() {
+		this.hash = this.keyValues.hashCode();
+		return this;
 	}
 
 	/**
@@ -73,6 +77,21 @@ public class FileAttributeList {
 	 */
 	public void setId(final Integer id) {
 		this.id = id;
+	}
+
+	/**
+	 * @return the fileId
+	 */
+	public Integer getFileId() {
+		return this.fileId;
+	}
+
+	/**
+	 * @param fileId
+	 *            the fileId to set
+	 */
+	public void setFileId(final Integer fileId) {
+		this.fileId = fileId;
 	}
 
 	/**
@@ -119,44 +138,6 @@ public class FileAttributeList {
 	public void setSectionName(final String sectionName) {
 		this.sectionName = sectionName;
 	}
-
-	// @Override
-	// public HashMap<String, Object> toHashMap() {
-	// final HashMap<String, Object> tempHashMap = new HashMap<String,
-	// Object>();
-	// tempHashMap.put("id", this.getId());
-	// tempHashMap.put("keyValue", this.getKeyValues());
-	// tempHashMap.put("hash", this.getHash());
-	// tempHashMap.put("sectionName", this.getSectionName());
-	//
-	// return tempHashMap;
-	// }
-	//
-	// @SuppressWarnings("unchecked")
-	// @Override
-	// public Object fromHashMap(final HashMap<String, Object> map) {
-	// if (map.containsKey("id")) {
-	// this.setId((Integer) map.get("id"));
-	// }
-	// if (map.containsKey("keyValue")
-	// && (map.get("keyValue") instanceof ArrayList)) {
-	// this.keyValues = new ArrayList<KeyValue<String, Object>>(
-	// (ArrayList<KeyValue<String, Object>>) map.get("keyValue"));
-	// }
-	// if (map.containsKey("hash")) {
-	// this.setHash((Integer) (map.get("hash")));
-	// }
-	// if (map.containsKey("sectionName")) {
-	// this.setSectionName((String) (map.get("sectionName")));
-	// }
-	//
-	// return this;
-	// }
-	//
-	// @Override
-	// public String getDatabaseTable() {
-	// return "typeInformation";
-	// }
 
 	@Override
 	public String toString() {

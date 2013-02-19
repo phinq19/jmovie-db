@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.lars_albrecht.general.Helper;
+import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.IPersistable;
 import com.lars_albrecht.mdb.core.models.Key;
-import com.lars_albrecht.mdb.core.models.KeyValue;
+import com.lars_albrecht.mdb.core.models.TypeInformation;
 import com.lars_albrecht.mdb.core.models.Value;
 import com.lars_albrecht.mdb.database.DB;
 
@@ -26,9 +26,10 @@ import com.lars_albrecht.mdb.database.DB;
  */
 public class DataHandler {
 
-	private ArrayList<Key<?>>	keys		= null;
-	private ArrayList<Value<?>>	values		= null;
-	private ArrayList<FileItem>	fileItems	= null;
+	private ArrayList<Key<?>>			keys			= null;
+	private ArrayList<Value<?>>			values			= null;
+	private ArrayList<FileItem>			fileItems		= null;
+	private ArrayList<TypeInformation>	typeInformation	= null;
 
 	public DataHandler(final MainController mainController) {
 		this.reloadData();
@@ -38,67 +39,7 @@ public class DataHandler {
 		this.loadKeys();
 		this.loadValues();
 		this.loadFileItems(false);
-	}
-
-	public int persist(final IPersistable object) throws Exception {
-		final HashMap<String, Object> tempObject = object.toHashMap();
-		final String databaseTable = object.getDatabaseTable();
-		int result = -1;
-		if (tempObject != null && tempObject.size() > 0) {
-			String sql = "";
-
-			int i = 1;
-			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
-			String valueStr = "";
-			for (final Map.Entry<String, Object> entry : tempObject.entrySet()) {
-				Object x = null;
-				if (entry.getValue() == null) {
-					x = "";
-				} else {
-					x = entry.getValue();
-				}
-				values.put(i, x);
-				if (i != 1) {
-					valueStr += ",";
-				}
-				valueStr += "?";
-
-				i++;
-			}
-			sql = "INSERT OR IGNORE INTO '" + databaseTable + "' ("
-					+ Helper.implode(tempObject.keySet(), ",", "'", "'")
-					+ ") VALUES (" + valueStr + ");";
-
-			result = DB.updatePS(sql, values);
-		}
-		return result;
-	}
-
-	/**
-	 * @return the keys
-	 */
-	public ArrayList<Key<?>> getKeys() {
-		if (this.keys == null) {
-			this.loadKeys();
-		}
-		return this.keys;
-	}
-
-	/**
-	 * @return the values
-	 */
-	public ArrayList<Value<?>> getValues() {
-		return this.values;
-	}
-
-	/**
-	 * @return the fileItems
-	 */
-	public ArrayList<FileItem> getFileItems() {
-		if (this.fileItems == null) {
-			this.loadFileItems(false);
-		}
-		return this.fileItems;
+		this.loadTypeInformation();
 	}
 
 	private DataHandler loadKeys() {
@@ -122,6 +63,14 @@ public class DataHandler {
 		return this;
 	}
 
+	private DataHandler loadTypeInformation() {
+		this.typeInformation = TypeHandler
+				.castObjectListToTypeInformationList(this.findAll(
+						new TypeInformation(), false));
+
+		return this;
+	}
+
 	public Integer keyPos(final Key<?> searchKey) {
 		for (final Key<?> key : this.getKeys()) {
 			if (key.getKey() == searchKey.getKey()
@@ -134,10 +83,48 @@ public class DataHandler {
 		return null;
 	}
 
-	public void persist(final ArrayList<IPersistable> objects) throws Exception {
-		for (final IPersistable object : objects) {
-			this.persist(object);
+	public ArrayList<?> persist(final ArrayList<?> objects) throws Exception {
+		final ArrayList<IPersistable> tempArrayList = new ArrayList<IPersistable>();
+		for (final Object object : objects) {
+			tempArrayList.add(this.persist((IPersistable) object));
 		}
+
+		return tempArrayList;
+	}
+
+	public IPersistable persist(final IPersistable object) throws Exception {
+		final HashMap<String, Object> tempObject = object.toHashMap();
+		final String databaseTable = object.getDatabaseTable();
+		int result = -1;
+		if (tempObject != null && tempObject.size() > 0) {
+			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
+			String sql = "";
+			String valueStr = "";
+			int i = 1;
+
+			for (final Map.Entry<String, Object> entry : tempObject.entrySet()) {
+				Object x = null;
+				if (entry.getValue() == null) {
+					x = "";
+				} else {
+					x = entry.getValue();
+				}
+				values.put(i, x);
+				if (i != 1) {
+					valueStr += ",";
+				}
+				valueStr += "?";
+
+				i++;
+			}
+			sql = "INSERT OR IGNORE INTO '" + databaseTable + "' ("
+					+ Helper.implode(tempObject.keySet(), ",", "'", "'")
+					+ ") VALUES (" + valueStr + ");";
+
+			result = DB.updatePS(sql, values);
+			object.setId(result);
+		}
+		return object;
 	}
 
 	public ArrayList<Object> findAll(final IPersistable object,
@@ -169,19 +156,38 @@ public class DataHandler {
 		return resultList;
 	}
 
-	public void persistKeyValue(final Integer fileId,
-			final KeyValue<String, Object> keyValue, final String prefix) {
-		String sql = null;
-		if (keyValue != null && fileId > 0) {
-			sql = "INSERT OR IGNORE INTO typeInformation_key (key) VALUES (?);";
-			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
-			values.put(1, prefix + "_" + keyValue.getKey());
-			try {
-				DB.updatePS(sql, values);
-			} catch (final Exception e) {
-				e.printStackTrace();
-			}
-
+	/**
+	 * @return the keys
+	 */
+	public ArrayList<Key<?>> getKeys() {
+		if (this.keys == null) {
+			this.loadKeys();
 		}
+		return this.keys;
 	}
+
+	/**
+	 * @return the values
+	 */
+	public ArrayList<Value<?>> getValues() {
+		return this.values;
+	}
+
+	/**
+	 * @return the fileItems
+	 */
+	public ArrayList<FileItem> getFileItems() {
+		if (this.fileItems == null) {
+			this.loadFileItems(false);
+		}
+		return this.fileItems;
+	}
+
+	/**
+	 * @return the typeInformation
+	 */
+	public ArrayList<TypeInformation> getTypeInformation() {
+		return this.typeInformation;
+	}
+
 }

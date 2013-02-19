@@ -19,4 +19,6 @@ public interface IPersistable {
 
 	public Integer getId();
 
+	public void setId(final Integer id);
+
 }
