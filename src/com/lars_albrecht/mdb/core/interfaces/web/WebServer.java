@@ -29,12 +29,8 @@ package com.lars_albrecht.mdb.core.interfaces.web;
 
 ///A Simple Web Server (WebServer.java)
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.mdb.core.controller.MainController;
 
@@ -152,21 +148,22 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 public class WebServer {
 
 	private MainController	mainController	= null;
+	private ServerSocket	serverSocket	= null;
 
 	/**
 	 * WebServer constructor.
 	 */
 	protected void start(final MainController mainController) {
 		this.mainController = mainController;
+		final int socketPort = 8080;
 
 		System.out.println("WebServerConstructor start() at line ~160");
-		ServerSocket s;
 
-		System.out.println("Webserver starting up on port 80");
+		System.out.println("Webserver starting up on port " + socketPort);
 		System.out.println("(press ctrl-c to exit)");
 		try {
 			// create the main server socket
-			s = new ServerSocket(8080);
+			this.serverSocket = new ServerSocket(socketPort);
 		} catch (final Exception e) {
 			System.out.println("Error: " + e);
 			return;
@@ -176,103 +173,20 @@ public class WebServer {
 		for (;;) {
 			try {
 				// wait for a connection
-				final Socket remote = s.accept();
-				// remote is now the connected socket
-				// System.out.println("Connection, sending data.");
-				final BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
-				final PrintWriter out = new PrintWriter(remote.getOutputStream());
-
-				// read the data sent. We basically ignore it,
-				// stop reading once a blank line is hit. This
-				// blank line signals the end of the client HTTP
-				// headers.
-
-				String requestLine = "";
-				final ConcurrentHashMap<String, String> headerKeyValue = new ConcurrentHashMap<String, String>();
-				final ConcurrentHashMap<String, String> getKeyValue = new ConcurrentHashMap<String, String>();
-
-				// GET /asdasdasdasd?asdasd HTTP/1.1
-				String urlStr = "";
-
-				requestLine = in.readLine();
-				boolean notNull = false;
-				if (requestLine != null && !requestLine.equals("")) {
-					notNull = true;
-					// System.out.println("notNull = true");
-				} else {
-					// System.out.println("notNull = false");
-				}
-
-				while ((notNull || ((requestLine = in.readLine()) != null) && (!requestLine.equals("")))) {
-					notNull = false;
-					final String[] keyValue = requestLine.split(":");
-					if (keyValue.length > 1) {
-						headerKeyValue.put(keyValue[0].trim(), keyValue[1].trim());
-					}
-					if (requestLine.startsWith("GET ")) {
-						final int urlStart = 4;
-						final int urlEnd = requestLine.indexOf(" HTTP/1.1");
-						urlStr = requestLine.substring(urlStart, urlEnd);
-						final int paramPos = requestLine.indexOf("?");
-						String paramString = "";
-						if (paramPos > -1) {
-							urlStr = urlStr.substring(0, urlStr.indexOf("?"));
-							paramString = requestLine.substring(paramPos, urlEnd);
-							paramString = paramString.replaceFirst("\\?", "");
-							final String[] paramsArr = paramString.split("&");
-							for (final String string : paramsArr) {
-								final String[] paramArr = string.split("=");
-								if (paramArr.length > 0 && paramArr.length > 1) {
-									getKeyValue.put(paramArr[0], paramArr[1]);
-								} else {
-									getKeyValue.put(paramArr[0], "");
-								}
-							}
-
-							requestLine = requestLine.substring(4, paramPos);
-						}
-
-						// System.out.println(urlStr);
-						// System.out.println("PARAMS: " + paramString);
-						// System.out.println(uri.getURI().getPath());
-					}
-				}
-
-				// Send the HTML page
-				final String content = new WebServerHelper(this.mainController).getContent(urlStr, getKeyValue, headerKeyValue);
-
-				// Send the response
-				// Send the headers
-				if (content == null) {
-					out.println("HTTP/1.0 404 Not Found");
-				} else {
-					out.println("HTTP/1.0 200 OK");
-				}
-
-				if (urlStr != null) {
-					if (urlStr.endsWith(".js")) {
-						out.println("Content-Type: text/javascript; charset=utf-8");
-					} else if (urlStr.endsWith(".css")) {
-						out.println("Content-Type: text/css; charset=utf-8");
-					} else if (urlStr.endsWith(".ico")) {
-						out.println("image/x-icon; charset=utf-8");
-					} else {
-						out.println("Content-Type: text/html; charset=utf-8");
-					}
-				}
-
-				// out.println("Content-Type: text/html");
-				out.println("Server: MDB");
-				// this blank line signals the end of the headers
-				out.println("");
-
-				out.println(content != null ? content : "");
-				out.flush();
-				remote.close();
+				new Thread(new WebServerRunner(this.mainController, this.serverSocket.accept())).start();
 			} catch (final Exception e) {
-				System.out.println("Error: " + e);
+				System.out.println("Error: " + e.getMessage());
 				e.printStackTrace();
 			}
+		}
+	}
+
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			this.serverSocket.close();
+		} catch (final IOException e) {
+			System.out.println("Could not close socket");
 		}
 	}
 

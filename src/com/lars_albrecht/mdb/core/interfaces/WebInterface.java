@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
-import com.lars_albrecht.mdb.core.interfaces.web.WebServerRunner;
+import com.lars_albrecht.mdb.core.interfaces.web.WebServerInterface;
 
 /**
  * @author ibsisini
@@ -24,7 +24,7 @@ public class WebInterface extends AInterface {
 
 	@Override
 	public void startWebServer() {
-		this.threadList.add(new Thread(new WebServerRunner(this.mainController)));
+		this.threadList.add(new Thread(new WebServerInterface(this.mainController)));
 		this.threadList.get(this.threadList.size() - 1).start();
 	}
 }

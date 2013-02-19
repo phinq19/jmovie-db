@@ -64,10 +64,8 @@ public final class RessourceBundleEx {
 	 */
 	public String getProperty(final String key) {
 		try {
-			final ResourceBundle bundle = ResourceBundle.getBundle(this.prefix,
-					this.locale);
-			return new String(bundle.getString(key).getBytes("ISO-8859-1"),
-					"UTF-8");
+			final ResourceBundle bundle = ResourceBundle.getBundle(this.prefix, this.locale);
+			return new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
 		} catch (final MissingResourceException e) {
 			e.printStackTrace();
 		} catch (final UnsupportedEncodingException e) {
@@ -87,8 +85,7 @@ public final class RessourceBundleEx {
 	}
 
 	public Boolean contains(final String key) {
-		return ResourceBundle.getBundle(this.prefix, this.locale).containsKey(
-				key);
+		return ResourceBundle.getBundle(this.prefix, this.locale).containsKey(key);
 	}
 
 	/**

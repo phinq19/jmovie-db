@@ -27,20 +27,24 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DB implements IDatabase {
 
-	private static Connection		connection		= null;
+	private static Connection	connection			= null;
 
-	private final static String		dbUsername		= "moviedb";
-	private final static String		dbPassword		= "mypw";
-	private final static String		dbName			= "moviedb";
-	private final static String		dbUrl			= "jdbc:sqlite:";		// "jdbc:h2:";
-	private final static String		Strdb			= "org.sqlite.JDBC";	// "org.h2.Driver";
-	private final static String		dboptions		= "";
-	private final static String		dbFile			= "mdb.sqlite";
+	private final static String	dbUsername			= "moviedb";
+	private final static String	dbPassword			= "mypw";
+	private final static String	dbName				= "moviedb";
+	private final static String	dbUrlH2				= "jdbc:h2:";
+	private final static String	StrdbH2				= "org.h2.Driver";
+	private final static String	dbUrlSQLite			= "jdbc:sqlite:";
+	private final static String	StrdbSQLite			= "org.sqlite.JDBC";
+	private final static String	dboptions			= "";
+	private final static String	dbFile				= "mdb.sqlite";
 
-	public static final Integer		DBTYPE_SQLITE	= 0;
-	public static final Integer		DBTYPE_H2		= 1;
+	public static final Integer	DBTYPE_SQLITE		= 0;
+	public static final Integer	DBTYPE_H2			= 1;
 
-	private static final Integer	DBTYPE			= DB.DBTYPE_SQLITE;
+	private static Integer		DBTYPE				= DB.DBTYPE_SQLITE;
+
+	public static boolean		useQuotesForFields	= false;
 
 	/**
 	 * Returns the DB connection.
@@ -63,14 +67,17 @@ public class DB implements IDatabase {
 	private static Connection createConnection(final Integer dbType) {
 		Connection con = null;
 		try {
-			Class.forName(DB.Strdb);
 			switch (dbType) {
 				default:
 				case 0: // sqlite
-					con = DriverManager.getConnection("jdbc:sqlite:" + DB.dbFile);
+					Class.forName(DB.StrdbSQLite);
+					con = DriverManager.getConnection(DB.dbUrlSQLite + DB.dbFile);
+					DB.useQuotesForFields = true;
 					break;
 				case 1: // h2
-					con = DriverManager.getConnection(DB.dbUrl + DB.dbName + DB.dboptions, DB.dbUsername, DB.dbPassword);
+					Class.forName(DB.StrdbH2);
+					con = DriverManager.getConnection(DB.dbUrlH2 + DB.dbName + DB.dboptions, DB.dbUsername, DB.dbPassword);
+					DB.useQuotesForFields = false;
 			}
 
 		} catch (final ClassNotFoundException e) {
@@ -187,6 +194,7 @@ public class DB implements IDatabase {
 	 */
 	public static synchronized int updatePS(final String expression, final ConcurrentHashMap<Integer, Object> values) throws Exception {
 		PreparedStatement st = null;
+		System.out.println("SQL: " + expression);
 		st = DB.getConnection().prepareStatement(expression); // statements
 		for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
 			st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
@@ -213,7 +221,20 @@ public class DB implements IDatabase {
 	 * @throws SQLException
 	 */
 	private static synchronized int getLastInsertedRowId(final Statement st) throws SQLException {
-		return st.getGeneratedKeys().getInt("last_insert_rowid()");
+		int result = -1;
+		switch (DB.DBTYPE) {
+			default:
+			case 0: // sqlite
+				result = st.getGeneratedKeys().getInt("last_insert_rowid()");
+				break;
+			case 1: // h2
+				final ResultSet rs = DB.query("CALL IDENTITY()");
+				if (rs.first()) {
+					result = ((Long) rs.getObject(1)).intValue();
+				}
+		}
+
+		return result;
 	}
 
 	/**
@@ -388,55 +409,129 @@ public class DB implements IDatabase {
 	public void init() {
 		String sql = null;
 		try {
-			// fileInformation
-			sql = "CREATE TABLE IF NOT EXISTS 'fileInformation' ( ";
-			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-			sql += "'name' VARCHAR(255), ";
-			sql += "'dir' VARCHAR(255), ";
-			sql += "'ext' VARCHAR(255), ";
-			sql += "'size' LONG, ";
-			sql += "'fullpath' VARCHAR(255), ";
-			sql += "'filehash' VARCHAR(255) ";
-			sql += ");";
-			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
-			DB.update(sql);
+			switch (DB.DBTYPE) {
+				default:
+				case 0: // sqlite
+					// fileInformation
+					sql = "CREATE TABLE IF NOT EXISTS 'fileInformation' ( ";
+					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+					sql += "'name' VARCHAR(255), ";
+					sql += "'dir' VARCHAR(255), ";
+					sql += "'ext' VARCHAR(255), ";
+					sql += "'size' LONG, ";
+					sql += "'fullpath' VARCHAR(255), ";
+					sql += "'filehash' VARCHAR(255) ";
+					sql += ");";
+					DB.update(sql);
+					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
+					DB.update(sql);
 
-			// typeInformation_key
-			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_key' ( ";
-			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-			sql += "'key' VARCHAR(255), ";
-			sql += "'infoType' VARCHAR(255), ";
-			sql += "'section' VARCHAR(255) ";
-			sql += "); ";
-			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
-			DB.update(sql);
+					// typeInformation_key
+					sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_key' ( ";
+					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+					sql += "'key' VARCHAR(255), ";
+					sql += "'infoType' VARCHAR(255), ";
+					sql += "'section' VARCHAR(255) ";
+					sql += "); ";
+					DB.update(sql);
+					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
+					DB.update(sql);
 
-			// typeInformation_value
-			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_value' ( ";
-			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-			sql += "'value' VARCHAR(255) ";
-			sql += "); ";
-			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
-			DB.update(sql);
+					// typeInformation_value
+					sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_value' ( ";
+					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+					sql += "'value' TEXT ";
+					sql += "); ";
+					DB.update(sql);
+					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
+					DB.update(sql);
 
-			// typeInformation
-			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation' ( ";
-			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-			sql += "'file_id' INTEGER, ";
-			sql += "'key_id' INTEGER, ";
-			sql += "'value_id' INTEGER ";
-			// sql += "'value' INTEGER ";
-			sql += "); ";
-			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
-			DB.update(sql);
+					// typeInformation
+					sql = "CREATE TABLE IF NOT EXISTS 'typeInformation' ( ";
+					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+					sql += "'file_id' INTEGER, ";
+					sql += "'key_id' INTEGER, ";
+					sql += "'value_id' INTEGER ";
+					// sql += "'value' INTEGER ";
+					sql += "); ";
+					DB.update(sql);
+					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
+					DB.update(sql);
+					break;
+				case 1: // h2
+					final ArrayList<String> tables = DB.getTables();
+
+					if (!tables.contains("FILEINFORMATION")) {
+						// fileInformation
+						sql = "CREATE TABLE fileInformation ( ";
+						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
+						sql += "name VARCHAR(255), ";
+						sql += "dir VARCHAR(255), ";
+						sql += "ext VARCHAR(255), ";
+						sql += "size LONG, ";
+						sql += "fullpath VARCHAR(255), ";
+						sql += "filehash VARCHAR(255) ";
+						sql += ");";
+						DB.update(sql);
+						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
+						DB.update(sql);
+					}
+
+					if (!tables.contains("TYPEINFORMATION_KEY")) {
+						// typeInformation_key
+						sql = "CREATE TABLE IF NOT EXISTS typeInformation_key ( ";
+						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
+						sql += "key VARCHAR(255), ";
+						sql += "infoType VARCHAR(255), ";
+						sql += "section VARCHAR(255) ";
+						sql += "); ";
+						DB.update(sql);
+						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
+						DB.update(sql);
+					}
+
+					if (!tables.contains("TYPEINFORMATION_VALUE")) {
+						// typeInformation_value
+						sql = "CREATE TABLE IF NOT EXISTS typeInformation_value ( ";
+						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
+						sql += "value VARCHAR ";
+						sql += "); ";
+						DB.update(sql);
+						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
+						DB.update(sql);
+					}
+
+					if (!tables.contains("TYPEINFORMATION")) {
+						// typeInformation
+						sql = "CREATE TABLE IF NOT EXISTS typeInformation ( ";
+						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
+						sql += "file_id INTEGER, ";
+						sql += "key_id INTEGER, ";
+						sql += "value_id INTEGER ";
+						// sql += "value INTEGER ";
+						sql += "); ";
+						DB.update(sql);
+						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
+						DB.update(sql);
+					}
+
+					break;
+			}
 
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	public static int getDBType() {
+		return DB.DBTYPE;
+	}
+
+	public static void setDBType(final Integer dbType) {
+		if (dbType >= 0 && dbType <= 1) {
+			DB.DBTYPE = dbType;
+		} else {
+			DB.DBTYPE = DB.DBTYPE_SQLITE;
+		}
 	}
 }
