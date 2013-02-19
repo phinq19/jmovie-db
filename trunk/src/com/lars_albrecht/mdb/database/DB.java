@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.mdb.database.interfaces.IDatabase;
+
 /**
  * 
  * sqlite: https://bitbucket.org/xerial/sqlite-jdbc/overview
