@@ -19,8 +19,10 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
 import java.awt.image.ReplicateScaleFilter;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -64,11 +66,9 @@ public class Helper {
 	 *            Integer
 	 * @return Point center-point for given width / height
 	 */
-	public static Point getScreenCenterPoint(final Integer width,
-			final Integer height) {
+	public static Point getScreenCenterPoint(final Integer width, final Integer height) {
 		final Point resultPoint = new Point();
-		final Dimension screenSize = Toolkit.getDefaultToolkit()
-				.getScreenSize();
+		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
 		resultPoint.x = (screenSize.width - width) / 2;
 		resultPoint.y = (screenSize.height - height) / 2;
@@ -118,8 +118,7 @@ public class Helper {
 	 * @return String
 	 */
 	public static String getFileNameWithoutExtension(final String filename) {
-		return filename.substring(0, filename.length()
-				- (filename.length() - filename.lastIndexOf(".")));
+		return filename.substring(0, filename.length() - (filename.length() - filename.lastIndexOf(".")));
 	}
 
 	/**
@@ -160,15 +159,13 @@ public class Helper {
 	 * @param suffix
 	 * @return String
 	 */
-	public static String implode(final ArrayList<?> arrayList,
-			final String delim, final String prefix, final String suffix) {
+	public static String implode(final ArrayList<?> arrayList, final String delim, final String prefix, final String suffix) {
 		String temp = "";
 		for (int i = 0; i < arrayList.size(); i++) {
 			if (i != 0) {
 				temp += delim;
 			}
-			temp += (prefix != null ? prefix : "") + arrayList.get(i)
-					+ (suffix != null ? suffix : "");
+			temp += (prefix != null ? prefix : "") + arrayList.get(i) + (suffix != null ? suffix : "");
 		}
 		return temp;
 	}
@@ -181,16 +178,14 @@ public class Helper {
 	 * @param suffix
 	 * @return String
 	 */
-	public static String implode(final Collection<?> collection,
-			final String delim, final String prefix, final String suffix) {
+	public static String implode(final Collection<?> collection, final String delim, final String prefix, final String suffix) {
 		String temp = "";
 		int i = 0;
 		for (final Object object : collection) {
 			if (i != 0) {
 				temp += delim;
 			}
-			temp += (prefix != null ? prefix : "") + object
-					+ (suffix != null ? suffix : "");
+			temp += (prefix != null ? prefix : "") + object + (suffix != null ? suffix : "");
 
 			i++;
 		}
@@ -205,15 +200,13 @@ public class Helper {
 	 * @param suffix
 	 * @return String
 	 */
-	public static String implode(final String[] list, final String delim,
-			final String prefix, final String suffix) {
+	public static String implode(final String[] list, final String delim, final String prefix, final String suffix) {
 		String temp = "";
 		for (int i = 0; i < list.length; i++) {
 			if (i != 0) {
 				temp += delim;
 			}
-			temp += (prefix != null ? prefix : "") + list[i]
-					+ (suffix != null ? suffix : "");
+			temp += (prefix != null ? prefix : "") + list[i] + (suffix != null ? suffix : "");
 		}
 		return temp;
 	}
@@ -273,8 +266,7 @@ public class Helper {
 	 * @return Boolean
 	 * @throws SQLException
 	 */
-	public static Boolean isFieldInResult(final ResultSet rs, final String name)
-			throws SQLException {
+	public static Boolean isFieldInResult(final ResultSet rs, final String name) throws SQLException {
 		final ResultSetMetaData meta = rs.getMetaData();
 		final int numCol = meta.getColumnCount();
 
@@ -292,8 +284,7 @@ public class Helper {
 	 * @param s
 	 * @return inList
 	 */
-	public static Boolean containsIgnoreCase(final List<String> list,
-			final String s) {
+	public static Boolean containsIgnoreCase(final List<String> list, final String s) {
 		final Iterator<String> it = list.iterator();
 		while (it.hasNext()) {
 			if (it.next().equalsIgnoreCase(s)) {
@@ -324,8 +315,7 @@ public class Helper {
 		// Create a buffered image with a format that's compatible with the
 		// screen
 		BufferedImage bimage = null;
-		final GraphicsEnvironment ge = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+		final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		try {
 			// Determine the type of transparency of the new buffered image
 			int transparency = Transparency.OPAQUE;
@@ -336,8 +326,7 @@ public class Helper {
 			// Create the buffered image
 			final GraphicsDevice gs = ge.getDefaultScreenDevice();
 			final GraphicsConfiguration gc = gs.getDefaultConfiguration();
-			bimage = gc.createCompatibleImage(image.getWidth(null),
-					image.getHeight(null), transparency);
+			bimage = gc.createCompatibleImage(image.getWidth(null), image.getHeight(null), transparency);
 		} catch (final HeadlessException e) {
 			// The system does not have a screen
 		}
@@ -348,8 +337,7 @@ public class Helper {
 			if (hasAlpha) {
 				type = BufferedImage.TYPE_INT_ARGB;
 			}
-			bimage = new BufferedImage(image.getWidth(null),
-					image.getHeight(null), type);
+			bimage = new BufferedImage(image.getWidth(null), image.getHeight(null), type);
 		}
 
 		// Copy image to buffered image
@@ -372,9 +360,7 @@ public class Helper {
 	 */
 	public static BufferedImage toBufferedImage2(Image image) {
 		image = new ImageIcon(image).getImage();
-		final BufferedImage bufferedImage = new BufferedImage(
-				image.getWidth(null), image.getHeight(null),
-				BufferedImage.TYPE_INT_RGB);
+		final BufferedImage bufferedImage = new BufferedImage(image.getWidth(null), image.getHeight(null), BufferedImage.TYPE_INT_RGB);
 		final Graphics g = bufferedImage.createGraphics();
 		g.setColor(Color.white);
 		g.fillRect(0, 0, image.getWidth(null), image.getHeight(null));
@@ -392,8 +378,7 @@ public class Helper {
 	public static byte[] getBytesFromImage(final Image image) throws Exception {
 		final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		try {
-			if (!ImageIO.write(Helper.toBufferedImage(image), "jpeg",
-					byteArrayOutputStream)) {
+			if (!ImageIO.write(Helper.toBufferedImage(image), "jpeg", byteArrayOutputStream)) {
 				throw new Exception("cant write jpeg");
 			}
 		} catch (final IOException e) {
@@ -412,8 +397,7 @@ public class Helper {
 		return Toolkit.getDefaultToolkit().createImage(bi.getSource());
 	}
 
-	public static String repeatString(final String s, final String delim,
-			final Integer count) {
+	public static String repeatString(final String s, final String delim, final Integer count) {
 		String tempStr = "";
 		for (int i = 0; i < count; i++) {
 			if (i != 0) {
@@ -431,9 +415,7 @@ public class Helper {
 	 * @param maxHeight
 	 * @return Point (x=width/y=height)
 	 */
-	public static Point getProportionalWidthHeightImage(
-			final BufferedImage img, final Double maxWidth,
-			final Double maxHeight) {
+	public static Point getProportionalWidthHeightImage(final BufferedImage img, final Double maxWidth, final Double maxHeight) {
 
 		Double w = img.getWidth() / maxWidth;
 		Double h = img.getHeight() / maxHeight;
@@ -454,13 +436,10 @@ public class Helper {
 	 * @param height
 	 * @return BufferedImage
 	 */
-	public static BufferedImage scaleImage(final Image sourceImage,
-			final int width, final int height) {
+	public static BufferedImage scaleImage(final Image sourceImage, final int width, final int height) {
 		final ImageFilter filter = new ReplicateScaleFilter(width, height);
-		final ImageProducer producer = new FilteredImageSource(
-				sourceImage.getSource(), filter);
-		final Image resizedImage = Toolkit.getDefaultToolkit().createImage(
-				producer);
+		final ImageProducer producer = new FilteredImageSource(sourceImage.getSource(), filter);
+		final Image resizedImage = Toolkit.getDefaultToolkit().createImage(producer);
 
 		return Helper.toBufferedImage(resizedImage);
 	}
@@ -520,18 +499,14 @@ public class Helper {
 	 * @throws IllegalArgumentException
 	 * @throws InvocationTargetException
 	 */
-	public static Object call(final String methodName, final Object obj,
-			final Object... params) throws NoSuchMethodException,
-			SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
+	public static Object call(final String methodName, final Object obj, final Object... params) throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException,
+			InvocationTargetException {
 		final ArrayList<Class<?>> types = new ArrayList<Class<?>>();
 		final ArrayList<Object> values = new ArrayList<Object>();
 		if ((params != null) && (params.length > 0)) {
 			for (final Object object : params) {
 				values.add(object);
-				types.add((object != null ? ((object instanceof Class<?>) ? (Class<?>) object
-						: object.getClass())
-						: null));
+				types.add((object != null ? ((object instanceof Class<?>) ? (Class<?>) object : object.getClass()) : null));
 			}
 		}
 		Method m = null;
@@ -559,9 +534,9 @@ public class Helper {
 		return true;
 	}
 
-	final static String	WRITEIMAGE_JPEG	= "jpeg";
-	final static String	WRITEIMAGE_PNG	= "jpeg";
-	final static String	WRITEIMAGE_GIF	= "jpeg";
+	final static String WRITEIMAGE_JPEG = "jpeg";
+	final static String WRITEIMAGE_PNG = "jpeg";
+	final static String WRITEIMAGE_GIF = "jpeg";
 
 	/**
 	 * Writes a given image to filesystem.
@@ -572,10 +547,8 @@ public class Helper {
 	 *            String
 	 * @throws IOException
 	 */
-	public static void writeImage(final Image image, final String type,
-			final File newFile, final Boolean overWrite) throws IOException {
-		if ((overWrite == Boolean.TRUE)
-				|| ((overWrite == Boolean.FALSE) && (newFile.exists() == Boolean.FALSE))) {
+	public static void writeImage(final Image image, final String type, final File newFile, final Boolean overWrite) throws IOException {
+		if ((overWrite == Boolean.TRUE) || ((overWrite == Boolean.FALSE) && (newFile.exists() == Boolean.FALSE))) {
 			ImageIO.write(Helper.toBufferedImage(image), type, newFile);
 		}
 	}
@@ -607,13 +580,9 @@ public class Helper {
 		if (size <= 0) {
 			return "0";
 		}
-		final String[] units = new String[] {
-				"B", "KB", "MB", "GB", "TB"
-		};
+		final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
 		final int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
-		return new DecimalFormat("#,##0.#").format(size
-				/ Math.pow(1024, digitGroups))
-				+ " " + units[digitGroups];
+		return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
 	}
 
 	/**
@@ -623,9 +592,38 @@ public class Helper {
 	 * 
 	 * @param arrayList
 	 */
-	public static final <T> ArrayList<T> removeDuplicatedEntries(
-			final ArrayList<T> arrayList) {
+	public static final <T> ArrayList<T> removeDuplicatedEntries(final ArrayList<T> arrayList) {
 		return new ArrayList<T>(new HashSet<T>(arrayList));
+	}
+
+	public static String getFileContents(final File file) throws IOException {
+		String content = "";
+		if (file.exists() && file.isFile() && file.canRead()) {
+			String line = "";
+			final BufferedReader buReader = new BufferedReader(new FileReader(file));
+			line = buReader.readLine();
+
+			while (line != null) {
+				content += line;
+				line = buReader.readLine();
+			}
+			buReader.close();
+		}
+		return content;
+	}
+
+	public static <C> ArrayList<C> unique(final ArrayList<C> list) {
+		final ArrayList<C> resultList = new ArrayList<C>();
+		final Iterator<C> iterator = list.iterator();
+
+		while (iterator.hasNext()) {
+			final C o = iterator.next();
+			if (!resultList.contains(o)) {
+				resultList.add(o);
+			}
+		}
+
+		return resultList;
 	}
 
 }

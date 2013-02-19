@@ -6,6 +6,7 @@ package com.lars_albrecht.mdb.core.controller;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.finder.Finder;
 import com.lars_albrecht.mdb.core.finder.event.FinderEventMulticaster;
 import com.lars_albrecht.mdb.core.finder.event.FinderListener;
@@ -14,11 +15,10 @@ import com.lars_albrecht.mdb.core.finder.event.FinderListener;
  * @author albrela
  * 
  */
-public class FinderController {
-
-	private final ArrayList<Thread>	threadList			= new ArrayList<Thread>();
-	private final ArrayList<File>	foundFiles			= new ArrayList<File>();
-	private FinderEventMulticaster	finderMulticaster	= null;
+public class FinderController implements IController {
+	private final ArrayList<Thread> threadList = new ArrayList<Thread>();
+	private final ArrayList<File> foundFiles = new ArrayList<File>();
+	private FinderEventMulticaster finderMulticaster = null;
 
 	public FinderController(final MainController mainController) {
 		this.finderMulticaster = new FinderEventMulticaster();
@@ -40,10 +40,6 @@ public class FinderController {
 		return this.finderMulticaster;
 	}
 
-	/**
-	 * 
-	 * @return
-	 */
 	public ArrayList<Thread> getThreadList() {
 		return this.threadList;
 	}
@@ -58,6 +54,14 @@ public class FinderController {
 
 	public void removeFinderEventListener(final FinderListener listener) {
 		this.finderMulticaster.remove(listener);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void run(final Object... params) {
+		if ((params.length == 1) && (params[0] instanceof ArrayList<?>)) {
+			this.findFiles((ArrayList<File>) params[0]);
+		}
 	}
 
 }
