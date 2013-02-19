@@ -49,20 +49,6 @@ public abstract class ACollector implements Runnable {
 	public abstract void doCollect();
 
 	/**
-	 * Returns the keys to add.
-	 * 
-	 * @return ArrayList<Key<String>>
-	 */
-	public abstract ArrayList<Key<String>> getKeysToAdd();
-
-	/**
-	 * Returns the values to add.
-	 * 
-	 * @return ArrayList<Value<?>>
-	 */
-	public abstract ArrayList<Value<?>> getValuesToAdd();
-
-	/**
 	 * Returns a list of file attributes to add to the database.
 	 * 
 	 * @return ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>
@@ -76,84 +62,26 @@ public abstract class ACollector implements Runnable {
 	 */
 	public abstract String getInfoType();
 
-	@Override
-	public final void run() {
-		this.doCollect();
-		this.keysToAdd = this.getKeysToAdd();
-		this.valuesToAdd = this.getValuesToAdd();
-		this.fileAttributeListToAdd = this.getFileAttributeListToAdd();
-		this.preparePersist();
-		this.persist();
-		this.mainController.getDataHandler().reloadData();
-		this.controller.getThreadList().remove(Thread.currentThread());
-	}
+	/**
+	 * Returns the keys to add.
+	 * 
+	 * @return ArrayList<Key<String>>
+	 */
+	public abstract ArrayList<Key<String>> getKeysToAdd();
 
-	public final void setFileItems(final ArrayList<FileItem> fileItems) {
-		this.fileItems = fileItems;
-	}
+	/**
+	 * Returns the values to add.
+	 * 
+	 * @return ArrayList<Value<?>>
+	 */
+	public abstract ArrayList<Value<?>> getValuesToAdd();
 
-	@SuppressWarnings("unchecked")
-	private void persistKeys() {
-		try {
-			// this.mainController.getDataHandler().getKeys().addAll((Collection<?
-			// extends Key<?>>)
-			// this.mainController.getDataHandler().persist(this.keysToAdd));
-			final ArrayList<Key<?>> currentKeys = this.mainController.getDataHandler().getKeys();
-			final ArrayList<Key<String>> persistedKeys = (ArrayList<Key<String>>) this.mainController.getDataHandler().persist(
-					this.keysToAdd);
-			if (persistedKeys != null && persistedKeys.size() > 0) {
-				currentKeys.addAll(persistedKeys);
-			}
-
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void persistValues() {
-		try {
-			// this.mainController.getDataHandler().getValues().addAll((ArrayList<Value<Object>>)
-			// this.mainController.getDataHandler().persist(this.valuesToAdd));
-
-			final ArrayList<Value<?>> currentValues = this.mainController.getDataHandler().getValues();
-			final ArrayList<Value<Object>> persistedValues = (ArrayList<Value<Object>>) this.mainController.getDataHandler().persist(
-					this.valuesToAdd);
-			if (persistedValues != null && persistedValues.size() > 0) {
-				currentValues.addAll(persistedValues);
-			}
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void persistFileItemsAndAttributes() {
-		FileItem tempItem = null;
-		if (this.fileAttributeListToAdd != null && this.fileAttributeListToAdd.size() > 0) {
-			for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
-				try {
-					if ((tempItem = this.persistFileItem(entry.getKey())) != null && tempItem.getId() > -1) {
-						this.persistAttributes(tempItem.getId(), entry.getValue());
-						this.mainController.getDataHandler().getFileItems().add(tempItem);
-					}
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	}
-
-	private FileItem persistFileItem(final FileItem fileItem) throws Exception {
-		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItems();
-		int pos = -1;
-		if ((pos = fileItems.indexOf(fileItem)) > -1) {
-			return fileItems.get(pos);
-		} else {
-			final FileItem tempFileItem = (FileItem) this.mainController.getDataHandler().persist(fileItem);
-			fileItems.add(tempFileItem);
-			return tempFileItem;
-		}
-
+	private void persist() {
+		System.out.println("persist now (" + this.getInfoType() + ")");
+		this.persistKeys();
+		this.persistValues();
+		this.persistFileItemsAndAttributes();
+		System.out.println("end persist (" + this.getInfoType() + ")");
 	}
 
 	/**
@@ -187,11 +115,75 @@ public abstract class ACollector implements Runnable {
 					}
 
 					tempTypeInfo = new TypeInformation(fileItemId, keyId, valueId);
-					if (fileItemId > -1 && keyId > -1 && valueId > -1 && tempTypeInfo != null && !typeInfo.contains(tempTypeInfo)) {
+					if ((fileItemId > -1) && (keyId > -1) && (valueId > -1) && (tempTypeInfo != null) && !typeInfo.contains(tempTypeInfo)) {
 						this.mainController.getDataHandler().persist(tempTypeInfo);
 					}
 				}
 			}
+		}
+	}
+
+	private FileItem persistFileItem(final FileItem fileItem) throws Exception {
+		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItems();
+		int pos = -1;
+		if ((pos = fileItems.indexOf(fileItem)) > -1) {
+			return fileItems.get(pos);
+		} else {
+			final FileItem tempFileItem = (FileItem) this.mainController.getDataHandler().persist(fileItem);
+			fileItems.add(tempFileItem);
+			return tempFileItem;
+		}
+
+	}
+
+	private void persistFileItemsAndAttributes() {
+		FileItem tempItem = null;
+		if ((this.fileAttributeListToAdd != null) && (this.fileAttributeListToAdd.size() > 0)) {
+			for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
+				try {
+					if (((tempItem = this.persistFileItem(entry.getKey())) != null) && (tempItem.getId() > -1)) {
+						this.persistAttributes(tempItem.getId(), entry.getValue());
+						this.mainController.getDataHandler().getFileItems().add(tempItem);
+					}
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void persistKeys() {
+		try {
+			// this.mainController.getDataHandler().getKeys().addAll((Collection<?
+			// extends Key<?>>)
+			// this.mainController.getDataHandler().persist(this.keysToAdd));
+			final ArrayList<Key<?>> currentKeys = this.mainController.getDataHandler().getKeys();
+			final ArrayList<Key<String>> persistedKeys = (ArrayList<Key<String>>) this.mainController.getDataHandler().persist(
+					this.keysToAdd);
+			if ((persistedKeys != null) && (persistedKeys.size() > 0)) {
+				currentKeys.addAll(persistedKeys);
+			}
+
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void persistValues() {
+		try {
+			// this.mainController.getDataHandler().getValues().addAll((ArrayList<Value<Object>>)
+			// this.mainController.getDataHandler().persist(this.valuesToAdd));
+
+			final ArrayList<Value<?>> currentValues = this.mainController.getDataHandler().getValues();
+			final ArrayList<Value<Object>> persistedValues = (ArrayList<Value<Object>>) this.mainController.getDataHandler().persist(
+					this.valuesToAdd);
+			if ((persistedValues != null) && (persistedValues.size() > 0)) {
+				currentValues.addAll(persistedValues);
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -200,12 +192,20 @@ public abstract class ACollector implements Runnable {
 		this.valuesToAdd = Helper.unique(this.valuesToAdd);
 	}
 
-	private void persist() {
-		System.out.println("persist now (" + this.getInfoType() + ")");
-		this.persistKeys();
-		this.persistValues();
-		this.persistFileItemsAndAttributes();
-		System.out.println("end persist (" + this.getInfoType() + ")");
+	@Override
+	public final void run() {
+		this.doCollect();
+		this.keysToAdd = this.getKeysToAdd();
+		this.valuesToAdd = this.getValuesToAdd();
+		this.fileAttributeListToAdd = this.getFileAttributeListToAdd();
+		this.preparePersist();
+		this.persist();
+		this.mainController.getDataHandler().reloadData();
+		this.controller.getThreadList().remove(Thread.currentThread());
+	}
+
+	public final void setFileItems(final ArrayList<FileItem> fileItems) {
+		this.fileItems = fileItems;
 	}
 
 }

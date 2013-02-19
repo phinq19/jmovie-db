@@ -16,12 +16,16 @@ import com.lars_albrecht.mdb.core.finder.event.FinderListener;
  * 
  */
 public class FinderController implements IController {
-	private final ArrayList<Thread> threadList = new ArrayList<Thread>();
-	private final ArrayList<File> foundFiles = new ArrayList<File>();
-	private FinderEventMulticaster finderMulticaster = null;
+	private final ArrayList<Thread>	threadList			= new ArrayList<Thread>();
+	private final ArrayList<File>	foundFiles			= new ArrayList<File>();
+	private FinderEventMulticaster	finderMulticaster	= null;
 
 	public FinderController(final MainController mainController) {
 		this.finderMulticaster = new FinderEventMulticaster();
+	}
+
+	public void addFinderEventListener(final FinderListener listener) {
+		this.finderMulticaster.add(listener);
 	}
 
 	/**
@@ -40,16 +44,13 @@ public class FinderController implements IController {
 		return this.finderMulticaster;
 	}
 
-	public ArrayList<Thread> getThreadList() {
-		return this.threadList;
-	}
-
 	public ArrayList<File> getFoundFiles() {
 		return this.foundFiles;
 	}
 
-	public void addFinderEventListener(final FinderListener listener) {
-		this.finderMulticaster.add(listener);
+	@Override
+	public ArrayList<Thread> getThreadList() {
+		return this.threadList;
 	}
 
 	public void removeFinderEventListener(final FinderListener listener) {

@@ -50,7 +50,7 @@ public class Finder implements Runnable {
 				// list files
 				final File[] files = dir.listFiles(new VideoFileFilter());
 				// if files were found
-				if (files != null && files.length > 0) {
+				if ((files != null) && (files.length > 0)) {
 					// for each file in files
 					for (final File file : files) {
 						// is file is directory ...
@@ -58,10 +58,7 @@ public class Finder implements Runnable {
 							if (file.isDirectory()) {
 								final ArrayList<File> tempDirList = new ArrayList<File>();
 								tempDirList.add(file);
-								this.multicaster
-										.finderFoundDir((new FinderEvent(this,
-												FinderEvent.FINDER_FOUNDDIR,
-												tempDirList)));
+								this.multicaster.finderFoundDir((new FinderEvent(this, FinderEvent.FINDER_FOUNDDIR, tempDirList)));
 
 								// start new thread to find new files in
 								// subfolder
@@ -69,10 +66,7 @@ public class Finder implements Runnable {
 							} else if (file.isFile()) {
 								final ArrayList<File> tempFileList = new ArrayList<File>();
 								tempFileList.add(file);
-								this.multicaster
-										.finderFoundFile((new FinderEvent(this,
-												FinderEvent.FINDER_FOUNDFILE,
-												tempFileList)));
+								this.multicaster.finderFoundFile((new FinderEvent(this, FinderEvent.FINDER_FOUNDFILE, tempFileList)));
 								tempList.add(file);
 							}
 						}
@@ -91,18 +85,13 @@ public class Finder implements Runnable {
 			this.dirs.add(this.dir);
 			final ArrayList<File> foundFiles = this.find(this.dirs);
 
-			this.multicaster.finderPreAdd((new FinderEvent(this,
-					FinderEvent.FINDER_PREADD, foundFiles)));
+			this.multicaster.finderPreAdd((new FinderEvent(this, FinderEvent.FINDER_PREADD, foundFiles)));
 			this.controller.getFoundFiles().addAll(foundFiles);
-			this.multicaster.finderAfterAdd((new FinderEvent(this,
-					FinderEvent.FINDER_AFTERADD, this.controller
-							.getFoundFiles())));
+			this.multicaster.finderAfterAdd((new FinderEvent(this, FinderEvent.FINDER_AFTERADD, this.controller.getFoundFiles())));
 		}
 		this.controller.getThreadList().remove(Thread.currentThread());
 		if (this.controller.getThreadList().size() == 0) {
-			this.multicaster.finderAddFinish((new FinderEvent(this,
-					FinderEvent.FINDER_ADDFINISH, this.controller
-							.getFoundFiles())));
+			this.multicaster.finderAddFinish((new FinderEvent(this, FinderEvent.FINDER_ADDFINISH, this.controller.getFoundFiles())));
 		}
 	}
 }

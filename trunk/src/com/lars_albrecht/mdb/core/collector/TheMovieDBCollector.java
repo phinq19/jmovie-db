@@ -47,9 +47,6 @@ public class TheMovieDBCollector extends ACollector {
 		this.init();
 	}
 
-	private void init() {
-	}
-
 	@Override
 	public void doCollect() {
 		this.fileAttributeListToAdd.clear();
@@ -60,25 +57,78 @@ public class TheMovieDBCollector extends ACollector {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem item) {
-		ArrayList<FileAttributeList> resultList = null;
-		if (item != null) {
-			String[] titles = null;
-			Integer year = null;
+	private MovieDb findMovie(final String[] titles, final Integer year) {
+		ArrayList<MovieDb> tempList = null;
+		TheMovieDb tmdb = null;
+		try {
+			tmdb = new TheMovieDb(this.apiKey);
+			// tmdb.getConfiguration().setBaseUrl("http://api.themoviedb.org/3/");
+			// search with different combinations to find the movie.
+			// implode titles to one title
+			String searchTitle = Helper.implode(titles, " - ", null, null);
+			if (searchTitle != null) {
+				// for each title, get imploded title and cut one part out of
+				// it, if no movie is found.
+				for (@SuppressWarnings("unused")
+				final String title : titles) {
+					// search for title
+					tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, (year != null ? year : 0), this.langKey, true, 0);
 
-			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(item.getName());
-			if (data != null && data.containsKey("titles") && data.containsKey("year")) {
-				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[data.size()]);
-				year = (Integer) data.get("year");
+					if ((tempList != null) && (tempList.size() > 0)) {
+						// if found, break loop
+						break;
+					}
 
-				if (titles != null && titles.length > 0) {
-					resultList = this.getMovieInfo(titles, year);
+					if (year != null) {
+						tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0);
+
+						if ((tempList != null) && (tempList.size() > 0)) {
+							// if found, break loop
+							break;
+						}
+					}
+
+					// if in string contains " - ", then get subpart of string
+					// without LAST " - <else>".
+					if (searchTitle.indexOf(" - ") > -1) {
+						searchTitle = searchTitle.substring(0, searchTitle.lastIndexOf(" - "));
+					} else {
+						// if string dont contains " - ", then search without
+						// year if exists
+						if (year != null) {
+							tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0);
+							break;
+						}
+						break;
+					}
 				}
-			}
-		}
 
-		return resultList;
+			}
+
+		} catch (final MovieDbException e) {
+			e.printStackTrace();
+		}
+		// TODO if more than one result in list, than try to find the right
+		int id = -1;
+		if ((tempList != null) && (tempList.size() > 0)) {
+			if (tempList.size() > 1) {
+				id = tempList.get(0).getId();
+			} else {
+				id = tempList.get(0).getId();
+			}
+			tempList = null;
+
+			MovieDb loadedMovie = null;
+			try {
+				loadedMovie = tmdb.getMovieInfo(id, this.langKey);
+			} catch (final MovieDbException e) {
+				e.printStackTrace();
+			}
+			return loadedMovie;
+
+		} else {
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -92,24 +142,60 @@ public class TheMovieDBCollector extends ACollector {
 		final Matcher m = p.matcher(filename);
 
 		while (m.find()) {
-			if (m.group(2) != null && m.group(3) != null && m.group(4) != null) {
+			if ((m.group(2) != null) && (m.group(3) != null) && (m.group(4) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(2));
 				((ArrayList<String>) data.get("titles")).add(m.group(3));
 				data.replace("year", Integer.parseInt(m.group(4)));
 			}
 
-			if (m.group(5) != null && m.group(6) != null) {
+			if ((m.group(5) != null) && (m.group(6) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(5));
 				((ArrayList<String>) data.get("titles")).add(m.group(6));
 			}
 
-			if (m.group(8) != null && m.group(9) != null && m.group(10) != null) {
+			if ((m.group(8) != null) && (m.group(9) != null) && (m.group(10) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(8));
 				((ArrayList<String>) data.get("titles")).add(m.group(9));
 				data.replace("year", Integer.parseInt(m.group(10)));
 			}
 		}
 		return data;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem item) {
+		ArrayList<FileAttributeList> resultList = null;
+		if (item != null) {
+			String[] titles = null;
+			Integer year = null;
+
+			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(item.getName());
+			if ((data != null) && data.containsKey("titles") && data.containsKey("year")) {
+				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[data.size()]);
+				year = (Integer) data.get("year");
+
+				if ((titles != null) && (titles.length > 0)) {
+					resultList = this.getMovieInfo(titles, year);
+				}
+			}
+		}
+
+		return resultList;
+	}
+
+	@Override
+	public ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>> getFileAttributeListToAdd() {
+		return this.fileAttributeListToAdd;
+	}
+
+	@Override
+	public String getInfoType() {
+		return "TheMovieDB";
+	}
+
+	@Override
+	public ArrayList<Key<String>> getKeysToAdd() {
+		return this.keysToAdd;
 	}
 
 	private ArrayList<FileAttributeList> getMovieInfo(final String[] titles, final Integer year) {
@@ -191,11 +277,11 @@ public class TheMovieDBCollector extends ACollector {
 			}
 
 			for (final KeyValue<String, Object> keyValue : keyValueList) {
-				if (keyValue != null && keyValue.getKey() != null && !this.keysToAdd.contains(keyValue.getKey())) {
+				if ((keyValue != null) && (keyValue.getKey() != null) && !this.keysToAdd.contains(keyValue.getKey())) {
 					this.keysToAdd.add(keyValue.getKey());
 				}
 
-				if (keyValue != null && keyValue.getValue() != null && !this.valuesToAdd.contains(keyValue.getValue())) {
+				if ((keyValue != null) && (keyValue.getValue() != null) && !this.valuesToAdd.contains(keyValue.getValue())) {
 					this.valuesToAdd.add(keyValue.getValue());
 				}
 			}
@@ -208,98 +294,12 @@ public class TheMovieDBCollector extends ACollector {
 		return tempKeyValueList;
 	}
 
-	private MovieDb findMovie(final String[] titles, final Integer year) {
-		ArrayList<MovieDb> tempList = null;
-		TheMovieDb tmdb = null;
-		try {
-			tmdb = new TheMovieDb(this.apiKey);
-			// tmdb.getConfiguration().setBaseUrl("http://api.themoviedb.org/3/");
-			// search with different combinations to find the movie.
-			// implode titles to one title
-			String searchTitle = Helper.implode(titles, " - ", null, null);
-			if (searchTitle != null) {
-				// for each title, get imploded title and cut one part out of
-				// it, if no movie is found.
-				for (@SuppressWarnings("unused")
-				final String title : titles) {
-					// search for title
-					tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, (year != null ? year : 0), this.langKey, true, 0);
-
-					if (tempList != null && tempList.size() > 0) {
-						// if found, break loop
-						break;
-					}
-
-					if (year != null) {
-						tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0);
-
-						if (tempList != null && tempList.size() > 0) {
-							// if found, break loop
-							break;
-						}
-					}
-
-					// if in string contains " - ", then get subpart of string
-					// without LAST " - <else>".
-					if (searchTitle.indexOf(" - ") > -1) {
-						searchTitle = searchTitle.substring(0, searchTitle.lastIndexOf(" - "));
-					} else {
-						// if string dont contains " - ", then search without
-						// year if exists
-						if (year != null) {
-							tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0);
-							break;
-						}
-						break;
-					}
-				}
-
-			}
-
-		} catch (final MovieDbException e) {
-			e.printStackTrace();
-		}
-		// TODO if more than one result in list, than try to find the right
-		int id = -1;
-		if (tempList != null && tempList.size() > 0) {
-			if (tempList.size() > 1) {
-				id = tempList.get(0).getId();
-			} else {
-				id = tempList.get(0).getId();
-			}
-			tempList = null;
-
-			MovieDb loadedMovie = null;
-			try {
-				loadedMovie = tmdb.getMovieInfo(id, this.langKey);
-			} catch (final MovieDbException e) {
-				e.printStackTrace();
-			}
-			return loadedMovie;
-
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public ArrayList<Key<String>> getKeysToAdd() {
-		return this.keysToAdd;
-	}
-
 	@Override
 	public ArrayList<Value<?>> getValuesToAdd() {
 		return this.valuesToAdd;
 	}
 
-	@Override
-	public ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>> getFileAttributeListToAdd() {
-		return this.fileAttributeListToAdd;
-	}
-
-	@Override
-	public String getInfoType() {
-		return "TheMovieDB";
+	private void init() {
 	}
 
 }

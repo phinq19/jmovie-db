@@ -13,13 +13,23 @@ public class FinderEventMulticaster implements FinderListener {
 
 	protected Vector<FinderListener>	listener	= new Vector<FinderListener>();
 
-	public void remove(final FinderListener l) {
-		this.listener.remove(l);
-	}
-
 	public void add(final FinderListener a) {
 		if (!this.listener.contains(a)) {
 			this.listener.addElement(a);
+		}
+	}
+
+	@Override
+	public void finderAddFinish(final FinderEvent e) {
+		for (int i = 0; i < this.listener.size(); i++) {
+			(this.listener.elementAt(i)).finderAddFinish(e);
+		}
+	}
+
+	@Override
+	public void finderAfterAdd(final FinderEvent e) {
+		for (int i = 0; i < this.listener.size(); i++) {
+			(this.listener.elementAt(i)).finderAfterAdd(e);
 		}
 	}
 
@@ -44,18 +54,8 @@ public class FinderEventMulticaster implements FinderListener {
 		}
 	}
 
-	@Override
-	public void finderAfterAdd(final FinderEvent e) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderAfterAdd(e);
-		}
-	}
-
-	@Override
-	public void finderAddFinish(final FinderEvent e) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderAddFinish(e);
-		}
+	public void remove(final FinderListener l) {
+		this.listener.remove(l);
 	}
 
 }

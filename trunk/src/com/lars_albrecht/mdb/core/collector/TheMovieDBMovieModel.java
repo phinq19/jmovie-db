@@ -39,21 +39,6 @@ public class TheMovieDBMovieModel {
 	protected Integer			year				= null;
 
 	/**
-	 * @return the tmdbId
-	 */
-	public synchronized final Integer getTmdbId() {
-		return this.tmdbId;
-	}
-
-	/**
-	 * @param tmdbId
-	 *            the tmdbId to set
-	 */
-	public synchronized final void setTmdbId(final Integer tmdbId) {
-		this.tmdbId = tmdbId;
-	}
-
-	/**
 	 * @return the alternativeName
 	 */
 	public synchronized final String getAlternativeName() {
@@ -61,12 +46,38 @@ public class TheMovieDBMovieModel {
 	}
 
 	/**
-	 * @param alternativeName
-	 *            the alternativeName to set
+	 * @return the budget
 	 */
-	public synchronized final void setAlternativeName(
-			final String alternativeName) {
-		this.alternativeName = alternativeName;
+	public synchronized final Integer getBudget() {
+		return this.budget;
+	}
+
+	/**
+	 * @return the countries
+	 */
+	public synchronized final ArrayList<String> getCountries() {
+		return this.countries;
+	}
+
+	/**
+	 * @return the homepage
+	 */
+	public synchronized final String getHomepage() {
+		return this.homepage;
+	}
+
+	/**
+	 * @return the people
+	 */
+	public synchronized final ArrayList<String> getPeople() {
+		return this.people;
+	}
+
+	/**
+	 * @return the rating
+	 */
+	public synchronized final Integer getRating() {
+		return this.rating;
 	}
 
 	/**
@@ -77,18 +88,18 @@ public class TheMovieDBMovieModel {
 	}
 
 	/**
-	 * @param runtime
-	 *            the runtime to set
+	 * @return the tmdbId
 	 */
-	public synchronized final void setRuntime(final Integer runtime) {
-		this.runtime = runtime;
+	public synchronized final Integer getTmdbId() {
+		return this.tmdbId;
 	}
 
 	/**
-	 * @return the budget
+	 * @param alternativeName
+	 *            the alternativeName to set
 	 */
-	public synchronized final Integer getBudget() {
-		return this.budget;
+	public synchronized final void setAlternativeName(final String alternativeName) {
+		this.alternativeName = alternativeName;
 	}
 
 	/**
@@ -100,41 +111,19 @@ public class TheMovieDBMovieModel {
 	}
 
 	/**
-	 * @return the rating
-	 */
-	public synchronized final Integer getRating() {
-		return this.rating;
-	}
-
-	/**
-	 * @param rating
-	 *            the rating to set
-	 */
-	public synchronized final void setRating(final Integer rating) {
-		this.rating = rating;
-	}
-
-	/**
-	 * @return the countries
-	 */
-	public synchronized final ArrayList<String> getCountries() {
-		return this.countries;
-	}
-
-	/**
 	 * @param countries
 	 *            the countries to set
 	 */
-	public synchronized final void setCountries(
-			final ArrayList<String> countries) {
+	public synchronized final void setCountries(final ArrayList<String> countries) {
 		this.countries = countries;
 	}
 
 	/**
-	 * @return the people
+	 * @param homepage
+	 *            the homepage to set
 	 */
-	public synchronized final ArrayList<String> getPeople() {
-		return this.people;
+	public synchronized final void setHomepage(final String homepage) {
+		this.homepage = homepage;
 	}
 
 	/**
@@ -146,18 +135,27 @@ public class TheMovieDBMovieModel {
 	}
 
 	/**
-	 * @return the homepage
+	 * @param rating
+	 *            the rating to set
 	 */
-	public synchronized final String getHomepage() {
-		return this.homepage;
+	public synchronized final void setRating(final Integer rating) {
+		this.rating = rating;
 	}
 
 	/**
-	 * @param homepage
-	 *            the homepage to set
+	 * @param runtime
+	 *            the runtime to set
 	 */
-	public synchronized final void setHomepage(final String homepage) {
-		this.homepage = homepage;
+	public synchronized final void setRuntime(final Integer runtime) {
+		this.runtime = runtime;
+	}
+
+	/**
+	 * @param tmdbId
+	 *            the tmdbId to set
+	 */
+	public synchronized final void setTmdbId(final Integer tmdbId) {
+		this.tmdbId = tmdbId;
 	}
 
 }

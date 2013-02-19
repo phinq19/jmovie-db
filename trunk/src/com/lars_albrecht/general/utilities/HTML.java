@@ -22,7 +22,7 @@ public class HTML {
 	public static String generateListOutput(final ArrayList<FileItem> fileItemList, final String searchTerm, final boolean printOutCount) {
 		String resultStr = "";
 		if (fileItemList.size() > 0) {
-			if (printOutCount && searchTerm != null) {
+			if (printOutCount && (searchTerm != null)) {
 				resultStr += "<p>" + fileItemList.size() + "x wurde \"" + searchTerm + "\" gefunden</p>";
 			} else if (printOutCount) {
 				resultStr += "<p>" + fileItemList.size() + " Einträge gefunden</p>";

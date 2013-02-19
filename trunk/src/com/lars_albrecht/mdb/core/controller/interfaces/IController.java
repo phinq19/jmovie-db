@@ -11,10 +11,10 @@ import java.util.ArrayList;
  */
 public interface IController {
 
-	final ArrayList<Thread> threadList = new ArrayList<Thread>();
-
-	public void run(final Object... params);
+	final ArrayList<Thread>	threadList	= new ArrayList<Thread>();
 
 	public ArrayList<Thread> getThreadList();
+
+	public void run(final Object... params);
 
 }

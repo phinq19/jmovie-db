@@ -41,23 +41,23 @@ public class TypeHandler {
 		return resultList;
 	}
 
-	public static ArrayList<Value<?>> castObjectListToValueList(final ArrayList<Object> oList) {
-
-		final ArrayList<Value<?>> resultList = new ArrayList<Value<?>>();
+	public static ArrayList<TypeInformation> castObjectListToTypeInformationList(final ArrayList<Object> oList) {
+		final ArrayList<TypeInformation> resultList = new ArrayList<TypeInformation>();
 		for (final Object oItem : oList) {
-			if (oItem instanceof Value) {
-				resultList.add((Value<?>) oItem);
+			if (oItem instanceof TypeInformation) {
+				resultList.add((TypeInformation) oItem);
 			}
 		}
 
 		return resultList;
 	}
 
-	public static ArrayList<TypeInformation> castObjectListToTypeInformationList(final ArrayList<Object> oList) {
-		final ArrayList<TypeInformation> resultList = new ArrayList<TypeInformation>();
+	public static ArrayList<Value<?>> castObjectListToValueList(final ArrayList<Object> oList) {
+
+		final ArrayList<Value<?>> resultList = new ArrayList<Value<?>>();
 		for (final Object oItem : oList) {
-			if (oItem instanceof TypeInformation) {
-				resultList.add((TypeInformation) oItem);
+			if (oItem instanceof Value) {
+				resultList.add((Value<?>) oItem);
 			}
 		}
 
@@ -83,7 +83,8 @@ public class TypeHandler {
 	public static ArrayList<FileItem> fileListToFileItemList(final ArrayList<File> foundFilesList) {
 		final ArrayList<FileItem> tempFileItemList = new ArrayList<FileItem>();
 		for (final File file : foundFilesList) {
-			tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper.getFileExtension(file.getName())));
+			tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper
+					.getFileExtension(file.getName())));
 		}
 
 		return tempFileItemList;

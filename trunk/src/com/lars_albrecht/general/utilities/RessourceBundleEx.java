@@ -20,29 +20,6 @@ import java.util.ResourceBundle;
 public final class RessourceBundleEx {
 
 	private static RessourceBundleEx	instance	= null;
-	private Locale						locale		= Locale.getDefault();
-	private String						prefix		= "";
-
-	/**
-	 * @return the locale
-	 */
-	public synchronized final Locale getLocale() {
-		return this.locale;
-	}
-
-	/**
-	 * @param locale
-	 *            the locale to set
-	 */
-	public synchronized final void setLocale(final Locale locale) {
-		this.locale = locale;
-	}
-
-	/**
-	 * Private default constructor.
-	 */
-	private RessourceBundleEx() {
-	}
 
 	/**
 	 * 
@@ -54,6 +31,44 @@ public final class RessourceBundleEx {
 			RessourceBundleEx.instance = new RessourceBundleEx();
 		}
 		return RessourceBundleEx.instance;
+	}
+
+	private Locale	locale	= Locale.getDefault();
+
+	private String	prefix	= "";
+
+	/**
+	 * Private default constructor.
+	 */
+	private RessourceBundleEx() {
+	}
+
+	public Boolean contains(final String key) {
+		return ResourceBundle.getBundle(this.prefix, this.locale).containsKey(key);
+	}
+
+	/**
+	 * @return the locale
+	 */
+	public synchronized final Locale getLocale() {
+		return this.locale;
+	}
+
+	/**
+	 * @return the prefix
+	 */
+	public synchronized final String getPrefix() {
+		return this.prefix;
+	}
+
+	public ArrayList<String> getProperties(final String key) {
+		final ArrayList<String> resultList = new ArrayList<String>();
+		int i = 1;
+		while (this.contains(key + "." + i)) {
+			resultList.add(this.getProperty(key + "." + i));
+			i++;
+		}
+		return resultList;
 	}
 
 	/**
@@ -74,25 +89,12 @@ public final class RessourceBundleEx {
 		return null;
 	}
 
-	public ArrayList<String> getProperties(final String key) {
-		final ArrayList<String> resultList = new ArrayList<String>();
-		int i = 1;
-		while (this.contains(key + "." + i)) {
-			resultList.add(this.getProperty(key + "." + i));
-			i++;
-		}
-		return resultList;
-	}
-
-	public Boolean contains(final String key) {
-		return ResourceBundle.getBundle(this.prefix, this.locale).containsKey(key);
-	}
-
 	/**
-	 * @return the prefix
+	 * @param locale
+	 *            the locale to set
 	 */
-	public synchronized final String getPrefix() {
-		return this.prefix;
+	public synchronized final void setLocale(final Locale locale) {
+		this.locale = locale;
 	}
 
 	/**

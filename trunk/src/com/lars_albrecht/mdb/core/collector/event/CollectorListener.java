@@ -12,6 +12,30 @@ import java.util.EventListener;
 public interface CollectorListener extends EventListener {
 
 	/**
+	 * Called after all directories are searched for new files. Event contains
+	 * an ArrayList<File> with all found files.
+	 * 
+	 * @param e
+	 */
+	public void finderAddFinish(CollectorEvent e);
+
+	/**
+	 * Called after found filelist is added. Event contains an ArrayList<File>
+	 * with all found files.
+	 * 
+	 * @param e
+	 */
+	public void finderAfterAdd(CollectorEvent e);
+
+	/**
+	 * Called after found filelist is persist. Event contains an ArrayList<File>
+	 * with all found files.
+	 * 
+	 * @param e
+	 */
+	public void finderAfterPersist(CollectorEvent e);
+
+	/**
 	 * Called when a directory is found. Event contains an ArrayList<File> with
 	 * the found dir.
 	 * 
@@ -34,29 +58,5 @@ public interface CollectorListener extends EventListener {
 	 * @param e
 	 */
 	public void finderPreAdd(CollectorEvent e);
-
-	/**
-	 * Called after found filelist is added. Event contains an ArrayList<File>
-	 * with all found files.
-	 * 
-	 * @param e
-	 */
-	public void finderAfterAdd(CollectorEvent e);
-
-	/**
-	 * Called after found filelist is persist. Event contains an ArrayList<File>
-	 * with all found files.
-	 * 
-	 * @param e
-	 */
-	public void finderAfterPersist(CollectorEvent e);
-
-	/**
-	 * Called after all directories are searched for new files. Event contains
-	 * an ArrayList<File> with all found files.
-	 * 
-	 * @param e
-	 */
-	public void finderAddFinish(CollectorEvent e);
 
 }

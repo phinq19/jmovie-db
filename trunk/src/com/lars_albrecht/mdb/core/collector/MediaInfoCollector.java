@@ -62,94 +62,11 @@ public class MediaInfoCollector extends ACollector {
 		}
 	}
 
-	@SuppressWarnings("unused")
-	@Deprecated
-	private ArrayList<Key<String>> prepareDataToSave() {
-		final ArrayList<FileAttributeList> fileAttributeList = new ArrayList<FileAttributeList>();
-		final ArrayList<Key<String>> keyList = new ArrayList<Key<String>>();
-		for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
-			fileAttributeList.addAll(entry.getValue());
-		}
-
-		for (final FileAttributeList fileAttrib : fileAttributeList) {
-			final ArrayList<KeyValue<String, Object>> singleList = fileAttrib.getKeyValues();
-			for (final KeyValue<String, Object> keyValue : singleList) {
-				keyList.add(keyValue.getKey());
-			}
-		}
-		return Helper.removeDuplicatedEntries(keyList);
-	}
-
-	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem item) {
-		final ArrayList<FileAttributeList> resultList = new ArrayList<FileAttributeList>();
-
-		final HashMap<String, ArrayList<KeyValue<String, Object>>> sectionsWithKeyValue = this.parseDataString(this.getDataStrForFile(item
-				.getFullpath()));
-
-		if (sectionsWithKeyValue != null && sectionsWithKeyValue.size() > 0) {
-			for (final Map.Entry<String, ArrayList<KeyValue<String, Object>>> section : sectionsWithKeyValue.entrySet()) {
-				resultList.add(new FileAttributeList(section.getValue(), section.getKey(), item.getId()));
-			}
-		}
-
-		return resultList;
-	}
-
-	@SuppressWarnings("unchecked")
-	private HashMap<String, ArrayList<KeyValue<String, Object>>> parseDataString(final String dataString) {
-		String[] sections = null;
-		HashMap<String, ArrayList<KeyValue<String, Object>>> resultList = null;
-		if (dataString != null) {
-			sections = dataString.split("\\~");
-			if (sections != null) {
-				resultList = new HashMap<String, ArrayList<KeyValue<String, Object>>>();
-				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
-				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
-				for (String completeSection : sections) {
-					final String sectionName = completeSection.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
-					completeSection = completeSection.substring(completeSection.indexOf("}") + 1);
-					final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
-					final String[] items = completeSection.split("\\|");
-					for (final String string : items) {
-						final String[] keyValues = string.split("\\:");
-						if (keyValues.length > 1) {
-							Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName));
-							int pos = -1;
-							if ((pos = keys.indexOf(key)) > -1 && (keys.get(pos) instanceof Key<?>)) {
-								key = (Key<String>) keys.get(pos);
-							} else {
-								if (!this.keysToAdd.contains(key)) {
-									this.keysToAdd.add(key);
-								}
-							}
-							Value<Object> value = new Value<Object>(keyValues[1]);
-							pos = -1;
-							if ((pos = values.indexOf(value)) > -1 && (values.get(pos) instanceof Value<?>)) {
-								value = (Value<Object>) values.get(pos);
-							} else {
-								if (!this.valuesToAdd.contains(value)) {
-									this.valuesToAdd.add(value);
-								}
-							}
-
-							keyValueList.add(new KeyValue<String, Object>(key, value));
-						}
-
-					}
-					resultList.put(this.getSectionname(sectionName), keyValueList);
-				}
-			}
-
-		}
-
-		return resultList;
-	}
-
 	private String getDataStrForFile(final String filepath) {
 		String line = null;
 		final String command = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.cliexe");
 		final String templatePath = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.template");
-		if (command != null && templatePath != null && new File(command).exists() && new File(templatePath).exists()) {
+		if ((command != null) && (templatePath != null) && new File(command).exists() && new File(templatePath).exists()) {
 			final ProcExec pe = new ProcExec();
 
 			final String[] parameters = {
@@ -169,9 +86,34 @@ public class MediaInfoCollector extends ACollector {
 		return line;
 	}
 
+	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem item) {
+		final ArrayList<FileAttributeList> resultList = new ArrayList<FileAttributeList>();
+
+		final HashMap<String, ArrayList<KeyValue<String, Object>>> sectionsWithKeyValue = this.parseDataString(this.getDataStrForFile(item
+				.getFullpath()));
+
+		if ((sectionsWithKeyValue != null) && (sectionsWithKeyValue.size() > 0)) {
+			for (final Map.Entry<String, ArrayList<KeyValue<String, Object>>> section : sectionsWithKeyValue.entrySet()) {
+				resultList.add(new FileAttributeList(section.getValue(), section.getKey(), item.getId()));
+			}
+		}
+
+		return resultList;
+	}
+
+	@Override
+	public ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>> getFileAttributeListToAdd() {
+		return this.fileAttributeListToAdd;
+	}
+
 	@Override
 	public String getInfoType() {
 		return "MediaInfo";
+	}
+
+	@Override
+	public ArrayList<Key<String>> getKeysToAdd() {
+		return this.keysToAdd;
 	}
 
 	/**
@@ -194,18 +136,76 @@ public class MediaInfoCollector extends ACollector {
 	}
 
 	@Override
-	public ArrayList<Key<String>> getKeysToAdd() {
-		return this.keysToAdd;
-	}
-
-	@Override
 	public ArrayList<Value<?>> getValuesToAdd() {
 		return this.valuesToAdd;
 	}
 
-	@Override
-	public ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>> getFileAttributeListToAdd() {
-		return this.fileAttributeListToAdd;
+	@SuppressWarnings("unchecked")
+	private HashMap<String, ArrayList<KeyValue<String, Object>>> parseDataString(final String dataString) {
+		String[] sections = null;
+		HashMap<String, ArrayList<KeyValue<String, Object>>> resultList = null;
+		if (dataString != null) {
+			sections = dataString.split("\\~");
+			if (sections != null) {
+				resultList = new HashMap<String, ArrayList<KeyValue<String, Object>>>();
+				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
+				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
+				for (String completeSection : sections) {
+					final String sectionName = completeSection.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
+					completeSection = completeSection.substring(completeSection.indexOf("}") + 1);
+					final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
+					final String[] items = completeSection.split("\\|");
+					for (final String string : items) {
+						final String[] keyValues = string.split("\\:");
+						if (keyValues.length > 1) {
+							Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName));
+							int pos = -1;
+							if (((pos = keys.indexOf(key)) > -1) && (keys.get(pos) instanceof Key<?>)) {
+								key = (Key<String>) keys.get(pos);
+							} else {
+								if (!this.keysToAdd.contains(key)) {
+									this.keysToAdd.add(key);
+								}
+							}
+							Value<Object> value = new Value<Object>(keyValues[1]);
+							pos = -1;
+							if (((pos = values.indexOf(value)) > -1) && (values.get(pos) instanceof Value<?>)) {
+								value = (Value<Object>) values.get(pos);
+							} else {
+								if (!this.valuesToAdd.contains(value)) {
+									this.valuesToAdd.add(value);
+								}
+							}
+
+							keyValueList.add(new KeyValue<String, Object>(key, value));
+						}
+
+					}
+					resultList.put(this.getSectionname(sectionName), keyValueList);
+				}
+			}
+
+		}
+
+		return resultList;
+	}
+
+	@SuppressWarnings("unused")
+	@Deprecated
+	private ArrayList<Key<String>> prepareDataToSave() {
+		final ArrayList<FileAttributeList> fileAttributeList = new ArrayList<FileAttributeList>();
+		final ArrayList<Key<String>> keyList = new ArrayList<Key<String>>();
+		for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
+			fileAttributeList.addAll(entry.getValue());
+		}
+
+		for (final FileAttributeList fileAttrib : fileAttributeList) {
+			final ArrayList<KeyValue<String, Object>> singleList = fileAttrib.getKeyValues();
+			for (final KeyValue<String, Object> keyValue : singleList) {
+				keyList.add(keyValue.getKey());
+			}
+		}
+		return Helper.removeDuplicatedEntries(keyList);
 	}
 
 }

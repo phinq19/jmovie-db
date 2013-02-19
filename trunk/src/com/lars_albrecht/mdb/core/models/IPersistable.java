@@ -11,8 +11,6 @@ import java.util.HashMap;
  */
 public interface IPersistable {
 
-	HashMap<String, Object> toHashMap();
-
 	Object fromHashMap(final HashMap<String, Object> map);
 
 	String getDatabaseTable();
@@ -20,5 +18,7 @@ public interface IPersistable {
 	public Integer getId();
 
 	public void setId(final Integer id);
+
+	HashMap<String, Object> toHashMap();
 
 }

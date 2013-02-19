@@ -35,12 +35,6 @@ public class CollectorController implements IController {
 		this.initCollector();
 	}
 
-	private void initCollector() {
-		this.collectors.add(new MediaInfoCollector(this.mainController, this));
-		this.collectors.add(new TheMovieDBCollector(this.mainController, this));
-
-	}
-
 	public void collectInfos(final ArrayList<FileItem> fileItems) {
 		for (final ACollector collector : this.collectors) {
 			collector.setFileItems(fileItems);
@@ -49,16 +43,22 @@ public class CollectorController implements IController {
 		}
 	}
 
+	@Override
+	public ArrayList<Thread> getThreadList() {
+		return IController.threadList;
+	}
+
+	private void initCollector() {
+		this.collectors.add(new MediaInfoCollector(this.mainController, this));
+		this.collectors.add(new TheMovieDBCollector(this.mainController, this));
+
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void run(final Object... params) {
 		if ((params.length == 1) && (params[0] instanceof ArrayList<?>)) {
 			this.collectInfos((ArrayList<FileItem>) params[0]);
 		}
-	}
-
-	@Override
-	public ArrayList<Thread> getThreadList() {
-		return IController.threadList;
 	}
 }

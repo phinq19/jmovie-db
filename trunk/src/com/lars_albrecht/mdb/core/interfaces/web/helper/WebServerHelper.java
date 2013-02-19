@@ -31,35 +31,6 @@ public class WebServerHelper {
 		this.mainController = mainController;
 	}
 
-	public String getContent(final String url,
-			final ConcurrentHashMap<String, String> GETParams,
-			final ConcurrentHashMap<String, String> headerKeyValue) {
-		if (url != null) {
-			final File file = (new File(new File("").getAbsolutePath() + "/trunk/web/" + url));
-			// System.out.println("APATH: " + file.getAbsolutePath());
-			try {
-				if (file != null && file.exists()) {
-					// System.out.println("load file: " +
-					// file.getAbsolutePath());
-					String content = "";
-					content = Helper.getFileContents(file);
-					content = this.generateContent(content, file.getName(), GETParams, headerKeyValue);
-
-					return content;
-				} else if (file != null && !file.exists()) {
-					// System.out.println("cant load file: " +
-					// file.getAbsolutePath());
-				} else {
-					// System.out.println("cant load file with url");
-				}
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return null;
-	}
-
 	public String generateContent(final String content,
 			final String filename,
 			final ConcurrentHashMap<String, String> GETParams,
@@ -83,10 +54,10 @@ public class WebServerHelper {
 				pageTitle += " | " + this.getTitleForSearchresults(GETParams);
 			} else if (action.equalsIgnoreCase("showFileDetails")) {
 				contentMarkerReplacement = "showFileDetails";
-				if (GETParams.containsKey("fileId") && GETParams.get("fileId") != null) {
+				if (GETParams.containsKey("fileId") && (GETParams.get("fileId") != null)) {
 					final Integer fileId = Integer.parseInt(GETParams.get("fileId"));
 
-					if (fileId != null && fileId > 0) {
+					if ((fileId != null) && (fileId > 0)) {
 						final FileItem tempFileItem = this.mainController.getDataHandler().findAllInfoForAllByFileId(fileId);
 						contentMarkerReplacement = this.generateDetailView(tempFileItem);
 						pageTitle += " | " + this.getTitleForDetailview(tempFileItem);
@@ -106,7 +77,7 @@ public class WebServerHelper {
 
 			// replace "free" marker.
 			if (Template.containsMarker(content, "searchTerm")) {
-				if (GETParams.containsKey("searchStr") && GETParams.get("searchStr") != null) {
+				if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
 					try {
 						generatedContent = Template.replaceMarker(generatedContent, "searchTerm",
 								URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
@@ -131,43 +102,78 @@ public class WebServerHelper {
 		return generatedContent;
 	}
 
-	public String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) {
-		String resultStr = "<div id=\"searchresultsView\" class=\"contentPart\">";
-		if (GETParams.containsKey("searchStr") && GETParams.get("searchStr") != null) {
-			// get DATA for output
-			String searchStr = GETParams.get("searchStr");
-			searchStr = searchStr.replaceAll("\\+", " ");
-			ArrayList<FileItem> foundList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
-					.findAllFileItemForStringInAll(searchStr, false));
-			foundList = Helper.unique(foundList);
+	public String generateDetailView(final FileItem item) {
+		String resultStr = "<div id=\"detailView\" class=\"contentPart\">";
+		if ((item != null) && (item.getId() != null)) {
+			resultStr += "<h2>" + item.getName() + " (" + item.getId() + ")" + "</h2>";
+			resultStr += "<div class=\"path\">" + item.getFullpath().replaceAll("\\\\", "\\\\\\\\") + "</div>";
+			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Dir</div><div class=\"value\">"
+					+ item.getDir().replaceAll("\\\\", "\\\\\\\\") + "</div></div>";
+			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Size</div><div class=\"value\">"
+					+ Helper.getHumanreadableFileSize(item.getSize()) + "</div></div>";
 
-			resultStr += HTML.generateListOutput(foundList, searchStr, true);
+			if ((item.getAttributes() != null) && (item.getAttributes().size() > 0)) {
+				resultStr += "<hr />";
+				resultStr += "<div id=\"attributes\">";
+
+				resultStr += "<nav><ul><li><a href=\"#MediaInfo\">MediaInfo</a></li><li><a href=\"#themoviedb\">The Movie DB</a></li></ul></nav>";
+
+				resultStr += "<h3>Attributes</h3>";
+				String currentInfoType = null;
+				int i = 0;
+				for (final FileAttributeList attributeList : item.getAttributes()) {
+					if ((currentInfoType == null)
+							|| !currentInfoType.equalsIgnoreCase(attributeList.getKeyValues().get(0).getKey().getInfoType())) {
+						currentInfoType = attributeList.getKeyValues().get(0).getKey().getInfoType();
+						if (i > 0) {
+							resultStr += "</div>";
+						}
+						resultStr += "<div class=\"infoSection\">";
+						resultStr += "<h4>" + currentInfoType + "</h4>" + "<a name=\"" + currentInfoType + "\"></a>";
+					}
+					if ((attributeList.getKeyValues() != null) && (attributeList.getKeyValues().size() > 0)) {
+						resultStr += "<div class=\"sectionSection\">";
+						resultStr += "<h5 class=\"tableHeader\">" + attributeList.getSectionName() + "</h5>";
+						resultStr += "<table>";
+						resultStr += "<tr>";
+						resultStr += "<th>" + "Key" + "</th>";
+						resultStr += "<th>" + "Value" + "</th>";
+						resultStr += "</tr>";
+						// copy to reduce the count of loops in search for
+						// values
+						FileAttributeList attributeListCpy = null;
+						try {
+							attributeListCpy = (FileAttributeList) attributeList.clone();
+
+							int evenOdd = 0;
+							for (final KeyValue<String, Object> keyValue : attributeList.getKeyValues()) {
+								if (attributeListCpy.getKeyValues().contains(keyValue)) {
+									resultStr += "<tr class=\"" + ((evenOdd % 2) == 0 ? "even" : "odd") + "\">";
+									resultStr += "<td>" + keyValue.getKey().getKey() + "</td>";
+									resultStr += "<td>"
+											+ Helper.implode(this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey()), ", ",
+													null, null) + "</td>";
+									resultStr += "</tr>";
+									attributeListCpy = this.removeKeysFromFileAttributeList(attributeListCpy, keyValue.getKey().getKey());
+									evenOdd++;
+								}
+							}
+						} catch (final CloneNotSupportedException e) {
+							e.printStackTrace();
+						}
+						resultStr += "</table>";
+						resultStr += "</div>";
+					}
+					i++;
+				}
+				resultStr += "</div>";
+			}
+
 		} else {
-			resultStr += "<p>Suchen Sie mit hilfe der Suche</p>";
+			resultStr += "<p>Nichts gefunden</p>";
 		}
-
 		resultStr += "</div>";
 		return resultStr;
-	}
-
-	public String getTitleForSearchresults(final ConcurrentHashMap<String, String> GETParams) {
-		String searchStr = "";
-		if (GETParams.containsKey("searchStr") && GETParams.get("searchStr") != null) {
-			searchStr = GETParams.get("searchStr");
-		}
-		return "Suchergebnisse für: " + searchStr;
-	}
-
-	public String getTitleForInfoview() {
-		return "Infos";
-	}
-
-	public String getTitleForDetailview(final FileItem fileItem) {
-		String titleStr = "Kein Titel gewählt";
-		if (fileItem != null) {
-			titleStr = fileItem.getName();
-		}
-		return "Detailansicht: " + titleStr;
 	}
 
 	public String generateInfoControlView(final ConcurrentHashMap<String, String> GETParams) {
@@ -203,7 +209,7 @@ public class WebServerHelper {
 		resultStr += "<div id=\"controlView\" class=\"contentPart\">";
 		resultStr += "<h3>Control</h3>";
 		boolean isStartFinder = false;
-		if (GETParams.containsKey("do") && GETParams.get("do") != null && GETParams.get("do").equalsIgnoreCase("startFinder")) {
+		if (GETParams.containsKey("do") && (GETParams.get("do") != null) && GETParams.get("do").equalsIgnoreCase("startFinder")) {
 			isStartFinder = true;
 			resultStr += "<div id=\"statusArea\">";
 			resultStr += "<p>" + "Files will be refreshed ..." + "</p>";
@@ -212,14 +218,14 @@ public class WebServerHelper {
 		}
 
 		boolean isStartCollectors = false;
-		if (GETParams.containsKey("do") && GETParams.get("do") != null && GETParams.get("do").equalsIgnoreCase("startCollectors")) {
+		if (GETParams.containsKey("do") && (GETParams.get("do") != null) && GETParams.get("do").equalsIgnoreCase("startCollectors")) {
 			isStartCollectors = true;
 			resultStr += "<div id=\"statusArea\">";
 
 			resultStr += "<p>" + "Collections will be refreshed ..." + "<br />";
 			final ArrayList<FileItem> fileList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler().findAll(
 					new FileItem(), false, null));
-			if (fileList != null && fileList.size() > 0) {
+			if ((fileList != null) && (fileList.size() > 0)) {
 				resultStr += "Collections can be refreshed ... work in progress" + "</p>";
 				this.mainController.getcController().collectInfos(fileList);
 			} else {
@@ -241,99 +247,95 @@ public class WebServerHelper {
 		return resultStr;
 	}
 
-	public String generateDetailView(final FileItem item) {
-		String resultStr = "<div id=\"detailView\" class=\"contentPart\">";
-		if (item != null && item.getId() != null) {
-			resultStr += "<h2>" + item.getName() + " (" + item.getId() + ")" + "</h2>";
-			resultStr += "<div class=\"path\">" + item.getFullpath().replaceAll("\\\\", "\\\\\\\\") + "</div>";
-			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Dir</div><div class=\"value\">"
-					+ item.getDir().replaceAll("\\\\", "\\\\\\\\") + "</div></div>";
-			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Size</div><div class=\"value\">"
-					+ Helper.getHumanreadableFileSize(item.getSize()) + "</div></div>";
+	public String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) {
+		String resultStr = "<div id=\"searchresultsView\" class=\"contentPart\">";
+		if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
+			// get DATA for output
+			String searchStr = GETParams.get("searchStr");
+			searchStr = searchStr.replaceAll("\\+", " ");
+			ArrayList<FileItem> foundList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
+					.findAllFileItemForStringInAll(searchStr, false));
+			foundList = Helper.unique(foundList);
 
-			if (item.getAttributes() != null && item.getAttributes().size() > 0) {
-				resultStr += "<hr />";
-				resultStr += "<div id=\"attributes\">";
-
-				resultStr += "<nav><ul><li><a href=\"#MediaInfo\">MediaInfo</a></li><li><a href=\"#themoviedb\">The Movie DB</a></li></ul></nav>";
-
-				resultStr += "<h3>Attributes</h3>";
-				String currentInfoType = null;
-				int i = 0;
-				for (final FileAttributeList attributeList : item.getAttributes()) {
-					if (currentInfoType == null
-							|| !currentInfoType.equalsIgnoreCase(attributeList.getKeyValues().get(0).getKey().getInfoType())) {
-						currentInfoType = attributeList.getKeyValues().get(0).getKey().getInfoType();
-						if (i > 0) {
-							resultStr += "</div>";
-						}
-						resultStr += "<div class=\"infoSection\">";
-						resultStr += "<h4>" + currentInfoType + "</h4>" + "<a name=\"" + currentInfoType + "\"></a>";
-					}
-					if (attributeList.getKeyValues() != null && attributeList.getKeyValues().size() > 0) {
-						resultStr += "<div class=\"sectionSection\">";
-						resultStr += "<h5 class=\"tableHeader\">" + attributeList.getSectionName() + "</h5>";
-						resultStr += "<table>";
-						resultStr += "<tr>";
-						resultStr += "<th>" + "Key" + "</th>";
-						resultStr += "<th>" + "Value" + "</th>";
-						resultStr += "</tr>";
-						// copy to reduce the count of loops in search for
-						// values
-						FileAttributeList attributeListCpy = null;
-						try {
-							attributeListCpy = (FileAttributeList) attributeList.clone();
-
-							int evenOdd = 0;
-							for (final KeyValue<String, Object> keyValue : attributeList.getKeyValues()) {
-								if (attributeListCpy.getKeyValues().contains(keyValue)) {
-									resultStr += "<tr class=\"" + (evenOdd % 2 == 0 ? "even" : "odd") + "\">";
-									resultStr += "<td>" + keyValue.getKey().getKey() + "</td>";
-									resultStr += "<td>"
-											+ Helper.implode(this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey()), ", ",
-													null, null) + "</td>";
-									resultStr += "</tr>";
-									attributeListCpy = this.removeKeysFromFileAttributeList(attributeListCpy, keyValue.getKey().getKey());
-									evenOdd++;
-								}
-							}
-						} catch (final CloneNotSupportedException e) {
-							e.printStackTrace();
-						}
-						resultStr += "</table>";
-						resultStr += "</div>";
-					}
-					i++;
-				}
-				resultStr += "</div>";
-			}
-
+			resultStr += HTML.generateListOutput(foundList, searchStr, true);
 		} else {
-			resultStr += "<p>Nichts gefunden</p>";
+			resultStr += "<p>Suchen Sie mit hilfe der Suche</p>";
 		}
+
 		resultStr += "</div>";
 		return resultStr;
 	}
 
-	private FileAttributeList
-			removeKeysFromFileAttributeList(final FileAttributeList list, final String key) throws CloneNotSupportedException {
-		final FileAttributeList resultList = (FileAttributeList) list.clone();
-		if (list != null && list.getKeyValues().size() > 0 && key != null) {
+	public String getContent(final String url,
+			final ConcurrentHashMap<String, String> GETParams,
+			final ConcurrentHashMap<String, String> headerKeyValue) {
+		if (url != null) {
+			final File file = (new File(new File("").getAbsolutePath() + "/trunk/web/" + url));
+			// System.out.println("APATH: " + file.getAbsolutePath());
+			try {
+				if ((file != null) && file.exists()) {
+					// System.out.println("load file: " +
+					// file.getAbsolutePath());
+					String content = "";
+					content = Helper.getFileContents(file);
+					content = this.generateContent(content, file.getName(), GETParams, headerKeyValue);
+
+					return content;
+				} else if ((file != null) && !file.exists()) {
+					// System.out.println("cant load file: " +
+					// file.getAbsolutePath());
+				} else {
+					// System.out.println("cant load file with url");
+				}
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return null;
+	}
+
+	public String getTitleForDetailview(final FileItem fileItem) {
+		String titleStr = "Kein Titel gewählt";
+		if (fileItem != null) {
+			titleStr = fileItem.getName();
+		}
+		return "Detailansicht: " + titleStr;
+	}
+
+	public String getTitleForInfoview() {
+		return "Infos";
+	}
+
+	public String getTitleForSearchresults(final ConcurrentHashMap<String, String> GETParams) {
+		String searchStr = "";
+		if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
+			searchStr = GETParams.get("searchStr");
+		}
+		return "Suchergebnisse für: " + searchStr;
+	}
+
+	private ArrayList<Object> getValuesForKey(final FileAttributeList list, final String key) {
+		final ArrayList<Object> resultList = new ArrayList<Object>();
+		if ((list != null) && (list.getKeyValues().size() > 0) && (key != null)) {
 			for (final KeyValue<String, Object> keyValue : list.getKeyValues()) {
-				if (keyValue != null && keyValue.getKey() != null && keyValue.getKey().getKey().equals(key) && keyValue.getValue() != null) {
-					resultList.getKeyValues().remove(keyValue);
+				if ((keyValue != null) && (keyValue.getKey() != null) && keyValue.getKey().getKey().equals(key)
+						&& (keyValue.getValue() != null)) {
+					resultList.add(keyValue.getValue().getValue());
 				}
 			}
 		}
 		return resultList;
 	}
 
-	private ArrayList<Object> getValuesForKey(final FileAttributeList list, final String key) {
-		final ArrayList<Object> resultList = new ArrayList<Object>();
-		if (list != null && list.getKeyValues().size() > 0 && key != null) {
+	private FileAttributeList
+			removeKeysFromFileAttributeList(final FileAttributeList list, final String key) throws CloneNotSupportedException {
+		final FileAttributeList resultList = (FileAttributeList) list.clone();
+		if ((list != null) && (list.getKeyValues().size() > 0) && (key != null)) {
 			for (final KeyValue<String, Object> keyValue : list.getKeyValues()) {
-				if (keyValue != null && keyValue.getKey() != null && keyValue.getKey().getKey().equals(key) && keyValue.getValue() != null) {
-					resultList.add(keyValue.getValue().getValue());
+				if ((keyValue != null) && (keyValue.getKey() != null) && keyValue.getKey().getKey().equals(key)
+						&& (keyValue.getValue() != null)) {
+					resultList.getKeyValues().remove(keyValue);
 				}
 			}
 		}

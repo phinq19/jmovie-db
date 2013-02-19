@@ -150,6 +150,15 @@ public class WebServer {
 	private MainController	mainController	= null;
 	private ServerSocket	serverSocket	= null;
 
+	@Override
+	protected void finalize() throws Throwable {
+		try {
+			this.serverSocket.close();
+		} catch (final IOException e) {
+			System.out.println("Could not close socket");
+		}
+	}
+
 	/**
 	 * WebServer constructor.
 	 */
@@ -178,15 +187,6 @@ public class WebServer {
 				System.out.println("Error: " + e.getMessage());
 				e.printStackTrace();
 			}
-		}
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		try {
-			this.serverSocket.close();
-		} catch (final IOException e) {
-			System.out.println("Could not close socket");
 		}
 	}
 

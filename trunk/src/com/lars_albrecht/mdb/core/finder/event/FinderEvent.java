@@ -27,19 +27,18 @@ public class FinderEvent extends EventObject {
 	protected int				id;
 	protected ArrayList<File>	files;
 
-	public FinderEvent(final Object source, final int id,
-			final ArrayList<File> files) {
+	public FinderEvent(final Object source, final int id, final ArrayList<File> files) {
 		super(source);
 		this.id = id;
 		this.files = files;
 	}
 
-	public int getId() {
-		return this.id;
-	}
-
 	public ArrayList<File> getFiles() {
 		return this.files;
+	}
+
+	public int getId() {
+		return this.id;
 	}
 
 }

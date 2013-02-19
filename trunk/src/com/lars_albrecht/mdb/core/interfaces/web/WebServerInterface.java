@@ -17,6 +17,11 @@ public class WebServerInterface implements Runnable {
 		this.mainController = mainController;
 	}
 
+	@Override
+	public void run() {
+		this.start();
+	}
+
 	/**
 	 * Starts the webserver.
 	 */
@@ -25,11 +30,6 @@ public class WebServerInterface implements Runnable {
 		if (ws != null) {
 			ws.start(this.mainController);
 		}
-	}
-
-	@Override
-	public void run() {
-		this.start();
 	}
 
 }
