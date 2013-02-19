@@ -14,7 +14,6 @@ public class Main {
 
 	public static void main(final String[] args) {
 		new Main();
-
 	}
 
 	private MainController	controller	= null;
@@ -30,6 +29,7 @@ public class Main {
 	}
 
 	private void initDB() {
+		DB.setDBType(DB.DBTYPE_SQLITE);
 		new DB().init();
 	}
 

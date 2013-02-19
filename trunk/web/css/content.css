@@ -26,6 +26,7 @@ h2, h3, h4, h5											{margin:0;}
 #detailView .path										{font-size:0.8em;}
 
 #detailView #attributes									{margin-top:20px; display:inline-block; width:100%;}
+#detailView #attributes nav								{margin-bottom:20px;}
 #detailView #attributes .infoSection					{margin-bottom:20px;}
 #detailView #attributes .infoSection .sectionSection	{margin-bottom:10px;}
 

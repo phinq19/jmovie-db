@@ -110,8 +110,17 @@ public class DataHandler {
 
 				i++;
 			}
-			sql = "INSERT OR IGNORE INTO '" + databaseTable + "' (" + Helper.implode(tempObject.keySet(), ",", "'", "'") + ") VALUES ("
-					+ valueStr + ");";
+			sql = "MERGE INTO "
+					+ (DB.useQuotesForFields ? "'" : "")
+					+ ""
+					+ databaseTable
+					+ ""
+					+ (DB.useQuotesForFields ? "'" : "")
+					+ " ("
+					+ (tempObject.containsKey("id") ? "" : "id, ")
+					+ Helper.implode(tempObject.keySet(), ",", "" + (DB.useQuotesForFields ? "'" : "") + "", ""
+							+ (DB.useQuotesForFields ? "'" : "") + "") + ") VALUES ("
+					+ (tempObject.containsKey("id") ? "" : "TRANSACTION_ID(),") + valueStr + ");";
 
 			result = DB.updatePS(sql, values);
 			object.setId(result);
