@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.finder;
 import java.io.File;
 import java.util.ArrayList;
 
-import com.lars_albrecht.mdb.controller.ThreadController;
+import com.lars_albrecht.mdb.core.controller.FinderController;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.FinderEventMulticaster;
 import com.lars_albrecht.mdb.filter.VideoFileFilter;
@@ -17,22 +17,32 @@ import com.lars_albrecht.mdb.filter.VideoFileFilter;
  */
 public class Finder implements Runnable {
 
-	private ThreadController		threadController	= null;
-	private File					dir					= null;
+	private FinderController		controller	= null;
+	private File					dir			= null;
 
-	private FinderEventMulticaster	multicaster			= null;
+	private FinderEventMulticaster	multicaster	= null;
 
-	private ArrayList<File>			dirs				= null;
+	private ArrayList<File>			dirs		= null;
 
-	public Finder(final ThreadController threadController, final File dir) {
-		this.threadController = threadController;
+	/**
+	 * 
+	 * @param threadController
+	 * @param dir
+	 */
+	public Finder(final FinderController controller, final File dir) {
+		this.controller = controller;
 		this.dir = dir;
-		this.multicaster = threadController.getFinderMulticaster();
+		this.multicaster = controller.getFinderMulticaster();
 
 	}
 
+	/**
+	 * 
+	 * @param dirs
+	 * @return
+	 */
 	public ArrayList<File> find(final ArrayList<File> dirs) {
-		final ArrayList<File> tempFileList = new ArrayList<File>();
+		final ArrayList<File> tempList = new ArrayList<File>();
 		// for each dir in dirs
 		for (final File dir : dirs) {
 			// list files
@@ -41,24 +51,25 @@ public class Finder implements Runnable {
 			for (final File file : files) {
 				// is file is directory ...
 				if (file.exists()) {
-					final ArrayList<File> tempList = new ArrayList<File>();
-					tempList.add(file);
 					if (file.isDirectory()) {
+						final ArrayList<File> tempDirList = new ArrayList<File>();
+						tempDirList.add(file);
 						this.multicaster.finderFoundDir((new FinderEvent(this,
-								FinderEvent.FINDER_FOUNDDIR, tempList)));
+								FinderEvent.FINDER_FOUNDDIR, tempDirList)));
 
-						// start new thread to find new files
-						this.threadController.findFiles(tempList);
+						// start new thread to find new files in subfolder
+						this.controller.findFiles(tempDirList);
 					} else if (file.isFile()) {
-						this.multicaster.finderFoundFile((new FinderEvent(this,
-								FinderEvent.FINDER_FOUNDFILE, tempList)));
+						final ArrayList<File> tempFileList = new ArrayList<File>();
 						tempFileList.add(file);
+						this.multicaster.finderFoundFile((new FinderEvent(this,
+								FinderEvent.FINDER_FOUNDFILE, tempFileList)));
+						tempList.add(file);
 					}
 				}
 			}
 		}
-
-		return tempFileList;
+		return tempList;
 
 	}
 
@@ -71,17 +82,16 @@ public class Finder implements Runnable {
 
 			this.multicaster.finderPreAdd((new FinderEvent(this,
 					FinderEvent.FINDER_PREADD, foundFiles)));
-			this.threadController.getFoundFiles().addAll(foundFiles);
+			this.controller.getFoundFiles().addAll(foundFiles);
 			this.multicaster.finderAfterAdd((new FinderEvent(this,
-					FinderEvent.FINDER_AFTERADD, this.threadController
+					FinderEvent.FINDER_AFTERADD, this.controller
 							.getFoundFiles())));
 		}
-		this.threadController.getFinderList().remove(Thread.currentThread());
-		if (this.threadController.getFinderList().size() == 0) {
+		this.controller.getThreadList().remove(Thread.currentThread());
+		if (this.controller.getThreadList().size() == 0) {
 			this.multicaster.finderAddFinish((new FinderEvent(this,
-					FinderEvent.FINDER_ADDFINISH, this.threadController
+					FinderEvent.FINDER_ADDFINISH, this.controller
 							.getFoundFiles())));
 		}
 	}
-
 }

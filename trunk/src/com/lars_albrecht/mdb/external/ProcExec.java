@@ -47,9 +47,11 @@ public class ProcExec {
 	public BufferedReader getProcOutput(final String command,
 			final String[] parameters) throws IOException {
 		if (ProcExec.system != ProcExec.SYSTEM_UNKNOWN) {
+			// "cmd /c"
 			final Process process = Runtime.getRuntime().exec(
-					((ProcExec.system == ProcExec.SYSTEM_WIN) ? "cmd /c "
-							+ command : command)
+					((ProcExec.system == ProcExec.SYSTEM_WIN) ? " " + command
+							: command)
+							+ " "
 							+ Helper.implode(parameters, " ", null, null));
 			this.input = new InputStreamReader(process.getInputStream());
 			return new BufferedReader(this.input);
