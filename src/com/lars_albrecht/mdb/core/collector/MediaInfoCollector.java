@@ -164,7 +164,7 @@ public class MediaInfoCollector extends ACollector {
 		final String templatePath = RessourceBundleEx.getInstance()
 				.getProperty("module.collector.mediainfo.path.template");
 		final String[] parameters = {
-				"--Inform=file://" + templatePath, filepath
+				"--Inform=file://" + templatePath, "\"" + filepath + "\""
 		};
 		String line = null;
 
