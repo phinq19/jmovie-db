@@ -141,16 +141,15 @@ public class DB implements IDatabase {
 	 * @param expression
 	 * @param values
 	 * @return ResultSet
-	 * @throws SQLException
+	 * @throws Exception
 	 */
 	public static synchronized ResultSet queryPS(final String expression,
-			final ConcurrentHashMap<Integer, Object> values)
-			throws SQLException {
+			final ConcurrentHashMap<Integer, Object> values) throws Exception {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		st = DB.getConnection().prepareStatement(expression);
 		for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
-			// st = DB.addDynamicValue(st, entry.getKey(), entry.getValue()); //
+			st = DB.addDynamicValue(st, entry.getKey(), entry.getValue()); //
 			// TODO check why it will not save lists with this -> see logs with
 			// image org.h2.jdbc.JdbcSQLException: Serialisierung
 			// fehlgeschlagen, Grund:
@@ -159,7 +158,7 @@ public class DB implements IDatabase {
 			// "java.io.NotSerializableException: sun.awt.image.ToolkitImage"
 			// [90026-162]
 			st.setObject(entry.getKey(), entry.getValue());
-			// st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
+			st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
 		}
 
 		rs = st.executeQuery();
@@ -178,7 +177,7 @@ public class DB implements IDatabase {
 		Statement st = null;
 		st = DB.getConnection().createStatement(); // statements
 		final int i = st.executeUpdate(expression); // run the query
-		System.out.println(expression);
+		// System.out.println(expression);
 		if (i == -1) {
 			// Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
 		}
@@ -193,7 +192,7 @@ public class DB implements IDatabase {
 	 * @param values
 	 * @throws Exception
 	 */
-	public static synchronized void updatePS(final String expression,
+	public static synchronized int updatePS(final String expression,
 			final ConcurrentHashMap<Integer, Object> values) throws Exception {
 		PreparedStatement st = null;
 		st = DB.getConnection().prepareStatement(expression); // statements
@@ -208,7 +207,22 @@ public class DB implements IDatabase {
 			// Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
 		}
 
+		final int lastInsertedId = DB.getLastInsertedRowId(st);
 		st.close();
+		return lastInsertedId;
+	}
+
+	/**
+	 * Returns the last inserted row id from the database. This method is using
+	 * the "getGeneratedKeys()"-method from Statement st.
+	 * 
+	 * @param st
+	 * @return last_inserted_rowid
+	 * @throws SQLException
+	 */
+	private static synchronized int getLastInsertedRowId(final Statement st)
+			throws SQLException {
+		return st.getGeneratedKeys().getInt("last_insert_rowid()");
 	}
 
 	/**
@@ -229,10 +243,7 @@ public class DB implements IDatabase {
 		if (objectToSet.getClass() == Integer.class) {
 			pst.setInt(index, ((Integer) objectToSet).intValue());
 		} else if (objectToSet.getClass() == String.class) {
-			pst.setString(
-					index,
-					((String) objectToSet).substring(1,
-							((String) objectToSet).length() - 1));
+			pst.setString(index, (String) objectToSet);
 		} else if (objectToSet instanceof Image) {
 			// pst.setBytes(index, Helper.getBytesFromImage((Image)
 			// objectToSet));
@@ -395,10 +406,11 @@ public class DB implements IDatabase {
 			sql = "CREATE TABLE IF NOT EXISTS 'fileInformation' ( ";
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
 			sql += "'name' VARCHAR(255), ";
-			sql += "'path' VARCHAR(255), ";
+			sql += "'dir' VARCHAR(255), ";
 			sql += "'ext' VARCHAR(255), ";
-			sql += "'size' INTEGER, ";
-			sql += "'fullpath' VARCHAR(255) ";
+			sql += "'size' LONG, ";
+			sql += "'fullpath' VARCHAR(255), ";
+			sql += "'filehash' VARCHAR(255) ";
 			sql += ");";
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
@@ -407,10 +419,12 @@ public class DB implements IDatabase {
 			// typeInformation_key
 			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_key' ( ";
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-			sql += "'key' VARCHAR(255)";
+			sql += "'key' VARCHAR(255), ";
+			sql += "'infoType' VARCHAR(255), ";
+			sql += "'section' VARCHAR(255) ";
 			sql += "); ";
 			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key);";
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
 			DB.update(sql);
 
 			// typeInformation_value
@@ -427,8 +441,8 @@ public class DB implements IDatabase {
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
 			sql += "'file_id' INTEGER, ";
 			sql += "'key_id' INTEGER, ";
-			sql += "'value_id' INTEGER NULL, ";
-			sql += "'value' INTEGER ";
+			sql += "'value_id' INTEGER ";
+			// sql += "'value' INTEGER ";
 			sql += "); ";
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id);";
@@ -440,3 +454,14 @@ public class DB implements IDatabase {
 
 	}
 }
+
+/**
+ * TYP: MediaInfo|IMDB SECTION: general|video FILE_ID = 1 KEY: x|y|z VALUE:
+ * 1|2|3
+ * 
+ * INF file_id key_id value_id value
+ * 
+ * KEY key type section
+ * 
+ * VAL value
+ */

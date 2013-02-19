@@ -35,6 +35,8 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -128,7 +130,11 @@ public class Helper {
 	 * @return String
 	 */
 	public static String getFileExtension(final String filename) {
-		return filename.substring(filename.lastIndexOf("."));
+		if (filename.contains(".")) {
+			return filename.substring(filename.lastIndexOf("."));
+		} else {
+			return "";
+		}
 	}
 
 	/**
@@ -169,16 +175,26 @@ public class Helper {
 
 	/**
 	 * 
-	 * @param s
+	 * @param collection
 	 * @param delim
-	 * @return ArrayList<String>
+	 * @param prefix
+	 * @param suffix
+	 * @return String
 	 */
-	public static ArrayList<String> explode(final String s, final String delim) {
-		final String[] sParted = s.split(delim);
-		if ((sParted != null) && (sParted.length > 0)) {
-			return new ArrayList<String>(Arrays.asList(sParted));
+	public static String implode(final Collection<?> collection,
+			final String delim, final String prefix, final String suffix) {
+		String temp = "";
+		int i = 0;
+		for (final Object object : collection) {
+			if (i != 0) {
+				temp += delim;
+			}
+			temp += (prefix != null ? prefix : "") + object
+					+ (suffix != null ? suffix : "");
+
+			i++;
 		}
-		return null;
+		return temp;
 	}
 
 	/**
@@ -200,6 +216,20 @@ public class Helper {
 					+ (suffix != null ? suffix : "");
 		}
 		return temp;
+	}
+
+	/**
+	 * 
+	 * @param s
+	 * @param delim
+	 * @return ArrayList<String>
+	 */
+	public static ArrayList<String> explode(final String s, final String delim) {
+		final String[] sParted = s.split(delim);
+		if ((sParted != null) && (sParted.length > 0)) {
+			return new ArrayList<String>(Arrays.asList(sParted));
+		}
+		return null;
 	}
 
 	/**
@@ -584,6 +614,18 @@ public class Helper {
 		return new DecimalFormat("#,##0.#").format(size
 				/ Math.pow(1024, digitGroups))
 				+ " " + units[digitGroups];
+	}
+
+	/**
+	 * Removes duplicated entries from an arrayList.
+	 * 
+	 * @param <T>
+	 * 
+	 * @param arrayList
+	 */
+	public static final <T> ArrayList<T> removeDuplicatedEntries(
+			final ArrayList<T> arrayList) {
+		return new ArrayList<T>(new HashSet<T>(arrayList));
 	}
 
 }

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.mdb.core.finder.event;
+package com.lars_albrecht.mdb.core.collector.event;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import java.util.EventObject;
  * @author albrela
  * 
  */
-public class FinderEvent extends EventObject {
+public class CollectorEvent extends EventObject {
 
 	/**
 	 * 
@@ -22,12 +22,13 @@ public class FinderEvent extends EventObject {
 	public final static int		FINDER_FOUNDFILE	= 10002;
 	public final static int		FINDER_PREADD		= 10010;
 	public final static int		FINDER_AFTERADD		= 10011;
+	public final static int		FINDER_AFTERPERSIST	= 10020;
 	public final static int		FINDER_ADDFINISH	= 10100;
 
 	protected int				id;
 	protected ArrayList<File>	files;
 
-	public FinderEvent(final Object source, final int id,
+	public CollectorEvent(final Object source, final int id,
 			final ArrayList<File> files) {
 		super(source);
 		this.id = id;
