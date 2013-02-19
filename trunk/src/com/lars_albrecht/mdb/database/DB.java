@@ -431,7 +431,7 @@ public class DB implements IDatabase {
 			// sql += "'value' INTEGER ";
 			sql += "); ";
 			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id);";
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
 			DB.update(sql);
 
 		} catch (final Exception e) {

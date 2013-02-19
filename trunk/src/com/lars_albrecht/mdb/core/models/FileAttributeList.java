@@ -4,6 +4,7 @@
 package com.lars_albrecht.mdb.core.models;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author albrela
@@ -29,9 +30,8 @@ public class FileAttributeList {
 	 * @param keyValues
 	 * @param hash
 	 */
-	public FileAttributeList(final Integer id,
-			final ArrayList<KeyValue<String, Object>> keyValues,
-			final String sectionName, final int hash, final Integer fileId) {
+	public FileAttributeList(final Integer id, final ArrayList<KeyValue<String, Object>> keyValues, final String sectionName,
+			final int hash, final Integer fileId) {
 		super();
 		this.id = id;
 		this.keyValues = keyValues;
@@ -44,9 +44,8 @@ public class FileAttributeList {
 	 * @param keyValues
 	 * @param hash
 	 */
-	public FileAttributeList(
-			final ArrayList<KeyValue<String, Object>> keyValues,
-			final String sectionName, final int hash, final Integer fileId) {
+	public FileAttributeList(final ArrayList<KeyValue<String, Object>> keyValues, final String sectionName, final int hash,
+			final Integer fileId) {
 		super();
 		this.keyValues = keyValues;
 		this.sectionName = sectionName;
@@ -57,9 +56,7 @@ public class FileAttributeList {
 	/**
 	 * @param keyValues
 	 */
-	public FileAttributeList(
-			final ArrayList<KeyValue<String, Object>> keyValues,
-			final String sectionName, final Integer fileId) {
+	public FileAttributeList(final ArrayList<KeyValue<String, Object>> keyValues, final String sectionName, final Integer fileId) {
 		super();
 		this.keyValues = keyValues;
 		this.sectionName = sectionName;
@@ -148,8 +145,25 @@ public class FileAttributeList {
 
 	@Override
 	public String toString() {
-		return "Id: " + this.id + " | " + "KeyValues: " + this.keyValues
-				+ " | " + "Hash: " + this.hash;
+		return "Id: " + this.id + " | " + "KeyValues: " + this.keyValues + " | " + "Hash: " + this.hash;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#clone()
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		final FileAttributeList tempList = new FileAttributeList();
+		tempList.fileId = this.fileId;
+		tempList.hash = this.hash;
+		tempList.id = this.id;
+		tempList.keyValues.addAll((Collection<? extends KeyValue<String, Object>>) this.keyValues.clone());
+		tempList.sectionName = this.sectionName;
+
+		return tempList;
 	}
 
 }

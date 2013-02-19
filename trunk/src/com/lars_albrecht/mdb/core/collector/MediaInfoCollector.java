@@ -101,19 +101,19 @@ public class MediaInfoCollector extends ACollector {
 		HashMap<String, ArrayList<KeyValue<String, Object>>> resultList = null;
 		if (dataString != null) {
 			sections = dataString.split("\\~");
-
 			if (sections != null) {
 				resultList = new HashMap<String, ArrayList<KeyValue<String, Object>>>();
-				int i = 0;
 				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
-				for (final String completeSection : sections) {
+				for (String completeSection : sections) {
+					final String sectionName = completeSection.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
+					completeSection = completeSection.substring(completeSection.indexOf("}") + 1);
 					final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
 					final String[] items = completeSection.split("\\|");
 					for (final String string : items) {
 						final String[] keyValues = string.split("\\:");
 						if (keyValues.length > 1) {
-							Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(i));
+							Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName));
 							int pos = -1;
 							if ((pos = keys.indexOf(key)) > -1 && (keys.get(pos) instanceof Key<?>)) {
 								key = (Key<String>) keys.get(pos);
@@ -136,8 +136,7 @@ public class MediaInfoCollector extends ACollector {
 						}
 
 					}
-					resultList.put(this.getSectionname(i), keyValueList);
-					i++;
+					resultList.put(this.getSectionname(sectionName), keyValueList);
 				}
 			}
 
@@ -177,22 +176,20 @@ public class MediaInfoCollector extends ACollector {
 
 	/**
 	 * 
-	 * @param sectionId
+	 * @param sectionKeyStr
 	 * @return
 	 */
-	private String getSectionname(final int sectionId) {
-		System.out.println("SECTION ID FOUND: " + sectionId);
-		switch (sectionId) {
-			case 0:
-				return MediaInfoCollector.SECTIONNAME_GENERAL;
-			case 1:
-				return MediaInfoCollector.SECTIONNAME_VIDEO;
-			case 2:
-				return MediaInfoCollector.SECTIONNAME_AUDIO;
-			case 3:
-				return MediaInfoCollector.SECTIONNAME_MENU;
-			default:
-				return MediaInfoCollector.SECTIONNAME_NONE;
+	private String getSectionname(final String sectionKeyStr) {
+		if (sectionKeyStr.equalsIgnoreCase("GENERAL")) {
+			return MediaInfoCollector.SECTIONNAME_GENERAL;
+		} else if (sectionKeyStr.equalsIgnoreCase("VIDEO")) {
+			return MediaInfoCollector.SECTIONNAME_VIDEO;
+		} else if (sectionKeyStr.equalsIgnoreCase("AUDIO")) {
+			return MediaInfoCollector.SECTIONNAME_AUDIO;
+		} else if (sectionKeyStr.equalsIgnoreCase("MENU")) {
+			return MediaInfoCollector.SECTIONNAME_MENU;
+		} else {
+			return MediaInfoCollector.SECTIONNAME_NONE;
 		}
 	}
 

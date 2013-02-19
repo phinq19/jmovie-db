@@ -45,8 +45,7 @@ public class CollectorController implements IController {
 		for (final ACollector collector : this.collectors) {
 			collector.setFileItems(fileItems);
 			IController.threadList.add(new Thread(collector));
-			IController.threadList.get(IController.threadList.size() - 1)
-					.start();
+			IController.threadList.get(IController.threadList.size() - 1).start();
 		}
 	}
 

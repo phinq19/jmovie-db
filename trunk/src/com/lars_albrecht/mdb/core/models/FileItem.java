@@ -33,6 +33,14 @@ public class FileItem implements IPersistable {
 	}
 
 	/**
+	 * @param fullpath
+	 */
+	public FileItem(final String fullpath) {
+		super();
+		this.fullpath = fullpath;
+	}
+
+	/**
 	 * @param id
 	 * @param name
 	 * @param fullpath
@@ -218,13 +226,16 @@ public class FileItem implements IPersistable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((this.dir == null) ? 0 : this.dir.hashCode());
-		result = prime * result + ((this.ext == null) ? 0 : this.ext.hashCode());
-		result = prime * result + ((this.filehash == null) ? 0 : this.filehash.hashCode());
-		result = prime * result + ((this.fullpath == null) ? 0 : this.fullpath.hashCode());
-		result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result + ((this.size == null) ? 0 : this.size.hashCode());
+		if (this.id == null) {
+			result = prime * result + ((this.dir == null) ? 0 : this.dir.hashCode());
+			result = prime * result + ((this.ext == null) ? 0 : this.ext.hashCode());
+			result = prime * result + ((this.filehash == null) ? 0 : this.filehash.hashCode());
+			result = prime * result + ((this.fullpath == null) ? 0 : this.fullpath.hashCode());
+			result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+			result = prime * result + ((this.size == null) ? 0 : this.size.hashCode());
+		} else {
+			result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+		}
 		return result;
 	}
 
@@ -245,6 +256,20 @@ public class FileItem implements IPersistable {
 			return false;
 		}
 		final FileItem other = (FileItem) obj;
+		if (this.id != null && other.id != null && !this.id.equals(other.id)) {
+			return false;
+		} else if (this.id != null && other.id != null && this.id.equals(other.id)) {
+			return true;
+		}
+		if (this.fullpath == null) {
+			if (other.fullpath != null) {
+				return false;
+			}
+		} else if (!this.fullpath.equals(other.fullpath)) {
+			return false;
+		} else if (this.fullpath.equals(other.fullpath)) {
+			return true;
+		}
 		if (this.dir == null) {
 			if (other.dir != null) {
 				return false;
@@ -266,16 +291,6 @@ public class FileItem implements IPersistable {
 		} else if (!this.filehash.equals(other.filehash)) {
 			return false;
 		}
-		if (this.fullpath == null) {
-			if (other.fullpath != null) {
-				return false;
-			}
-		} else if (!this.fullpath.equals(other.fullpath)) {
-			return false;
-		}
-		if (this.id != null && other.id != null && !this.id.equals(other.id)) {
-			return false;
-		}
 		if (this.name == null) {
 			if (other.name != null) {
 				return false;
@@ -292,5 +307,4 @@ public class FileItem implements IPersistable {
 		}
 		return true;
 	}
-
 }
