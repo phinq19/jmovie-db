@@ -35,7 +35,7 @@ public class WebServerHelper {
 			final ConcurrentHashMap<String, String> GETParams,
 			final ConcurrentHashMap<String, String> headerKeyValue) {
 		if (url != null) {
-			final File file = (new File(new File("").getAbsolutePath() + "/web/" + url));
+			final File file = (new File(new File("").getAbsolutePath() + "/trunk/web/" + url));
 			// System.out.println("APATH: " + file.getAbsolutePath());
 			try {
 				if (file != null && file.exists()) {
