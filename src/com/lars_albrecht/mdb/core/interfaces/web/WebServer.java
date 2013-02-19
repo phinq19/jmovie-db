@@ -329,7 +329,7 @@ public class WebServer {
 		System.out.println("Params: " + GETParams);
 		if (filename.equalsIgnoreCase("index.html")) {
 			String action = null;
-			if (GETParams.contains("action")) {
+			if (GETParams.containsKey("action")) {
 				action = GETParams.get("action");
 			} else {
 				action = "index";
@@ -341,7 +341,8 @@ public class WebServer {
 				if (GETParams.containsKey("searchStr")
 						&& GETParams.get("searchStr") != null) {
 					// get DATA for output
-					final String searchStr = GETParams.get("searchStr");
+					String searchStr = GETParams.get("searchStr");
+					searchStr = searchStr.replaceAll("\\+", " ");
 					ArrayList<FileItem> foundList = TypeHandler
 							.castObjectListToFileItemList(this.mainController
 									.getDataHandler().findAllInfoForString(
