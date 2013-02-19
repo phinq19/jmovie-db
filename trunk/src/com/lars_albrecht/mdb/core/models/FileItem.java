@@ -29,6 +29,7 @@ public class FileItem implements IPersistable {
 	 */
 	public FileItem() {
 		super();
+		this.attributes = new ArrayList<FileAttributeList>();
 	}
 
 	/**
@@ -39,8 +40,7 @@ public class FileItem implements IPersistable {
 	 * @param size
 	 * @param ext
 	 */
-	public FileItem(final Integer id, final String name, final String fullpath,
-			final String dir, final Long size, final String ext) {
+	public FileItem(final Integer id, final String name, final String fullpath, final String dir, final Long size, final String ext) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -57,8 +57,7 @@ public class FileItem implements IPersistable {
 	 * @param size
 	 * @param ext
 	 */
-	public FileItem(final String name, final String fullpath, final String dir,
-			final Long size, final String ext) {
+	public FileItem(final String name, final String fullpath, final String dir, final Long size, final String ext) {
 		super();
 		this.name = name;
 		this.fullpath = fullpath;
@@ -192,8 +191,7 @@ public class FileItem implements IPersistable {
 			result.setExt((String) map.get("ext"));
 		}
 
-		if (map.containsKey("filehash") && map.get("filehash") != ""
-				&& !map.get("filehash").equals("")) {
+		if (map.containsKey("filehash") && map.get("filehash") != "" && !map.get("filehash").equals("")) {
 			result.setFilehash((String) map.get("filehash"));
 		}
 
@@ -202,9 +200,8 @@ public class FileItem implements IPersistable {
 
 	@Override
 	public String toString() {
-		return "Id: " + this.id + " | " + "Name: " + this.name + " | "
-				+ "Fullpath: " + this.fullpath + " | " + "Dir: " + this.dir
-				+ " | " + "Size: " + this.size + " | " + "Ext: " + this.ext;
+		return "Id: " + this.id + " | " + "Name: " + this.name + " | " + "Fullpath: " + this.fullpath + " | " + "Dir: " + this.dir + " | "
+				+ "Size: " + this.size + " | " + "Ext: " + this.ext;
 	}
 
 	@Override
@@ -221,19 +218,13 @@ public class FileItem implements IPersistable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((this.dir == null) ? 0 : this.dir.hashCode());
-		result = prime * result
-				+ ((this.ext == null) ? 0 : this.ext.hashCode());
-		result = prime * result
-				+ ((this.filehash == null) ? 0 : this.filehash.hashCode());
-		result = prime * result
-				+ ((this.fullpath == null) ? 0 : this.fullpath.hashCode());
+		result = prime * result + ((this.dir == null) ? 0 : this.dir.hashCode());
+		result = prime * result + ((this.ext == null) ? 0 : this.ext.hashCode());
+		result = prime * result + ((this.filehash == null) ? 0 : this.filehash.hashCode());
+		result = prime * result + ((this.fullpath == null) ? 0 : this.fullpath.hashCode());
 		result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
-		result = prime * result
-				+ ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result
-				+ ((this.size == null) ? 0 : this.size.hashCode());
+		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+		result = prime * result + ((this.size == null) ? 0 : this.size.hashCode());
 		return result;
 	}
 

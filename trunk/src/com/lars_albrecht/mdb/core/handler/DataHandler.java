@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.IPersistable;
 import com.lars_albrecht.mdb.core.models.Key;
@@ -37,59 +38,51 @@ public class DataHandler {
 	}
 
 	public void reloadData() {
+		System.out.println("RELOAD");
 		this.loadKeys();
 		this.loadValues();
-		this.loadFileItems(false);
 		this.loadTypeInformation();
+		this.loadFileItems(false);
 	}
 
 	private DataHandler loadKeys() {
-		this.keys = TypeHandler.castObjectListToKeyList(this.findAll(
-				new Key<String>(), false, null));
-
+		this.keys = TypeHandler.castObjectListToKeyList(this.findAll(new Key<String>(), false, null));
 		return this;
 	}
 
 	private DataHandler loadValues() {
-		this.values = TypeHandler.castObjectListToValueList(this.findAll(
-				new Value<Object>(), false, null));
+		this.values = TypeHandler.castObjectListToValueList(this.findAll(new Value<Object>(), false, null));
 
 		return this;
 	}
 
 	private DataHandler loadFileItems(final boolean withArguments) {
-		this.fileItems = TypeHandler.castObjectListToFileItemList(this.findAll(
-				new FileItem(), withArguments, null));
-
+		this.fileItems = TypeHandler.castObjectListToFileItemList(this.findAll(new FileItem(), withArguments, null));
 		return this;
 	}
 
 	private DataHandler loadTypeInformation() {
-		this.typeInformation = TypeHandler
-				.castObjectListToTypeInformationList(this.findAll(
-						new TypeInformation(), false, null));
-
+		this.typeInformation = TypeHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), false, null));
 		return this;
 	}
 
 	public Integer keyPos(final Key<?> searchKey) {
 		for (final Key<?> key : this.getKeys()) {
-			if (key.getKey() == searchKey.getKey()
-					&& key.getSection() == searchKey.getSection()
+			if (key.getKey() == searchKey.getKey() && key.getSection() == searchKey.getSection()
 					&& key.getInfoType() == searchKey.getInfoType()) {
 				return key.getId();
 			}
 		}
-
 		return null;
 	}
 
 	public ArrayList<?> persist(final ArrayList<?> objects) throws Exception {
 		final ArrayList<IPersistable> tempArrayList = new ArrayList<IPersistable>();
-		for (final Object object : objects) {
-			tempArrayList.add(this.persist((IPersistable) object));
+		if (objects != null && objects.size() > 0) {
+			for (final Object object : objects) {
+				tempArrayList.add(this.persist((IPersistable) object));
+			}
 		}
-
 		return tempArrayList;
 	}
 
@@ -118,9 +111,8 @@ public class DataHandler {
 
 				i++;
 			}
-			sql = "INSERT OR IGNORE INTO '" + databaseTable + "' ("
-					+ Helper.implode(tempObject.keySet(), ",", "'", "'")
-					+ ") VALUES (" + valueStr + ");";
+			sql = "INSERT OR IGNORE INTO '" + databaseTable + "' (" + Helper.implode(tempObject.keySet(), ",", "'", "'") + ") VALUES ("
+					+ valueStr + ");";
 
 			result = DB.updatePS(sql, values);
 			object.setId(result);
@@ -128,8 +120,7 @@ public class DataHandler {
 		return object;
 	}
 
-	public ArrayList<Object> findAll(final IPersistable object,
-			final Boolean withSubtypes, final Integer limit) {
+	public ArrayList<Object> findAll(final IPersistable object, final Boolean withSubtypes, final Integer limit) {
 		HashMap<String, Object> tempMap = null;
 		final ArrayList<Object> resultList = new ArrayList<Object>();
 		if (object != null) {
@@ -142,8 +133,7 @@ public class DataHandler {
 			if (limit != null) {
 				limitStr = " LIMIT " + limit;
 			}
-			final String sql = "SELECT * FROM " + object.getDatabaseTable()
-					+ where + limitStr;
+			final String sql = "SELECT * FROM " + object.getDatabaseTable() + where + limitStr;
 			try {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();
@@ -161,20 +151,17 @@ public class DataHandler {
 		return resultList;
 	}
 
-	public ArrayList<Object> findAllByFileItemValue(final String fileItemValue,
-			final Boolean withSubtypes) {
+	public ArrayList<Object> findAllByFileItemValue(final String fileItemValue, final Boolean withSubtypes) {
 		final FileItem fileItem = new FileItem();
 		HashMap<String, Object> tempMap = null;
 		final ArrayList<Object> resultList = new ArrayList<Object>();
 		if (fileItem != null) {
 			String where = "";
 			ResultSet rs = null;
-			where = " WHERE ((name || fullpath || dir|| size|| ext || filehash) LIKE '%"
-					+ fileItemValue + "%')";
+			where = " WHERE ((name || fullpath || dir|| size|| ext || filehash) LIKE '%" + fileItemValue + "%')";
 
-			final String sql = "SELECT * FROM " + fileItem.getDatabaseTable()
-					+ where;
-			System.out.println(sql);
+			final String sql = "SELECT * FROM " + fileItem.getDatabaseTable() + where;
+			System.out.println("SQL: " + sql);
 			try {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();
@@ -195,81 +182,124 @@ public class DataHandler {
 	@SuppressWarnings({
 			"unchecked", "rawtypes"
 	})
-	public ArrayList<KeyValue<Key<String>, Value<Object>>> findAllInfoForId(
-			final Integer id) {
-		final ArrayList<KeyValue<Key<String>, Value<Object>>> resultList = new ArrayList<KeyValue<Key<String>, Value<Object>>>();
+	public ArrayList<FileAttributeList> findAllInfoForId(final Integer id) {
+		final ArrayList<FileAttributeList> resultList = new ArrayList<FileAttributeList>();
+		// ArrayList<KeyValue<Key<String>, Value<Object>>>
 		HashMap<String, Object> tempMapKey = null;
 		HashMap<String, Object> tempMapValue = null;
 		ResultSet rs = null;
 		final String sql = "SELECT "
 				+ "	tiKey.id AS 'keyId', tiKey.Key AS 'keyKey', tiKey.infoType AS 'keyInfoType', tiKey.section AS 'keySection', tiValue.id as 'valueId', tiValue.value as 'valueValue' "
-				+ "FROM " + "	fileInformation as fi " + "LEFT JOIN "
-				+ " 	typeInformation as ti " + "ON " + " 	ti.file_id = fi.id "
-				+ " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
-				+ " 	tiKey.id = ti.key_id " + "LEFT JOIN "
-				+ "	typeInformation_value AS tiValue " + "ON "
-				+ "	tiValue.id = ti.value_id " + "WHERE " + "	fi.id = '" + id
-				+ "' ";
+				+ "FROM " + "	fileInformation as fi " + "LEFT JOIN " + " 	typeInformation as ti " + "ON " + " 	ti.file_id = fi.id "
+				+ " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON " + " 	tiKey.id = ti.key_id " + "LEFT JOIN "
+				+ "	typeInformation_value AS tiValue " + "ON " + "	tiValue.id = ti.value_id " + "WHERE " + "	fi.id = '" + id
+				+ "' ORDER BY keyInfoType, keySection ";
 		try {
+			System.out.println("SQL: " + sql);
 			rs = DB.query(sql);
 			final ResultSetMetaData rsmd = rs.getMetaData();
-			for (; rs.next();) {
+			FileAttributeList tempFileAttributeList = null;
+			for (; rs.next();) { // for each line
+				KeyValue kv = null;
 				tempMapKey = new HashMap<String, Object>();
 				tempMapValue = new HashMap<String, Object>();
-				for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-					final String originalName = Helper.lcfirst(rsmd
-							.getColumnLabel(i).replaceFirst("key", "")
-							.replaceFirst("value", ""));
+				String section = null;
+				String infoType = null;
+				for (int i = 1; i <= rsmd.getColumnCount(); i++) { // for each
+																	// column
+					final String originalName = Helper.lcfirst(rsmd.getColumnLabel(i).replaceFirst("key", "").replaceFirst("value", ""));
 					if (rsmd.getColumnLabel(i).startsWith("key")) {
+						if (originalName.equals("section")) {
+							section = rs.getString("keySection");
+						} else if (originalName.equals("infoType")) {
+							infoType = rs.getString("keyInfoType");
+						}
 						tempMapKey.put(originalName, rs.getObject(i));
 					} else if (rsmd.getColumnLabel(i).startsWith("value")) {
 						tempMapValue.put(originalName, rs.getObject(i));
 					}
 
 				}
-				resultList.add(new KeyValue((Key<String>) (new Key<String>())
-						.fromHashMap(tempMapKey),
-						((Value<Object>) (new Value<Object>())
-								.fromHashMap(tempMapValue))));
-				/*
-				 * if(tempMapKey.size() > 0) resultList.put("key", tempMapKey);
-				 */
+
+				final Key<String> key = (Key<String>) (new Key<String>()).fromHashMap(tempMapKey);
+				final Value<Object> value = ((Value<Object>) (new Value<Object>()).fromHashMap(tempMapValue));
+				if (key != null && value != null && value.getValue() != null) {
+					kv = new KeyValue<String, Object>(key, value);
+
+					int index = -1;
+					if ((index = this.indexOfSectionInFileAttributeList(resultList, section, infoType)) > -1) {
+						tempFileAttributeList = resultList.get(index);
+						tempFileAttributeList.getKeyValues().add(kv);
+						resultList.set(index, tempFileAttributeList);
+					} else {
+						tempFileAttributeList = new FileAttributeList();
+						tempFileAttributeList.setSectionName(section);
+						tempFileAttributeList.getKeyValues().add(kv);
+						resultList.add(tempFileAttributeList);
+					}
+					// resultList.add();
+					/*
+					 * if(tempMapKey.size() > 0) resultList.put("key",
+					 * tempMapKey);
+					 */
+				}
 			}
 		} catch (final SQLException e) {
 			e.printStackTrace();
 		}
+		// System.exit(-1);
 		return resultList;
 	}
 
+	private int indexOfSectionInFileAttributeList(final ArrayList<FileAttributeList> fileAttribList,
+			final String sectionName,
+			final String infoType) {
+		if (infoType != null && sectionName != null) {
+			for (final FileAttributeList fileAttributeListItem : fileAttribList) {
+				if (fileAttributeListItem != null && fileAttributeListItem.getSectionName() != null) {
+					if (fileAttributeListItem.getSectionName().equalsIgnoreCase(sectionName)
+							&& fileAttribList.indexOf(fileAttributeListItem) > -1) {
+						final int pos = fileAttribList.indexOf(fileAttributeListItem);
+						if (pos > -1 && fileAttribList.get(pos) != null && fileAttribList.get(pos).getKeyValues() != null
+								&& fileAttribList.get(pos).getKeyValues().size() > 0
+								&& fileAttribList.get(pos).getKeyValues().get(0).getKey() != null
+								&& fileAttribList.get(pos).getKeyValues().get(0).getKey().getInfoType().equalsIgnoreCase(infoType)) {
+							return pos;
+						}
+					}
+				}
+			}
+		}
+
+		return -1;
+	}
+
 	/**
+	 * Returns a list of FileItems which are searched by the search term
+	 * searchStr.
 	 * 
 	 * @param searchStr
-	 *            = fileItemValue
+	 *            String
 	 * @param withSubtypes
-	 * @return
+	 *            Boolean
+	 * @return ArrayList<FileItem>
 	 */
-	public ArrayList<Object> findAllInfoForString(final String searchStr,
-			final Boolean withSubtypes) {
+	public ArrayList<Object> findAllFileItemForStringInAll(final String searchStr, final Boolean withSubtypes) {
 		ArrayList<Object> tempList = null;
 		tempList = this.findAllByFileItemValue(searchStr, withSubtypes);
 
 		final FileItem fileItem = new FileItem();
 		HashMap<String, Object> tempMap = null;
-		final ArrayList<Object> tempResultList = new ArrayList<Object>();
 		if (fileItem != null) {
 			String where = "";
 			ResultSet rs = null;
 			where = " WHERE (tiValue.value LIKE '%" + searchStr + "%')";
 
-			final String sql = "SELECT fi.* FROM '"
-					+ fileItem.getDatabaseTable() + "' AS fi LEFT JOIN "
-					+ " 	typeInformation as ti " + "ON "
-					+ " 	ti.file_id = fi.id " + " LEFT JOIN "
-					+ " 	typeInformation_key AS tiKey " + "ON "
-					+ " 	tiKey.id = ti.key_id " + "LEFT JOIN "
-					+ "	typeInformation_value AS tiValue " + "ON "
+			final String sql = "SELECT fi.* FROM '" + fileItem.getDatabaseTable() + "' AS fi LEFT JOIN " + " 	typeInformation as ti "
+					+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
+					+ " 	tiKey.id = ti.key_id " + "LEFT JOIN " + "	typeInformation_value AS tiValue " + "ON "
 					+ "	tiValue.id = ti.value_id " + where;
-			System.out.println(sql);
+			System.out.println("SQL: " + sql);
 			try {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();
@@ -278,14 +308,74 @@ public class DataHandler {
 					for (int i = 1; i <= rsmd.getColumnCount(); i++) {
 						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
 					}
-					tempResultList.add(fileItem.fromHashMap(tempMap));
+					tempList.add(fileItem.fromHashMap(tempMap));
 				}
 			} catch (final SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		tempList.addAll(tempResultList);
 		return tempList;
+	}
+
+	public FileItem findAllInfoForAllByFileId(final Integer fileId) {
+		HashMap<String, Object> tempMap = null;
+		FileItem resultItem = new FileItem();
+		if (fileId != null) {
+			String where = "";
+			ResultSet rs = null;
+			where = " WHERE id = '" + fileId + "'";
+
+			final String sql = "SELECT * FROM " + resultItem.getDatabaseTable() + where;
+			System.out.println("SQL: " + sql);
+			try {
+				rs = DB.query(sql);
+				final ResultSetMetaData rsmd = rs.getMetaData();
+				for (; rs.next();) {
+					tempMap = new HashMap<String, Object>();
+					for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
+					}
+					resultItem = (FileItem) resultItem.fromHashMap(tempMap);
+					if (resultItem.getId() != null) {
+						final ArrayList<FileAttributeList> attribList = this.findAllInfoForId(fileId);
+						if (attribList != null && attribList.size() > 0) {
+							resultItem.getAttributes().addAll(attribList);
+						}
+					}
+				}
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return resultItem;
+	}
+
+	public Integer getRowCount(final IPersistable object) {
+		Integer result = null;
+		ResultSet rs = null;
+		final String sql = "SELECT COUNT(id) AS count FROM " + object.getDatabaseTable();
+
+		try {
+			rs = DB.query(sql);
+			if (rs.next()) {
+				result = rs.getInt("count");
+			}
+
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public ConcurrentHashMap<String, Integer> getInfoFromDatabase() {
+		final ConcurrentHashMap<String, Integer> resultMap = new ConcurrentHashMap<String, Integer>();
+
+		resultMap.put("fileCount", this.getRowCount(new FileItem()));
+		resultMap.put("keyCount", this.getRowCount(new Key<Object>()));
+		resultMap.put("valueCount", this.getRowCount(new Value<Object>()));
+
+		return resultMap;
 	}
 
 	/**

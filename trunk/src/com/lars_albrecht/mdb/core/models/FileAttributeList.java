@@ -18,6 +18,13 @@ public class FileAttributeList {
 	private Integer								fileId		= null;
 
 	/**
+	 * 
+	 */
+	public FileAttributeList() {
+		super();
+	}
+
+	/**
 	 * @param id
 	 * @param keyValues
 	 * @param hash

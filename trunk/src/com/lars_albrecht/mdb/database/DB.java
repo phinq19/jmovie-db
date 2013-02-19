@@ -48,10 +48,8 @@ public class DB implements IDatabase {
 	 * @return the connection
 	 * @throws SQLException
 	 */
-	public static synchronized final Connection getConnection()
-			throws SQLException {
-		if ((DB.connection == null) || DB.connection.isClosed()
-				|| DB.connection.isReadOnly()) {
+	public static synchronized final Connection getConnection() throws SQLException {
+		if ((DB.connection == null) || DB.connection.isClosed() || DB.connection.isReadOnly()) {
 			DB.connection = DB.createConnection(DB.DBTYPE);
 		}
 		return DB.connection;
@@ -69,12 +67,10 @@ public class DB implements IDatabase {
 			switch (dbType) {
 				default:
 				case 0: // sqlite
-					con = DriverManager.getConnection("jdbc:sqlite:"
-							+ DB.dbFile);
+					con = DriverManager.getConnection("jdbc:sqlite:" + DB.dbFile);
 					break;
 				case 1: // h2
-					con = DriverManager.getConnection(DB.dbUrl + DB.dbName
-							+ DB.dboptions, DB.dbUsername, DB.dbPassword);
+					con = DriverManager.getConnection(DB.dbUrl + DB.dbName + DB.dboptions, DB.dbUsername, DB.dbPassword);
 			}
 
 		} catch (final ClassNotFoundException e) {
@@ -110,8 +106,7 @@ public class DB implements IDatabase {
 	 * @param expression
 	 * @throws SQLException
 	 */
-	public static synchronized ResultSet query(final String expression)
-			throws SQLException {
+	public static synchronized ResultSet query(final String expression) throws SQLException {
 		Statement st = null;
 		ResultSet rs = null;
 		st = DB.getConnection().createStatement(); // statement objects can be
@@ -143,8 +138,7 @@ public class DB implements IDatabase {
 	 * @return ResultSet
 	 * @throws Exception
 	 */
-	public static synchronized ResultSet queryPS(final String expression,
-			final ConcurrentHashMap<Integer, Object> values) throws Exception {
+	public static synchronized ResultSet queryPS(final String expression, final ConcurrentHashMap<Integer, Object> values) throws Exception {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		st = DB.getConnection().prepareStatement(expression);
@@ -172,8 +166,7 @@ public class DB implements IDatabase {
 	 * @param expression
 	 * @throws SQLException
 	 */
-	public static synchronized void update(final String expression)
-			throws SQLException {
+	public static synchronized void update(final String expression) throws SQLException {
 		Statement st = null;
 		st = DB.getConnection().createStatement(); // statements
 		final int i = st.executeUpdate(expression); // run the query
@@ -192,8 +185,7 @@ public class DB implements IDatabase {
 	 * @param values
 	 * @throws Exception
 	 */
-	public static synchronized int updatePS(final String expression,
-			final ConcurrentHashMap<Integer, Object> values) throws Exception {
+	public static synchronized int updatePS(final String expression, final ConcurrentHashMap<Integer, Object> values) throws Exception {
 		PreparedStatement st = null;
 		st = DB.getConnection().prepareStatement(expression); // statements
 		for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
@@ -220,8 +212,7 @@ public class DB implements IDatabase {
 	 * @return last_inserted_rowid
 	 * @throws SQLException
 	 */
-	private static synchronized int getLastInsertedRowId(final Statement st)
-			throws SQLException {
+	private static synchronized int getLastInsertedRowId(final Statement st) throws SQLException {
 		return st.getGeneratedKeys().getInt("last_insert_rowid()");
 	}
 
@@ -237,9 +228,8 @@ public class DB implements IDatabase {
 	 * @return PreparedStatement
 	 * @throws Exception
 	 */
-	private static PreparedStatement addDynamicValue(
-			final PreparedStatement pst, final int index,
-			final Object objectToSet) throws Exception {
+	private static PreparedStatement
+			addDynamicValue(final PreparedStatement pst, final int index, final Object objectToSet) throws Exception {
 		if (objectToSet.getClass() == Integer.class) {
 			pst.setInt(index, ((Integer) objectToSet).intValue());
 		} else if (objectToSet.getClass() == String.class) {
@@ -247,8 +237,7 @@ public class DB implements IDatabase {
 		} else if (objectToSet instanceof Image) {
 			// pst.setBytes(index, Helper.getBytesFromImage((Image)
 			// objectToSet));
-			throw new Exception("Unsupported type submitted: "
-					+ objectToSet.getClass().getName());
+			throw new Exception("Unsupported type submitted: " + objectToSet.getClass().getName());
 		} else if (objectToSet.getClass() == Boolean.class) {
 			pst.setBoolean(index, ((Boolean) objectToSet));
 		} else if (objectToSet.getClass() == Float.class) {
@@ -348,8 +337,7 @@ public class DB implements IDatabase {
 				dbInfoWhere = "TABLE_SCHEMA = 'PUBLIC'";
 		}
 
-		final ResultSet rs = DB.query("SELECT * FROM " + dbInfoTable
-				+ " WHERE " + dbInfoWhere + ";");
+		final ResultSet rs = DB.query("SELECT * FROM " + dbInfoTable + " WHERE " + dbInfoWhere + ";");
 		final ArrayList<String> temp = new ArrayList<String>();
 		for (; rs.next();) {
 			temp.add(rs.getString(dbInfoField));
@@ -366,9 +354,8 @@ public class DB implements IDatabase {
 	 * @return ArrayList<ConcurrentHashMap<String, Object>>
 	 * @throws SQLException
 	 */
-	public static ArrayList<ConcurrentHashMap<String, Object>> returnResultFromItems(
-			final String sql, final ArrayList<String> fields)
-			throws SQLException {
+	public static ArrayList<ConcurrentHashMap<String, Object>>
+			returnResultFromItems(final String sql, final ArrayList<String> fields) throws SQLException {
 		final ArrayList<ConcurrentHashMap<String, Object>> resultSet = new ArrayList<ConcurrentHashMap<String, Object>>();
 		final ResultSet rs = DB.query(sql);
 		for (; rs.next();) {
@@ -387,8 +374,7 @@ public class DB implements IDatabase {
 	 * @return ArrayList<String>
 	 * @throws SQLException
 	 */
-	public static ArrayList<String> getColumnsFromTable(final String tableName)
-			throws SQLException {
+	public static ArrayList<String> getColumnsFromTable(final String tableName) throws SQLException {
 		final ResultSet rs = DB.query("SHOW COLUMNS FROM " + tableName);
 		final ArrayList<String> tempList = new ArrayList<String>();
 		while (rs.next()) {
@@ -430,7 +416,7 @@ public class DB implements IDatabase {
 			// typeInformation_value
 			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_value' ( ";
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-			sql += "'value' VARCHAR(255)";
+			sql += "'value' VARCHAR(255) ";
 			sql += "); ";
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
@@ -454,14 +440,3 @@ public class DB implements IDatabase {
 
 	}
 }
-
-/**
- * TYP: MediaInfo|IMDB SECTION: general|video FILE_ID = 1 KEY: x|y|z VALUE:
- * 1|2|3
- * 
- * INF file_id key_id value_id value
- * 
- * KEY key type section
- * 
- * VAL value
- */

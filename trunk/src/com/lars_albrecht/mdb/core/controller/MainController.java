@@ -19,12 +19,12 @@ import com.lars_albrecht.mdb.core.handler.TypeHandler;
  */
 public class MainController implements FinderListener {
 
-	private FinderController					fController	= null;
-	private CollectorController					cController	= null;
-	private InterfaceController					iController	= null;
-	private DataHandler							dataHandler	= null;
+	private FinderController fController = null;
+	private CollectorController cController = null;
+	private InterfaceController iController = null;
+	private DataHandler dataHandler = null;
 
-	private ConcurrentHashMap<String, Object>	globalVars	= null;
+	private ConcurrentHashMap<String, Object> globalVars = null;
 
 	public MainController() {
 		this.init();
@@ -32,11 +32,7 @@ public class MainController implements FinderListener {
 
 	private void init() {
 		RessourceBundleEx.getInstance().setPrefix("mdb");
-		System.out.println(RessourceBundleEx.getInstance().getProperty(
-				"application.name")
-				+ " ("
-				+ RessourceBundleEx.getInstance().getProperty(
-						"application.version") + ")");
+		System.out.println(RessourceBundleEx.getInstance().getProperty("application.name") + " (" + RessourceBundleEx.getInstance().getProperty("application.version") + ")");
 
 		this.fController = new FinderController(this);
 		this.fController.addFinderEventListener(this);
@@ -48,19 +44,18 @@ public class MainController implements FinderListener {
 		this.dataHandler = new DataHandler(this);
 		this.globalVars = new ConcurrentHashMap<String, Object>();
 
-		final ArrayList<?> tempList = TypeHandler
-				.castStringListToFileList(RessourceBundleEx.getInstance()
-						.getProperties("module.finder.path"));
+		final ArrayList<?> tempList = TypeHandler.castStringListToFileList(RessourceBundleEx.getInstance().getProperties("module.finder.path"));
 		this.globalVars.put("searchPathList", tempList);
 	}
 
 	public void run() {
 		this.startInterfaces();
-		// this.startSearch();
+		this.startSearch();
 
-		this.test();
+		// this.test();
 	}
 
+	@SuppressWarnings("unused")
 	private void test() {
 
 		// System.out.println(this.dataHandler.findAllInfoForId(25));
@@ -73,13 +68,11 @@ public class MainController implements FinderListener {
 
 	@SuppressWarnings("unchecked")
 	private void startSearch() {
-		this.fController.run((ArrayList<File>) this.globalVars
-				.get("searchPathList"));
+		this.fController.run((ArrayList<File>) this.globalVars.get("searchPathList"));
 	}
 
 	private void startCollect(final ArrayList<File> foundFilesList) {
-		this.cController
-				.run(TypeHandler.fileListToFileItemList(foundFilesList));
+		this.cController.run(TypeHandler.fileListToFileItemList(foundFilesList));
 	}
 
 	/**

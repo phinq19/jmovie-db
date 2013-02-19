@@ -34,17 +34,21 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import com.lars_albrecht.general.utilities.HTML;
 import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.TypeHandler;
+import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
+import com.lars_albrecht.mdb.core.models.KeyValue;
 
 /**
  * Example program from Chapter 1 Programming Spiders, Bots and Aggregators in
@@ -187,10 +191,8 @@ public class WebServer {
 				final Socket remote = s.accept();
 				// remote is now the connected socket
 				System.out.println("Connection, sending data.");
-				final BufferedReader in = new BufferedReader(
-						new InputStreamReader(remote.getInputStream()));
-				final PrintWriter out = new PrintWriter(
-						remote.getOutputStream());
+				final BufferedReader in = new BufferedReader(new InputStreamReader(remote.getInputStream()));
+				final PrintWriter out = new PrintWriter(remote.getOutputStream());
 
 				// read the data sent. We basically ignore it,
 				// stop reading once a blank line is hit. This
@@ -213,13 +215,11 @@ public class WebServer {
 					// System.out.println("notNull = false");
 				}
 
-				while ((notNull || ((requestLine = in.readLine()) != null)
-						&& (!requestLine.equals("")))) {
+				while ((notNull || ((requestLine = in.readLine()) != null) && (!requestLine.equals("")))) {
 					notNull = false;
 					final String[] keyValue = requestLine.split(":");
 					if (keyValue.length > 1) {
-						headerKeyValue.put(keyValue[0].trim(),
-								keyValue[1].trim());
+						headerKeyValue.put(keyValue[0].trim(), keyValue[1].trim());
 					}
 					if (requestLine.startsWith("GET ")) {
 						final int urlStart = 4;
@@ -229,8 +229,7 @@ public class WebServer {
 						String paramString = "";
 						if (paramPos > -1) {
 							urlStr = urlStr.substring(0, urlStr.indexOf("?"));
-							paramString = requestLine.substring(paramPos,
-									urlEnd);
+							paramString = requestLine.substring(paramPos, urlEnd);
 							paramString = paramString.replaceFirst("\\?", "");
 							final String[] paramsArr = paramString.split("&");
 							for (final String string : paramsArr) {
@@ -252,8 +251,7 @@ public class WebServer {
 				}
 
 				// Send the HTML page
-				final String content = this.getContent(urlStr, getKeyValue,
-						headerKeyValue);
+				final String content = this.getContent(urlStr, getKeyValue, headerKeyValue);
 
 				// Send the response
 				// Send the headers
@@ -294,8 +292,7 @@ public class WebServer {
 			final ConcurrentHashMap<String, String> GETParams,
 			final ConcurrentHashMap<String, String> headerKeyValue) {
 		if (url != null) {
-			final File file = (new File(new File("").getAbsolutePath()
-					+ "/web/" + url));
+			final File file = (new File(new File("").getAbsolutePath() + "/web/" + url));
 			// System.out.println("APATH: " + file.getAbsolutePath());
 			try {
 				if (file != null && file.exists()) {
@@ -303,8 +300,7 @@ public class WebServer {
 					// file.getAbsolutePath());
 					String content = "";
 					content = Helper.getFileContents(file);
-					content = this.generateContent(content, file.getName(),
-							GETParams, headerKeyValue);
+					content = this.generateContent(content, file.getName(), GETParams, headerKeyValue);
 
 					return content;
 				} else if (file != null && !file.exists()) {
@@ -321,7 +317,8 @@ public class WebServer {
 		return null;
 	}
 
-	private String generateContent(final String content, final String filename,
+	private String generateContent(final String content,
+			final String filename,
 			final ConcurrentHashMap<String, String> GETParams,
 			final ConcurrentHashMap<String, String> headerKeyValue) {
 		String generatedContent = content;
@@ -336,46 +333,48 @@ public class WebServer {
 			}
 
 			if (action.equalsIgnoreCase("index")) {
-				contentMarkerReplacement = "index";
+				contentMarkerReplacement = "Auf dieser Seite kann man vorhandene Filme suchen und sich verschiedene Informationen anzeigen lassen.";
 			} else if (action.equalsIgnoreCase("showSearchresults")) {
-				if (GETParams.containsKey("searchStr")
-						&& GETParams.get("searchStr") != null) {
-					// get DATA for output
-					String searchStr = GETParams.get("searchStr");
-					searchStr = searchStr.replaceAll("\\+", " ");
-					ArrayList<FileItem> foundList = TypeHandler
-							.castObjectListToFileItemList(this.mainController
-									.getDataHandler().findAllInfoForString(
-											searchStr, false));
-					foundList = Helper.unique(foundList);
-
-					contentMarkerReplacement = this.generateListOutput(
-							foundList, true);
-				} else {
-					contentMarkerReplacement = "<p>Suchen Sie mit hilfe der Suche</p>";
-				}
+				contentMarkerReplacement = this.generateSearchresults(GETParams);
 			} else if (action.equalsIgnoreCase("showFileDetails")) {
 				contentMarkerReplacement = "showFileDetails";
+				if (GETParams.containsKey("fileId") && GETParams.get("fileId") != null) {
+					final Integer fileId = Integer.parseInt(GETParams.get("fileId"));
+
+					if (fileId != null && fileId > 0) {
+						contentMarkerReplacement = this.generateDetailView(this.mainController.getDataHandler().findAllInfoForAllByFileId(
+								fileId));
+					}
+
+				}
+			} else if (action.equalsIgnoreCase("showInfo")) {
+				contentMarkerReplacement = this.generateInfoView();
 			}
 
 			// replace contentmarker with "contentMarkerReplacement" if marker
 			// exists.
-			if (this.containsMarker(generatedContent, "content")) {
-				generatedContent = this.replaceMarker(generatedContent,
-						"content", contentMarkerReplacement);
+			if (Template.containsMarker(generatedContent, "content")) {
+				generatedContent = Template.replaceMarker(generatedContent, "content", contentMarkerReplacement);
 			}
 
 			// replace "free" marker.
-			if (this.containsMarker(generatedContent, "lastFiveAdded")) {
-				final ArrayList<FileItem> lastFiveList = TypeHandler
-						.castObjectListToFileItemList(this.mainController
-								.getDataHandler().findAll(new FileItem(),
-										false, 5));
-				final String listOutput = this.generateListOutput(lastFiveList,
-						false);
-				System.out.println("LAST FIVE: " + listOutput);
-				generatedContent = this.replaceMarker(generatedContent,
-						"lastFiveAdded", listOutput);
+			if (Template.containsMarker(content, "searchTerm")) {
+				if (GETParams.containsKey("searchStr") && GETParams.get("searchStr") != null) {
+					try {
+						generatedContent = Template.replaceMarker(generatedContent, "searchTerm",
+								URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
+					} catch (final UnsupportedEncodingException e) {
+						generatedContent = e.getMessage();
+					}
+				} else {
+					generatedContent = Template.replaceMarker(generatedContent, "searchTerm", "");
+				}
+			}
+			if (Template.containsMarker(generatedContent, "lastFiveAdded")) {
+				final ArrayList<FileItem> lastFiveList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
+						.findAll(new FileItem(), false, 5));
+				final String listOutput = HTML.generateListOutput(lastFiveList, null, false);
+				generatedContent = Template.replaceMarker(generatedContent, "lastFiveAdded", listOutput);
 			}
 
 		}
@@ -383,82 +382,113 @@ public class WebServer {
 		return generatedContent;
 	}
 
-	private Boolean containsMarker(final String content, final String marker) {
-		Pattern pattern = null;
-		if (marker == null) {
-			pattern = Pattern.compile("\\{(.*)\\}");
+	private String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) {
+		String resultStr = "<div id=\"searchresultsView\">";
+		if (GETParams.containsKey("searchStr") && GETParams.get("searchStr") != null) {
+			// get DATA for output
+			String searchStr = GETParams.get("searchStr");
+			searchStr = searchStr.replaceAll("\\+", " ");
+			ArrayList<FileItem> foundList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
+					.findAllFileItemForStringInAll(searchStr, false));
+			foundList = Helper.unique(foundList);
+
+			resultStr += HTML.generateListOutput(foundList, searchStr, true);
 		} else {
-			pattern = Pattern.compile("\\{" + marker + "\\}");
+			resultStr += "<p>Suchen Sie mit hilfe der Suche</p>";
 		}
-		final Matcher matcher = pattern.matcher(content);
-		return matcher.find();
+
+		resultStr += "</div>";
+		return resultStr;
 	}
 
-	/**
-	 * Returns the first markername.
-	 * 
-	 * @param content
-	 * @return String
-	 */
-	private String getNextMarkername(final String content) {
-		final Pattern pattern = Pattern.compile("\\{(.*)\\}");
-		final Matcher matcher = pattern.matcher(content);
-		String name = null;
-		if (matcher.find()) {
-			name = matcher.group(1);
-		}
-		return name;
-	}
-
-	/**
-	 * Replace a marker "markername" in "content" with "replacement".
-	 * 
-	 * @param content
-	 * @param markername
-	 * @param replacement
-	 * @return String
-	 */
-	private String replaceMarker(final String content, final String markername,
-			final String replacement) {
-		String inContent = content;
-		inContent = inContent.replaceFirst("(\\{" + markername + "\\})+",
-				replacement);
-		return inContent;
-	}
-
-	/**
-	 * Generate HTML Output from FileItem-List.
-	 * 
-	 * @param fileItemList
-	 * @return String
-	 */
-	private String generateListOutput(final ArrayList<FileItem> fileItemList,
-			final boolean printOutCount) {
-		String resultStr = "";
-		if (fileItemList.size() > 0) {
-			if (printOutCount) {
-				resultStr += "<p>" + fileItemList.size()
-						+ " Einträge gefunden</p>";
-			}
-			resultStr += "<div class=\"resulttable\">";
+	private String generateInfoView() {
+		String resultStr = "<div id=\"infoView\">";
+		this.mainController.getDataHandler().reloadData();
+		final ConcurrentHashMap<String, Integer> info = this.mainController.getDataHandler().getInfoFromDatabase();
+		if (info != null) {
+			resultStr += "<h2>Informationen</h2>";
+			resultStr += "<h3 class=\"tableHeader\">Anzahl Einträge</h3>";
 			resultStr += "<table>";
 			resultStr += "<tr>";
-			resultStr += "<th>Filename</th>";
+			resultStr += "<th>Typ</th>";
+			resultStr += "<th>Anzahl</th>";
 			resultStr += "</tr>";
-
-			for (final FileItem fileItem : fileItemList) {
-				resultStr += "<tr>";
-				resultStr += "<td><a href=\"?action=showFileDetails&fileId="
-						+ fileItem.getId() + "\">" + fileItem.getName()
-						+ "</a></td>";
-				resultStr += "</tr>";
-			}
+			resultStr += "<tr>";
+			resultStr += "<td>File Count</td>";
+			resultStr += "<td>" + info.get("fileCount") + "</td>";
+			resultStr += "</tr>";
+			resultStr += "<tr>";
+			resultStr += "<td>Key Count</td>";
+			resultStr += "<td>" + info.get("keyCount") + "</td>";
+			resultStr += "</tr>";
+			resultStr += "<tr>";
+			resultStr += "<td>Value Count</td>";
+			resultStr += "<td>" + info.get("valueCount") + "</td>";
+			resultStr += "</tr>";
 			resultStr += "</table>";
-			resultStr += "</div>";
-
 		} else {
-			resultStr = "<p>Keine Ergebnisse</p>";
+			resultStr += "<p>Ein Fehler ist aufgetreten. Konnte keine Informationen sammeln.</p>";
 		}
+
+		resultStr += "</div>";
+		return resultStr;
+	}
+
+	private String generateDetailView(final FileItem item) {
+		String resultStr = "<div id=\"detailView\">";
+		if (item != null) {
+			resultStr += "<h2>" + item.getName() + " (" + item.getId() + ")" + "</h2>";
+			resultStr += "<div class=\"path\">" + item.getFullpath().replaceAll("\\\\", "\\\\\\\\") + "</div>";
+			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Dir</div><div class=\"value\">"
+					+ item.getDir().replaceAll("\\\\", "\\\\\\\\") + "</div></div>";
+			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Size</div><div class=\"value\">"
+					+ Helper.getHumanreadableFileSize(item.getSize()) + "</div></div>";
+
+			if (item.getAttributes() != null && item.getAttributes().size() > 0) {
+				resultStr += "<hr />";
+				resultStr += "<div id=\"attributes\">";
+
+				resultStr += "<ul><li><a href=\"#MediaInfo\">MediaInfo</a></li><li><a href=\"#themoviedb\">The Movie DB</a></li></ul>";
+
+				resultStr += "<h3>Attributes</h3>";
+				String currentInfoType = null;
+				int i = 0;
+				for (final FileAttributeList attributeList : item.getAttributes()) {
+					if (currentInfoType == null
+							|| !currentInfoType.equalsIgnoreCase(attributeList.getKeyValues().get(0).getKey().getInfoType())) {
+						currentInfoType = attributeList.getKeyValues().get(0).getKey().getInfoType();
+						if (i > 0) {
+							resultStr += "</div>";
+						}
+						resultStr += "<div class=\"infoSection\">";
+						resultStr += "<h4>" + currentInfoType + "</h4>" + "<a name=\"" + currentInfoType + "\"></a>";
+					}
+					if (attributeList.getKeyValues() != null && attributeList.getKeyValues().size() > 0) {
+						resultStr += "<div class=\"sectionSection\">";
+						resultStr += "<h5 class=\"tableHeader\">" + attributeList.getSectionName() + "</h5>";
+						resultStr += "<table>";
+						resultStr += "<tr>";
+						resultStr += "<th>" + "Key" + "<th>";
+						resultStr += "<th>" + "Value" + "<th>";
+						resultStr += "</tr>";
+						for (final KeyValue<String, Object> keyValue : attributeList.getKeyValues()) {
+							resultStr += "<tr>";
+							resultStr += "<td>" + keyValue.getKey().getKey() + "<td>";
+							resultStr += "<td>" + keyValue.getValue().getValue() + "<td>";
+							resultStr += "</tr>";
+						}
+						resultStr += "</table>";
+						resultStr += "</div>";
+					}
+					i++;
+				}
+				resultStr += "</div>";
+			}
+		} else {
+			resultStr += "<p>Nichts gefunden</p>";
+		}
+		resultStr += "</div>";
+
 		return resultStr;
 	}
 }
