@@ -12,6 +12,7 @@
 
         <link rel="stylesheet" href="css/normalize.min.css">
         <link rel="stylesheet" href="css/main.css">
+        <link rel="stylesheet" href="css/content.css">
 
         <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
     </head>
@@ -24,10 +25,18 @@
             <header class="wrapper clearfix">
                 <h1 class="title">MDB</h1>
                     <nav>
-	                    <form method="get" action="">
-	                    	<input type="text" id="searchStr" name="searchStr" />
-	                    	<input type="hidden" name="action" value="showSearchresults" />
-	                    </form>
+	                    <div id="searchForm" class="menuItem">
+							<form method="get" action="">
+								<title for="searchStr">Suche</title>
+								<input type="text" id="searchStr" name="searchStr" value="{searchTerm}" />
+								<input type="hidden" name="action" value="showSearchresults" />
+							</form>
+						</div>
+ 						<ul>
+ 							<li><a href="index.html">Home</a></li>
+ 							<li><a href="#">Attributes</a></li>
+ 							<li><a href="?action=showInfo">Info</a></li>
+ 						</ul>
                 	</nav>
             </header>
         </div>
@@ -35,7 +44,9 @@
         <div class="main-container">
             <div class="main wrapper clearfix">
                 <article>
-					{content}
+                	<div id="contentContainer">
+						{content}
+					</div>
                 </article>
 
                 <aside>

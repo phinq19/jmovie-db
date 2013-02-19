@@ -6,6 +6,7 @@ package com.lars_albrecht.mdb.core.controller;
 import java.util.ArrayList;
 
 import com.lars_albrecht.mdb.core.collector.MediaInfoCollector;
+import com.lars_albrecht.mdb.core.collector.TheMovieDBCollector;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEventMulticaster;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
@@ -17,11 +18,11 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  */
 public class CollectorController implements IController {
 
-	private ArrayList<ACollector> collectors = null;
+	private ArrayList<ACollector>		collectors				= null;
 
 	@SuppressWarnings("unused")
-	private CollectorEventMulticaster collectorMulticaster = null;
-	private MainController mainController = null;
+	private CollectorEventMulticaster	collectorMulticaster	= null;
+	private MainController				mainController			= null;
 
 	/**
 	 * 
@@ -36,6 +37,7 @@ public class CollectorController implements IController {
 
 	private void initCollector() {
 		this.collectors.add(new MediaInfoCollector(this.mainController, this));
+		this.collectors.add(new TheMovieDBCollector(this.mainController, this));
 
 	}
 
@@ -43,7 +45,8 @@ public class CollectorController implements IController {
 		for (final ACollector collector : this.collectors) {
 			collector.setFileItems(fileItems);
 			IController.threadList.add(new Thread(collector));
-			IController.threadList.get(IController.threadList.size() - 1).start();
+			IController.threadList.get(IController.threadList.size() - 1)
+					.start();
 		}
 	}
 

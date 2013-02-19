@@ -4,6 +4,7 @@
 package com.lars_albrecht.mdb.core.collector;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,19 +29,21 @@ import com.lars_albrecht.mdb.external.ProcExec;
  */
 public class MediaInfoCollector extends ACollector {
 
-	public static int SECTION_GENERAL = 0;
-	public static int SECTION_VIDEO = 1;
-	public static int SECTION_AUDIO = 2;
-	public static int SECTION_MENU = 3;
+	public static int													SECTION_NONE			= -1;
+	public static int													SECTION_GENERAL			= 0;
+	public static int													SECTION_VIDEO			= 1;
+	public static int													SECTION_AUDIO			= 2;
+	public static int													SECTION_MENU			= 3;
 
-	public static String SECTIONNAME_GENERAL = "general";
-	public static String SECTIONNAME_VIDEO = "video";
-	public static String SECTIONNAME_AUDIO = "audio";
-	public static String SECTIONNAME_MENU = "menu";
+	public static String												SECTIONNAME_NONE		= "none";
+	public static String												SECTIONNAME_GENERAL		= "general";
+	public static String												SECTIONNAME_VIDEO		= "video";
+	public static String												SECTIONNAME_AUDIO		= "audio";
+	public static String												SECTIONNAME_MENU		= "menu";
 
-	private ArrayList<Key<String>> keysToAdd = null;
-	private ArrayList<Value<?>> valuesToAdd = null;
-	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>> fileAttributeListToAdd = null;
+	private ArrayList<Key<String>>										keysToAdd				= null;
+	private ArrayList<Value<?>>											valuesToAdd				= null;
+	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>	fileAttributeListToAdd	= null;
 
 	public MediaInfoCollector(final MainController mainController, final CollectorController controller) {
 		super(mainController, controller);
@@ -80,10 +83,13 @@ public class MediaInfoCollector extends ACollector {
 	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem item) {
 		final ArrayList<FileAttributeList> resultList = new ArrayList<FileAttributeList>();
 
-		final HashMap<String, ArrayList<KeyValue<String, Object>>> sectionsWithKeyValue = this.parseDataString(this.getDataStrForFile(item.getFullpath()));
+		final HashMap<String, ArrayList<KeyValue<String, Object>>> sectionsWithKeyValue = this.parseDataString(this.getDataStrForFile(item
+				.getFullpath()));
 
-		for (final Map.Entry<String, ArrayList<KeyValue<String, Object>>> section : sectionsWithKeyValue.entrySet()) {
-			resultList.add(new FileAttributeList(section.getValue(), section.getKey(), item.getId()));
+		if (sectionsWithKeyValue != null && sectionsWithKeyValue.size() > 0) {
+			for (final Map.Entry<String, ArrayList<KeyValue<String, Object>>> section : sectionsWithKeyValue.entrySet()) {
+				resultList.add(new FileAttributeList(section.getValue(), section.getKey(), item.getId()));
+			}
 		}
 
 		return resultList;
@@ -101,9 +107,9 @@ public class MediaInfoCollector extends ACollector {
 				int i = 0;
 				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
-				for (final String section : sections) {
+				for (final String completeSection : sections) {
 					final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
-					final String[] items = section.split("\\|");
+					final String[] items = completeSection.split("\\|");
 					for (final String string : items) {
 						final String[] keyValues = string.split("\\:");
 						if (keyValues.length > 1) {
@@ -141,20 +147,24 @@ public class MediaInfoCollector extends ACollector {
 	}
 
 	private String getDataStrForFile(final String filepath) {
-		final ProcExec pe = new ProcExec();
-
+		String line = null;
 		final String command = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.cliexe");
 		final String templatePath = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.template");
-		final String[] parameters = { "--Inform=file://" + templatePath, "\"" + filepath + "\"" };
-		String line = null;
+		if (command != null && templatePath != null && new File(command).exists() && new File(templatePath).exists()) {
+			final ProcExec pe = new ProcExec();
 
-		try {
-			final BufferedReader br = pe.getProcOutput(command, parameters);
-			line = br.readLine();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		} finally {
-			pe.closeProc();
+			final String[] parameters = {
+					"--Inform=file://" + templatePath, "\"" + filepath + "\""
+			};
+
+			try {
+				final BufferedReader br = pe.getProcOutput(command, parameters);
+				line = br.readLine();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			} finally {
+				pe.closeProc();
+			}
 		}
 
 		return line;
@@ -171,17 +181,18 @@ public class MediaInfoCollector extends ACollector {
 	 * @return
 	 */
 	private String getSectionname(final int sectionId) {
+		System.out.println("SECTION ID FOUND: " + sectionId);
 		switch (sectionId) {
-		case 0:
-			return MediaInfoCollector.SECTIONNAME_GENERAL;
-		case 1:
-			return MediaInfoCollector.SECTIONNAME_VIDEO;
-		case 2:
-			return MediaInfoCollector.SECTIONNAME_AUDIO;
-		case 3:
-			return MediaInfoCollector.SECTIONNAME_MENU;
-		default:
-			return null;
+			case 0:
+				return MediaInfoCollector.SECTIONNAME_GENERAL;
+			case 1:
+				return MediaInfoCollector.SECTIONNAME_VIDEO;
+			case 2:
+				return MediaInfoCollector.SECTIONNAME_AUDIO;
+			case 3:
+				return MediaInfoCollector.SECTIONNAME_MENU;
+			default:
+				return MediaInfoCollector.SECTIONNAME_NONE;
 		}
 	}
 

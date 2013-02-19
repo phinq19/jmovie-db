@@ -1,0 +1,24 @@
+h2, h3, h4, h5											{margin:0;}
+
+#contentContainer										{padding:10px; border-top: 20px solid #000000; border-left: 1px solid #000; 
+															-webkit-box-shadow: 0 5px 5px #333;
+											        		   -moz-box-shadow: 0 5px 5px #333;
+											        		        box-shadow: 0 5px 5px #333;
+                										}
+
+#contentContainer .tableHeader							{height:20px; line-height:20px; text-transform:capitalize; text-align:left; color:#ffffff; background-color:#000000; text-indent:10px; font-size:0.83em}
+#contentContainer table									{width:100%; text-indent:10px;}
+#contentContainer table tr								{border-bottom:1px solid #000;}
+#contentContainer table tr th							{background: none repeat scroll 0 0 #888888; color:#fff; text-align:left;}
+#contentContainer table tr td							{ }
+
+									
+#detailView .listWrapper								{width:100%; float:left;}
+#detailView .listWrapper .key							{float:left; width: 25%; font-weight:bold;}
+#detailView .listWrapper .value							{float:left;}
+
+#detailView .path										{font-size:0.8em;}
+
+#detailView #attributes									{margin-top:20px; display:inline-block; width:100%;}
+#detailView #attributes .infoSection					{margin-bottom:20px;}
+#detailView #attributes .infoSection .sectionSection	{margin-bottom:10px;}
