@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.mdb.database;
+package com.lars_albrecht.mdb.database.interfaces;
 
 /**
  * @author albrela
