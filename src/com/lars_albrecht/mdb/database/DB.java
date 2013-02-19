@@ -49,16 +49,70 @@ public class DB implements IDatabase {
 	public static boolean		useQuotesForFields	= false;
 
 	/**
-	 * Returns the DB connection.
+	 * Sets a dynamic object in a PreparedStatement.
 	 * 
-	 * @return the connection
+	 * @param pst
+	 *            PreparedStatement
+	 * @param index
+	 *            int
+	 * @param objectToSet
+	 *            Object
+	 * @return PreparedStatement
+	 * @throws Exception
+	 */
+	private static PreparedStatement
+			addDynamicValue(final PreparedStatement pst, final int index, final Object objectToSet) throws Exception {
+		if (objectToSet.getClass() == Integer.class) {
+			pst.setInt(index, ((Integer) objectToSet).intValue());
+		} else if (objectToSet.getClass() == String.class) {
+			pst.setString(index, (String) objectToSet);
+		} else if (objectToSet instanceof Image) {
+			// pst.setBytes(index, Helper.getBytesFromImage((Image)
+			// objectToSet));
+			throw new Exception("Unsupported type submitted: " + objectToSet.getClass().getName());
+		} else if (objectToSet.getClass() == Boolean.class) {
+			pst.setBoolean(index, ((Boolean) objectToSet));
+		} else if (objectToSet.getClass() == Float.class) {
+			pst.setFloat(index, ((Float) objectToSet).floatValue());
+		} else if (objectToSet.getClass() == Long.class) {
+			pst.setLong(index, ((Long) objectToSet).longValue());
+		} else if (objectToSet.getClass() == Byte.class) {
+			pst.setByte(index, ((Byte) objectToSet).byteValue());
+		} else if (objectToSet.getClass() == Short.class) {
+			pst.setShort(index, ((Short) objectToSet).shortValue());
+		} else if (objectToSet.getClass() == BigDecimal.class) {
+			pst.setBigDecimal(index, ((BigDecimal) objectToSet));
+		} else if (objectToSet.getClass() == Double.class) {
+			pst.setDouble(index, ((Double) objectToSet).shortValue());
+		} else if (objectToSet.getClass() == Time.class) {
+			pst.setTime(index, ((Time) objectToSet));
+		} else if (objectToSet.getClass() == Date.class) {
+			pst.setDate(index, ((Date) objectToSet));
+		} else if (objectToSet.getClass() == Timestamp.class) {
+			pst.setTimestamp(index, ((Timestamp) objectToSet));
+		} else if (objectToSet.getClass() == byte[].class) {
+			pst.setBytes(index, ((byte[]) objectToSet));
+		} else if (objectToSet.getClass() == Object[].class) {
+			pst.setArray(index, (Array) Arrays.asList(((Object[]) objectToSet)));
+		}
+		return pst;
+	}
+
+	/**
+	 * Close the DB connection.
+	 * 
 	 * @throws SQLException
 	 */
-	public static synchronized final Connection getConnection() throws SQLException {
-		if ((DB.connection == null) || DB.connection.isClosed() || DB.connection.isReadOnly()) {
-			DB.connection = DB.createConnection(DB.DBTYPE);
+	public static void closeConnection() throws SQLException {
+		if (DB.connection != null) {
+			DB.connection.close();
 		}
-		return DB.connection;
+	}
+
+	public static void commit() throws SQLException {
+		if (DB.connection != null) {
+			DB.connection.commit();
+		}
 	}
 
 	/**
@@ -93,20 +147,127 @@ public class DB implements IDatabase {
 	}
 
 	/**
-	 * Close the DB connection.
 	 * 
+	 * @param rs
+	 *            ResultSet
 	 * @throws SQLException
 	 */
-	public static void closeConnection() throws SQLException {
-		if (DB.connection != null) {
-			DB.connection.close();
+	public static void dump(final ResultSet rs) throws SQLException {
+
+		// the order of the rows in a cursor
+		// are implementation dependent unless you use the SQL ORDER statement
+		final ResultSetMetaData meta = rs.getMetaData();
+		final int colmax = meta.getColumnCount();
+		int i;
+		Object o = null;
+
+		// the result set is a cursor into the data. You can only
+		// point to one row at a time
+		// assume we are pointing to BEFORE the first row
+		// rs.next() points to next row and returns true
+		// or false if there is no next row, which breaks the loop
+		for (; rs.next();) {
+			for (i = 0; i < colmax; ++i) {
+				o = rs.getObject(i + 1); // Is SQL the first column is indexed
+
+				// with 1 not 0
+				// Debug.log(Debug.LEVEL_DEBUG, o.toString() + " ");
+				System.out.println(o.toString() + " ");
+			}
+
+			// Debug.log(Debug.LEVEL_DEBUG, " ");
+			System.out.println(" ");
 		}
 	}
 
-	public static void commit() throws SQLException {
-		if (DB.connection != null) {
-			DB.connection.commit();
+	/**
+	 * 
+	 * @param tableName
+	 * @return ArrayList<String>
+	 * @throws SQLException
+	 */
+	public static ArrayList<String> getColumnsFromTable(final String tableName) throws SQLException {
+		final ResultSet rs = DB.query("SHOW COLUMNS FROM " + tableName);
+		final ArrayList<String> tempList = new ArrayList<String>();
+		while (rs.next()) {
+			tempList.add(rs.getString("COLUMN_NAME"));
 		}
+
+		return tempList;
+	}
+
+	/**
+	 * Returns the DB connection.
+	 * 
+	 * @return the connection
+	 * @throws SQLException
+	 */
+	public static synchronized final Connection getConnection() throws SQLException {
+		if ((DB.connection == null) || DB.connection.isClosed() || DB.connection.isReadOnly()) {
+			DB.connection = DB.createConnection(DB.DBTYPE);
+		}
+		return DB.connection;
+	}
+
+	public static int getDBType() {
+		return DB.DBTYPE;
+	}
+
+	/**
+	 * Returns the last inserted row id from the database. This method is using
+	 * the "getGeneratedKeys()"-method from Statement st.
+	 * 
+	 * @param st
+	 * @return last_inserted_rowid
+	 * @throws SQLException
+	 */
+	private static synchronized int getLastInsertedRowId(final Statement st) throws SQLException {
+		int result = -1;
+		switch (DB.DBTYPE) {
+			default:
+			case 0: // sqlite
+				result = st.getGeneratedKeys().getInt("last_insert_rowid()");
+				break;
+			case 1: // h2
+				final ResultSet rs = DB.query("CALL IDENTITY()");
+				if (rs.first()) {
+					result = ((Long) rs.getObject(1)).intValue();
+				}
+		}
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * @return ArrayList<String>
+	 * @throws SQLException
+	 */
+	public static ArrayList<String> getTables() throws SQLException {
+		String dbInfoTable = null;
+		String dbInfoField = null;
+		String dbInfoWhere = null;
+		switch (DB.DBTYPE) {
+			default:
+			case 0: // sqlite
+				dbInfoTable = "sqlite_master";
+				dbInfoField = "name";
+				dbInfoWhere = "type = 'table'";
+				break;
+			case 1: // h2
+				dbInfoTable = "INFORMATION_SCHEMA.TABLES";
+				dbInfoField = "TABLE_NAME";
+				dbInfoWhere = "TABLE_SCHEMA = 'PUBLIC'";
+		}
+
+		final ResultSet rs = DB.query("SELECT * FROM " + dbInfoTable + " WHERE " + dbInfoWhere + ";");
+		final ArrayList<String> temp = new ArrayList<String>();
+		for (; rs.next();) {
+			temp.add(rs.getString(dbInfoField));
+		}
+		DB.closeConnection();
+
+		return temp;
 	}
 
 	/**
@@ -170,6 +331,50 @@ public class DB implements IDatabase {
 	}
 
 	/**
+	 * 
+	 * @param sql
+	 * @param fields
+	 * @return ArrayList<ConcurrentHashMap<String, Object>>
+	 * @throws SQLException
+	 */
+	public static ArrayList<ConcurrentHashMap<String, Object>>
+			returnResultFromItems(final String sql, final ArrayList<String> fields) throws SQLException {
+		final ArrayList<ConcurrentHashMap<String, Object>> resultSet = new ArrayList<ConcurrentHashMap<String, Object>>();
+		final ResultSet rs = DB.query(sql);
+		for (; rs.next();) {
+			final ConcurrentHashMap<String, Object> temp = new ConcurrentHashMap<String, Object>();
+			for (final String string : fields) {
+				temp.put(string, rs.getObject(string));
+			}
+			resultSet.add(temp);
+		}
+		return resultSet;
+	}
+
+	public static void setDBType(final Integer dbType) {
+		if ((dbType >= 0) && (dbType <= 1)) {
+			DB.DBTYPE = dbType;
+		} else {
+			DB.DBTYPE = DB.DBTYPE_SQLITE;
+		}
+	}
+
+	/**
+	 * 
+	 * @throws SQLException
+	 */
+	public static void shutdown() throws SQLException {
+
+		final Statement st = DB.getConnection().createStatement();
+
+		// db writes out to files and performs clean shuts down
+		// otherwise there will be an unclean shutdown
+		// when program ends
+		st.execute("SHUTDOWN");
+		DB.connection.close(); // if there are no other open connection
+	}
+
+	/**
 	 * use for SQL commands CREATE, DROP, INSERT, UPDATE and ALTER
 	 * 
 	 * @param expression
@@ -212,199 +417,6 @@ public class DB implements IDatabase {
 		final int lastInsertedId = DB.getLastInsertedRowId(st);
 		st.close();
 		return lastInsertedId;
-	}
-
-	/**
-	 * Returns the last inserted row id from the database. This method is using
-	 * the "getGeneratedKeys()"-method from Statement st.
-	 * 
-	 * @param st
-	 * @return last_inserted_rowid
-	 * @throws SQLException
-	 */
-	private static synchronized int getLastInsertedRowId(final Statement st) throws SQLException {
-		int result = -1;
-		switch (DB.DBTYPE) {
-			default:
-			case 0: // sqlite
-				result = st.getGeneratedKeys().getInt("last_insert_rowid()");
-				break;
-			case 1: // h2
-				final ResultSet rs = DB.query("CALL IDENTITY()");
-				if (rs.first()) {
-					result = ((Long) rs.getObject(1)).intValue();
-				}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Sets a dynamic object in a PreparedStatement.
-	 * 
-	 * @param pst
-	 *            PreparedStatement
-	 * @param index
-	 *            int
-	 * @param objectToSet
-	 *            Object
-	 * @return PreparedStatement
-	 * @throws Exception
-	 */
-	private static PreparedStatement
-			addDynamicValue(final PreparedStatement pst, final int index, final Object objectToSet) throws Exception {
-		if (objectToSet.getClass() == Integer.class) {
-			pst.setInt(index, ((Integer) objectToSet).intValue());
-		} else if (objectToSet.getClass() == String.class) {
-			pst.setString(index, (String) objectToSet);
-		} else if (objectToSet instanceof Image) {
-			// pst.setBytes(index, Helper.getBytesFromImage((Image)
-			// objectToSet));
-			throw new Exception("Unsupported type submitted: " + objectToSet.getClass().getName());
-		} else if (objectToSet.getClass() == Boolean.class) {
-			pst.setBoolean(index, ((Boolean) objectToSet));
-		} else if (objectToSet.getClass() == Float.class) {
-			pst.setFloat(index, ((Float) objectToSet).floatValue());
-		} else if (objectToSet.getClass() == Long.class) {
-			pst.setLong(index, ((Long) objectToSet).longValue());
-		} else if (objectToSet.getClass() == Byte.class) {
-			pst.setByte(index, ((Byte) objectToSet).byteValue());
-		} else if (objectToSet.getClass() == Short.class) {
-			pst.setShort(index, ((Short) objectToSet).shortValue());
-		} else if (objectToSet.getClass() == BigDecimal.class) {
-			pst.setBigDecimal(index, ((BigDecimal) objectToSet));
-		} else if (objectToSet.getClass() == Double.class) {
-			pst.setDouble(index, ((Double) objectToSet).shortValue());
-		} else if (objectToSet.getClass() == Time.class) {
-			pst.setTime(index, ((Time) objectToSet));
-		} else if (objectToSet.getClass() == Date.class) {
-			pst.setDate(index, ((Date) objectToSet));
-		} else if (objectToSet.getClass() == Timestamp.class) {
-			pst.setTimestamp(index, ((Timestamp) objectToSet));
-		} else if (objectToSet.getClass() == byte[].class) {
-			pst.setBytes(index, ((byte[]) objectToSet));
-		} else if (objectToSet.getClass() == Object[].class) {
-			pst.setArray(index, (Array) Arrays.asList(((Object[]) objectToSet)));
-		}
-		return pst;
-	}
-
-	/**
-	 * 
-	 * @param rs
-	 *            ResultSet
-	 * @throws SQLException
-	 */
-	public static void dump(final ResultSet rs) throws SQLException {
-
-		// the order of the rows in a cursor
-		// are implementation dependent unless you use the SQL ORDER statement
-		final ResultSetMetaData meta = rs.getMetaData();
-		final int colmax = meta.getColumnCount();
-		int i;
-		Object o = null;
-
-		// the result set is a cursor into the data. You can only
-		// point to one row at a time
-		// assume we are pointing to BEFORE the first row
-		// rs.next() points to next row and returns true
-		// or false if there is no next row, which breaks the loop
-		for (; rs.next();) {
-			for (i = 0; i < colmax; ++i) {
-				o = rs.getObject(i + 1); // Is SQL the first column is indexed
-
-				// with 1 not 0
-				// Debug.log(Debug.LEVEL_DEBUG, o.toString() + " ");
-				System.out.println(o.toString() + " ");
-			}
-
-			// Debug.log(Debug.LEVEL_DEBUG, " ");
-			System.out.println(" ");
-		}
-	}
-
-	/**
-	 * 
-	 * @throws SQLException
-	 */
-	public static void shutdown() throws SQLException {
-
-		final Statement st = DB.getConnection().createStatement();
-
-		// db writes out to files and performs clean shuts down
-		// otherwise there will be an unclean shutdown
-		// when program ends
-		st.execute("SHUTDOWN");
-		DB.connection.close(); // if there are no other open connection
-	}
-
-	/**
-	 * 
-	 * @return ArrayList<String>
-	 * @throws SQLException
-	 */
-	public static ArrayList<String> getTables() throws SQLException {
-		String dbInfoTable = null;
-		String dbInfoField = null;
-		String dbInfoWhere = null;
-		switch (DB.DBTYPE) {
-			default:
-			case 0: // sqlite
-				dbInfoTable = "sqlite_master";
-				dbInfoField = "name";
-				dbInfoWhere = "type = 'table'";
-				break;
-			case 1: // h2
-				dbInfoTable = "INFORMATION_SCHEMA.TABLES";
-				dbInfoField = "TABLE_NAME";
-				dbInfoWhere = "TABLE_SCHEMA = 'PUBLIC'";
-		}
-
-		final ResultSet rs = DB.query("SELECT * FROM " + dbInfoTable + " WHERE " + dbInfoWhere + ";");
-		final ArrayList<String> temp = new ArrayList<String>();
-		for (; rs.next();) {
-			temp.add(rs.getString(dbInfoField));
-		}
-		DB.closeConnection();
-
-		return temp;
-	}
-
-	/**
-	 * 
-	 * @param sql
-	 * @param fields
-	 * @return ArrayList<ConcurrentHashMap<String, Object>>
-	 * @throws SQLException
-	 */
-	public static ArrayList<ConcurrentHashMap<String, Object>>
-			returnResultFromItems(final String sql, final ArrayList<String> fields) throws SQLException {
-		final ArrayList<ConcurrentHashMap<String, Object>> resultSet = new ArrayList<ConcurrentHashMap<String, Object>>();
-		final ResultSet rs = DB.query(sql);
-		for (; rs.next();) {
-			final ConcurrentHashMap<String, Object> temp = new ConcurrentHashMap<String, Object>();
-			for (final String string : fields) {
-				temp.put(string, rs.getObject(string));
-			}
-			resultSet.add(temp);
-		}
-		return resultSet;
-	}
-
-	/**
-	 * 
-	 * @param tableName
-	 * @return ArrayList<String>
-	 * @throws SQLException
-	 */
-	public static ArrayList<String> getColumnsFromTable(final String tableName) throws SQLException {
-		final ResultSet rs = DB.query("SHOW COLUMNS FROM " + tableName);
-		final ArrayList<String> tempList = new ArrayList<String>();
-		while (rs.next()) {
-			tempList.add(rs.getString("COLUMN_NAME"));
-		}
-
-		return tempList;
 	}
 
 	@Override
@@ -522,18 +534,6 @@ public class DB implements IDatabase {
 
 		} catch (final Exception e) {
 			e.printStackTrace();
-		}
-	}
-
-	public static int getDBType() {
-		return DB.DBTYPE;
-	}
-
-	public static void setDBType(final Integer dbType) {
-		if (dbType >= 0 && dbType <= 1) {
-			DB.DBTYPE = dbType;
-		} else {
-			DB.DBTYPE = DB.DBTYPE_SQLITE;
 		}
 	}
 }

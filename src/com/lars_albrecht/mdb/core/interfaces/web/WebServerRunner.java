@@ -31,6 +31,28 @@ public class WebServerRunner implements Runnable {
 		this.getKeyValue = new ConcurrentHashMap<String, String>();
 	}
 
+	private ConcurrentHashMap<String, String> getQuery(final String url) {
+		ConcurrentHashMap<String, String> resultList = null;
+		if (url != null) {
+			resultList = new ConcurrentHashMap<String, String>();
+			final int paramPos = url.indexOf("?");
+			String paramString = "";
+			paramString = url.substring(paramPos);
+			paramString = paramString.replaceFirst("\\?", "");
+			final String[] paramsArr = paramString.split("&");
+			for (final String string : paramsArr) {
+				final String[] paramArr = string.split("=");
+				if ((paramArr.length > 0) && (paramArr.length > 1)) {
+					resultList.put(paramArr[0], paramArr[1]);
+				} else if (paramArr.length > 0) {
+					resultList.put(paramArr[0], "");
+				}
+			}
+		}
+
+		return resultList;
+	}
+
 	@Override
 	public void run() {
 		BufferedReader in = null;
@@ -55,11 +77,11 @@ public class WebServerRunner implements Runnable {
 				// blank line signals the end of the client HTTP
 				// headers.
 				line = in.readLine();
-				if (line != null && !line.equals("")) {
+				if ((line != null) && !line.equals("")) {
 					notNull = true;
 				}
 
-				while ((notNull || ((line = in.readLine()) != null) && (!line.equals("")))) {
+				while ((notNull || (((line = in.readLine()) != null) && (!line.equals(""))))) {
 					notNull = false;
 					final String[] keyValue = line.split(":");
 					if (keyValue.length > 1) {
@@ -82,7 +104,7 @@ public class WebServerRunner implements Runnable {
 
 					// Send the response
 					// Send the headers
-					if (content == null || urlStr.endsWith(".ico")) {
+					if ((content == null) || urlStr.endsWith(".ico")) {
 						out.println("HTTP/1.0 404 Not Found");
 					} else {
 						out.println("HTTP/1.0 200 OK");
@@ -117,7 +139,7 @@ public class WebServerRunner implements Runnable {
 						out.flush();
 						this.clientSocket.close();
 					} else {
-						if (out != null && !out.checkError() && this.clientSocket.isConnected() && this.clientSocket.isBound()) {
+						if ((out != null) && !out.checkError() && this.clientSocket.isConnected() && this.clientSocket.isBound()) {
 							this.clientSocket.close();
 						}
 					}
@@ -127,27 +149,5 @@ public class WebServerRunner implements Runnable {
 				run = false;
 			}
 		}
-	}
-
-	private ConcurrentHashMap<String, String> getQuery(final String url) {
-		ConcurrentHashMap<String, String> resultList = null;
-		if (url != null) {
-			resultList = new ConcurrentHashMap<String, String>();
-			final int paramPos = url.indexOf("?");
-			String paramString = "";
-			paramString = url.substring(paramPos);
-			paramString = paramString.replaceFirst("\\?", "");
-			final String[] paramsArr = paramString.split("&");
-			for (final String string : paramsArr) {
-				final String[] paramArr = string.split("=");
-				if (paramArr.length > 0 && paramArr.length > 1) {
-					resultList.put(paramArr[0], paramArr[1]);
-				} else if (paramArr.length > 0) {
-					resultList.put(paramArr[0], "");
-				}
-			}
-		}
-
-		return resultList;
 	}
 }

@@ -32,13 +32,11 @@ public class ChecksumSHA1 {
 
 	// see this How-to for a faster way to convert
 	// a byte array to a HEX string
-	public static String getSHA1Checksum(final String filename)
-			throws Exception {
+	public static String getSHA1Checksum(final String filename) throws Exception {
 		final byte[] b = ChecksumSHA1.createChecksum(filename);
 		String result = "";
 		for (final byte element : b) {
-			result += Integer.toString((element & 0xff) + 0x100, 16).substring(
-					1);
+			result += Integer.toString((element & 0xff) + 0x100, 16).substring(1);
 		}
 		return result;
 	}

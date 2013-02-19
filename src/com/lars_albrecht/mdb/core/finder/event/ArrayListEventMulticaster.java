@@ -13,10 +13,6 @@ public class ArrayListEventMulticaster implements ArrayListListener {
 
 	protected Vector<ArrayListListener>	listener	= new Vector<ArrayListListener>();
 
-	public void remove(final ArrayListListener l) {
-		this.listener.remove(l);
-	}
-
 	public void add(final ArrayListListener a) {
 		if (!this.listener.contains(a)) {
 			this.listener.addElement(a);
@@ -31,17 +27,21 @@ public class ArrayListEventMulticaster implements ArrayListListener {
 	}
 
 	@Override
+	public void arrayListenerClear(final ArrayListEvent e) {
+		for (int i = 0; i < this.listener.size(); i++) {
+			(this.listener.elementAt(i)).arrayListenerClear(e);
+		}
+	}
+
+	@Override
 	public void arrayListenerRemove(final ArrayListEvent e) {
 		for (int i = 0; i < this.listener.size(); i++) {
 			(this.listener.elementAt(i)).arrayListenerRemove(e);
 		}
 	}
 
-	@Override
-	public void arrayListenerClear(final ArrayListEvent e) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).arrayListenerClear(e);
-		}
+	public void remove(final ArrayListListener l) {
+		this.listener.remove(l);
 	}
 
 }

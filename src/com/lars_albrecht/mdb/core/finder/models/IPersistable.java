@@ -11,8 +11,8 @@ import java.util.HashMap;
  */
 public interface IPersistable {
 
-	HashMap<String, Object> toHashMap();
-
 	Object fromHashMap(final HashMap<String, Object> map);
+
+	HashMap<String, Object> toHashMap();
 
 }

@@ -13,8 +13,8 @@ public interface ArrayListListener extends EventListener {
 
 	public void arrayListenerAdd(ArrayListEvent e);
 
-	public void arrayListenerRemove(ArrayListEvent e);
-
 	public void arrayListenerClear(ArrayListEvent e);
+
+	public void arrayListenerRemove(ArrayListEvent e);
 
 }

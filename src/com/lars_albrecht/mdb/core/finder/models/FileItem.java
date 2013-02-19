@@ -22,16 +22,6 @@ public class FileItem implements IPersistable {
 	}
 
 	/**
-	 * @param name
-	 * @param file
-	 */
-	public FileItem(final String name, final File file) {
-		super();
-		this.name = name;
-		this.file = file;
-	}
-
-	/**
 	 * @param id
 	 * @param name
 	 * @param file
@@ -44,73 +34,39 @@ public class FileItem implements IPersistable {
 	}
 
 	/**
+	 * @param id
 	 * @param name
 	 * @param file
 	 * @param attributes
 	 */
-	public FileItem(final String name, final File file,
-			final ArrayList<FileAttribute> attributes) {
+	public FileItem(final Integer id, final String name, final File file, final ArrayList<FileAttribute> attributes) {
 		super();
+		this.id = id;
 		this.name = name;
 		this.file = file;
 		this.attributes = attributes;
 	}
 
 	/**
-	 * @param id
+	 * @param name
+	 * @param file
+	 */
+	public FileItem(final String name, final File file) {
+		super();
+		this.name = name;
+		this.file = file;
+	}
+
+	/**
 	 * @param name
 	 * @param file
 	 * @param attributes
 	 */
-	public FileItem(final Integer id, final String name, final File file,
-			final ArrayList<FileAttribute> attributes) {
+	public FileItem(final String name, final File file, final ArrayList<FileAttribute> attributes) {
 		super();
-		this.id = id;
 		this.name = name;
 		this.file = file;
 		this.attributes = attributes;
-	}
-
-	public Integer getId() {
-		return this.id;
-	}
-
-	public void setId(final Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
-	}
-
-	public File getFile() {
-		return this.file;
-	}
-
-	public void setFile(final File file) {
-		this.file = file;
-	}
-
-	public ArrayList<FileAttribute> getAttributes() {
-		return this.attributes;
-	}
-
-	public void setAttributes(final ArrayList<FileAttribute> attributes) {
-		this.attributes = attributes;
-	}
-
-	@Override
-	public HashMap<String, Object> toHashMap() {
-		final HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
-		tempHashMap.put("id", this.getId());
-		tempHashMap.put("name", this.getName());
-		tempHashMap.put("file", this.file.getPath());
-
-		return tempHashMap;
 	}
 
 	@Override
@@ -126,5 +82,47 @@ public class FileItem implements IPersistable {
 		}
 
 		return this;
+	}
+
+	public ArrayList<FileAttribute> getAttributes() {
+		return this.attributes;
+	}
+
+	public File getFile() {
+		return this.file;
+	}
+
+	public Integer getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setAttributes(final ArrayList<FileAttribute> attributes) {
+		this.attributes = attributes;
+	}
+
+	public void setFile(final File file) {
+		this.file = file;
+	}
+
+	public void setId(final Integer id) {
+		this.id = id;
+	}
+
+	public void setName(final String name) {
+		this.name = name;
+	}
+
+	@Override
+	public HashMap<String, Object> toHashMap() {
+		final HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
+		tempHashMap.put("id", this.getId());
+		tempHashMap.put("name", this.getName());
+		tempHashMap.put("file", this.file.getPath());
+
+		return tempHashMap;
 	}
 }

@@ -26,12 +26,12 @@ public final class KeyValue<K, V> {
 		return this.key;
 	}
 
-	public void setKey(final Key<K> key) {
-		this.key = key;
-	}
-
 	public Value<V> getValue() {
 		return this.value;
+	}
+
+	public void setKey(final Key<K> key) {
+		this.key = key;
 	}
 
 	public void setValue(final Value<V> value) {

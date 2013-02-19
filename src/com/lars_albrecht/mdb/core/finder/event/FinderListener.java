@@ -12,6 +12,22 @@ import java.util.EventListener;
 public interface FinderListener extends EventListener {
 
 	/**
+	 * Called after all directories are searched for new files. Event contains
+	 * an ArrayList<File> with all found files.
+	 * 
+	 * @param e
+	 */
+	public void finderAddFinish(FinderEvent e);
+
+	/**
+	 * Called after found filelist is added. Event contains an ArrayList<File>
+	 * with all found files.
+	 * 
+	 * @param e
+	 */
+	public void finderAfterAdd(FinderEvent e);
+
+	/**
 	 * Called when a directory is found. Event contains an ArrayList<File> with
 	 * the found dir.
 	 * 
@@ -34,21 +50,5 @@ public interface FinderListener extends EventListener {
 	 * @param e
 	 */
 	public void finderPreAdd(FinderEvent e);
-
-	/**
-	 * Called after found filelist is added. Event contains an ArrayList<File>
-	 * with all found files.
-	 * 
-	 * @param e
-	 */
-	public void finderAfterAdd(FinderEvent e);
-
-	/**
-	 * Called after all directories are searched for new files. Event contains
-	 * an ArrayList<File> with all found files.
-	 * 
-	 * @param e
-	 */
-	public void finderAddFinish(FinderEvent e);
 
 }

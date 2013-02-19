@@ -13,20 +13,20 @@ import com.lars_albrecht.mdb.core.controller.interfaces.IController;
  */
 public abstract class AInterface implements Runnable {
 
-	protected MainController mainController = null;
-	protected IController controller = null;
+	protected MainController	mainController	= null;
+	protected IController		controller		= null;
 
 	public AInterface(final MainController mainController, final IController controller) {
 		this.mainController = mainController;
 		this.controller = controller;
 	}
 
-	public abstract void startWebServer();
-
 	@Override
 	public final void run() {
 		this.startWebServer();
 		this.controller.getThreadList().remove(Thread.currentThread());
 	}
+
+	public abstract void startWebServer();
 
 }
