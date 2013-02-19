@@ -110,17 +110,19 @@ public class DataHandler {
 
 				i++;
 			}
-			sql = "MERGE INTO "
+			// TODO check if h2 db -> if h2 db than use MERGE INTO instead of
+			// INSERT OR IGNORE INTO.
+			// TODO if h2 db, than use TRANSACTION_ID() as id to set instead of
+			// nothing.
+			sql = "INSERT OR IGNORE INTO "
 					+ (DB.useQuotesForFields ? "'" : "")
 					+ ""
 					+ databaseTable
 					+ ""
 					+ (DB.useQuotesForFields ? "'" : "")
 					+ " ("
-					+ (tempObject.containsKey("id") ? "" : "id, ")
 					+ Helper.implode(tempObject.keySet(), ",", "" + (DB.useQuotesForFields ? "'" : "") + "", ""
-							+ (DB.useQuotesForFields ? "'" : "") + "") + ") VALUES ("
-					+ (tempObject.containsKey("id") ? "" : "TRANSACTION_ID(),") + valueStr + ");";
+							+ (DB.useQuotesForFields ? "'" : "") + "") + ") VALUES (" + valueStr + ");";
 
 			result = DB.updatePS(sql, values);
 			object.setId(result);
