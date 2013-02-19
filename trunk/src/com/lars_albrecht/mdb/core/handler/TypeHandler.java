@@ -18,8 +18,7 @@ import com.lars_albrecht.mdb.core.models.Value;
  */
 public class TypeHandler {
 
-	public static ArrayList<FileItem> castObjectListToFileItemList(
-			final ArrayList<Object> oList) {
+	public static ArrayList<FileItem> castObjectListToFileItemList(final ArrayList<Object> oList) {
 
 		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
 		for (final Object oItem : oList) {
@@ -30,8 +29,7 @@ public class TypeHandler {
 		return resultList;
 	}
 
-	public static ArrayList<Key<?>> castObjectListToKeyList(
-			final ArrayList<Object> oList) {
+	public static ArrayList<Key<?>> castObjectListToKeyList(final ArrayList<Object> oList) {
 
 		final ArrayList<Key<?>> resultList = new ArrayList<Key<?>>();
 		for (final Object oItem : oList) {
@@ -43,8 +41,7 @@ public class TypeHandler {
 		return resultList;
 	}
 
-	public static ArrayList<Value<?>> castObjectListToValueList(
-			final ArrayList<Object> oList) {
+	public static ArrayList<Value<?>> castObjectListToValueList(final ArrayList<Object> oList) {
 
 		final ArrayList<Value<?>> resultList = new ArrayList<Value<?>>();
 		for (final Object oItem : oList) {
@@ -56,8 +53,7 @@ public class TypeHandler {
 		return resultList;
 	}
 
-	public static ArrayList<TypeInformation> castObjectListToTypeInformationList(
-			final ArrayList<Object> oList) {
+	public static ArrayList<TypeInformation> castObjectListToTypeInformationList(final ArrayList<Object> oList) {
 		final ArrayList<TypeInformation> resultList = new ArrayList<TypeInformation>();
 		for (final Object oItem : oList) {
 			if (oItem instanceof TypeInformation) {
@@ -68,8 +64,7 @@ public class TypeHandler {
 		return resultList;
 	}
 
-	public static ArrayList<File> castStringListToFileList(
-			final ArrayList<String> oList) {
+	public static ArrayList<File> castStringListToFileList(final ArrayList<String> oList) {
 		final ArrayList<File> resultList = new ArrayList<File>();
 		for (final String oItem : oList) {
 			if (oItem instanceof String) {
@@ -83,15 +78,12 @@ public class TypeHandler {
 	/**
 	 * 
 	 * @param foundFilesList
-	 * @return
+	 * @return ArrayList<FileItem>
 	 */
-	public static ArrayList<FileItem> fileListToFileItemList(
-			final ArrayList<File> foundFilesList) {
+	public static ArrayList<FileItem> fileListToFileItemList(final ArrayList<File> foundFilesList) {
 		final ArrayList<FileItem> tempFileItemList = new ArrayList<FileItem>();
 		for (final File file : foundFilesList) {
-			tempFileItemList.add(new FileItem(file.getName(), file
-					.getAbsolutePath(), file.getParent(), file.length(), Helper
-					.getFileExtension(file.getName())));
+			tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper.getFileExtension(file.getName())));
 		}
 
 		return tempFileItemList;

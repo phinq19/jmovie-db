@@ -21,6 +21,7 @@ public class MainController implements FinderListener {
 
 	private FinderController					fController	= null;
 	private CollectorController					cController	= null;
+	private InterfaceController					iController	= null;
 	private DataHandler							dataHandler	= null;
 
 	private ConcurrentHashMap<String, Object>	globalVars	= null;
@@ -40,7 +41,10 @@ public class MainController implements FinderListener {
 		this.fController = new FinderController(this);
 		this.fController.addFinderEventListener(this);
 
+		this.iController = new InterfaceController(this);
+
 		this.cController = new CollectorController(this);
+
 		this.dataHandler = new DataHandler(this);
 		this.globalVars = new ConcurrentHashMap<String, Object>();
 
@@ -51,18 +55,31 @@ public class MainController implements FinderListener {
 	}
 
 	public void run() {
-		this.startSearch();
+		this.startInterfaces();
+		// this.startSearch();
+
+		this.test();
+	}
+
+	private void test() {
+
+		// System.out.println(this.dataHandler.findAllInfoForId(25));
+
+	}
+
+	private void startInterfaces() {
+		this.iController.run();
 	}
 
 	@SuppressWarnings("unchecked")
 	private void startSearch() {
-		this.fController.findFiles((ArrayList<File>) this.globalVars
+		this.fController.run((ArrayList<File>) this.globalVars
 				.get("searchPathList"));
 	}
 
 	private void startCollect(final ArrayList<File> foundFilesList) {
-		this.cController.collectInfos(TypeHandler
-				.fileListToFileItemList(foundFilesList));
+		this.cController
+				.run(TypeHandler.fileListToFileItemList(foundFilesList));
 	}
 
 	/**
