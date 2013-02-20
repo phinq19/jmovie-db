@@ -5,6 +5,7 @@ package com.lars_albrecht.general.utilities;
 
 import java.util.ArrayList;
 
+import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
@@ -17,13 +18,31 @@ public class HTML {
 	 * Generate HTML Output from FileItem-List.
 	 * 
 	 * @param fileItemList
-	 * @return String
+	 * @param searchTerm
+	 * @param searchType
+	 * @param printOutCount
+	 * @return
 	 */
-	public static String generateListOutput(final ArrayList<FileItem> fileItemList, final String searchTerm, final boolean printOutCount) {
+	public static String generateListOutput(final ArrayList<FileItem> fileItemList,
+			final String searchTerm,
+			final Integer searchType,
+			final boolean printOutCount) {
 		String resultStr = "";
 		if (fileItemList.size() > 0) {
 			if (printOutCount && (searchTerm != null)) {
-				resultStr += "<p>" + fileItemList.size() + "x wurde \"" + searchTerm + "\" gefunden</p>";
+				switch (searchType) {
+					default:
+					case WebServerHelper.SEARCHTYPE_TEXTALL:
+						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()
+								+ "</span>x wurde \"<span class=\"searchTerm\">" + searchTerm + "</span>\" gefunden</p>";
+						break;
+					case WebServerHelper.SEARCHTYPE_ATTRIBUTE:
+						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()
+								+ "</span>x wurde das Attribut \"<span class=\"searchKey\">" + searchTerm.split("=")[0]
+								+ "</span>\" mit dem Wert \"<span class=\"searchValue\">" + searchTerm.split("=")[1]
+								+ "</span>\" gefunden</p>";
+						break;
+				}
 			} else if (printOutCount) {
 				resultStr += "<p>" + fileItemList.size() + " Einträge gefunden</p>";
 			} else if (searchTerm != null) {

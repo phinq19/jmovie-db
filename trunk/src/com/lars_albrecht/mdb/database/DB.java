@@ -436,7 +436,8 @@ public class DB implements IDatabase {
 			sql += "'ext' VARCHAR(255), ";
 			sql += "'size' LONG, ";
 			sql += "'fullpath' VARCHAR(255), ";
-			sql += "'filehash' VARCHAR(255) ";
+			sql += "'filehash' VARCHAR(255), ";
+			sql += "'createTS' INTEGER ";
 			sql += ");";
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";

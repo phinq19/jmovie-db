@@ -34,7 +34,9 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -156,6 +158,10 @@ public class Helper {
 
 	}
 
+	public static Long getCurrentTimestamp() {
+		return (System.currentTimeMillis() / 1000L);
+	}
+
 	/**
 	 * 
 	 * @param type
@@ -251,6 +257,22 @@ public class Helper {
 	 */
 	public static String getFileNameWithoutExtension(final String filename) {
 		return filename.substring(0, filename.length() - (filename.length() - filename.lastIndexOf(".")));
+	}
+
+	/**
+	 * Format the timestamp with pattern. The timestamp must be a real
+	 * unixtimestamp like "1357002000" for 2013-01-01 00:00:00.
+	 * 
+	 * @param timestamp
+	 * @param pattern
+	 * @return
+	 */
+	public static String getFormattedTimestamp(final Long timestamp, String pattern) {
+		if (pattern == null) {
+			pattern = "dd.MM.yyyy HH:mm:ss";
+		}
+		final DateFormat dfmt = new SimpleDateFormat(pattern);
+		return dfmt.format(new Date(timestamp * 1000));
 	}
 
 	/**
@@ -628,5 +650,4 @@ public class Helper {
 			ImageIO.write(Helper.toBufferedImage(image), type, newFile);
 		}
 	}
-
 }

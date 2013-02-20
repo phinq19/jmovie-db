@@ -164,6 +164,51 @@ public class DataHandler {
 		return tempList;
 	}
 
+	/**
+	 * Returns a list of FileItems which are searched by the search term
+	 * searchStr.
+	 * 
+	 * @param searchStr
+	 *            String
+	 * @param withSubtypes
+	 *            Boolean
+	 * @return ArrayList<FileItem>
+	 */
+	public ArrayList<Object>
+			findAllFileItemForStringInAttributesByKeyValue(final String key, final String value, final Boolean withSubtypes) {
+		final ArrayList<Object> tempList = new ArrayList<Object>();
+
+		if (key != null && value != null) {
+			final FileItem fileItem = new FileItem();
+			HashMap<String, Object> tempMap = null;
+			if (fileItem != null) {
+				String where = "";
+				ResultSet rs = null;
+				where = " WHERE (tiValue.value LIKE '%" + value + "%' AND tiKey.key LIKE '%" + key + "%' )";
+
+				final String sql = "SELECT fi.* FROM '" + fileItem.getDatabaseTable() + "' AS fi LEFT JOIN " + " 	typeInformation as ti "
+						+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
+						+ " 	tiKey.id = ti.key_id " + "LEFT JOIN " + "	typeInformation_value AS tiValue " + "ON "
+						+ "	tiValue.id = ti.value_id " + where;
+				System.out.println("SQL: " + sql);
+				try {
+					rs = DB.query(sql);
+					final ResultSetMetaData rsmd = rs.getMetaData();
+					for (; rs.next();) {
+						tempMap = new HashMap<String, Object>();
+						for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+							tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
+						}
+						tempList.add(fileItem.fromHashMap(tempMap));
+					}
+				} catch (final SQLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return tempList;
+	}
+
 	public FileItem findAllInfoForAllByFileId(final Integer fileId) {
 		HashMap<String, Object> tempMap = null;
 		FileItem resultItem = new FileItem();
@@ -364,21 +409,42 @@ public class DataHandler {
 		return null;
 	}
 
+	/**
+	 * Reload the fileitems.
+	 * 
+	 * @param withArguments
+	 * @return
+	 */
 	private DataHandler loadFileItems(final boolean withArguments) {
 		this.fileItems = TypeHandler.castObjectListToFileItemList(this.findAll(new FileItem(), withArguments, null));
 		return this;
 	}
 
+	/**
+	 * Reload the keys.
+	 * 
+	 * @return
+	 */
 	private DataHandler loadKeys() {
 		this.keys = TypeHandler.castObjectListToKeyList(this.findAll(new Key<String>(), false, null));
 		return this;
 	}
 
+	/**
+	 * Reload the typeInformation.
+	 * 
+	 * @return
+	 */
 	private DataHandler loadTypeInformation() {
 		this.typeInformation = TypeHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), false, null));
 		return this;
 	}
 
+	/**
+	 * Reload the values.
+	 * 
+	 * @return
+	 */
 	private DataHandler loadValues() {
 		this.values = TypeHandler.castObjectListToValueList(this.findAll(new Value<Object>(), false, null));
 
@@ -445,6 +511,22 @@ public class DataHandler {
 		this.loadValues();
 		this.loadTypeInformation();
 		this.loadFileItems(false);
+	}
+
+	/**
+	 * Search key in this.keys. This method ignore the infoType/section
+	 * parameters.
+	 * 
+	 * @param key
+	 * @return
+	 */
+	public boolean isKeyInKeyList(final String key) {
+		for (final Key<?> thisKey : this.keys) {
+			if (((String) thisKey.getKey()).equalsIgnoreCase(key)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

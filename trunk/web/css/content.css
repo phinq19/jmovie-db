@@ -19,7 +19,7 @@ h2, h3, h4, h5											{margin:0;}
 #contentContainer .contentPart							{margin-bottom:20px;}
 
 									
-#detailView .listWrapper								{width:100%; float:left;}
+#detailView .listWrapper								{width:100%; clear:both; display:inline-block;}
 #detailView .listWrapper .key							{float:left; width: 25%; font-weight:bold;}
 #detailView .listWrapper .value							{float:left;}
 
@@ -33,3 +33,9 @@ h2, h3, h4, h5											{margin:0;}
 
 #controlView #statusArea								{color:#fff; background-color:#888; font-family:console; padding:5px; border:1px solid #000; margin-bottom:20px;}
 #controlView #statusArea p								{margin:0.5em 0;}
+
+
+#searchresultsView .searchResultCount					{font-weight:bold;}
+#searchresultsView .searchTerm,
+#searchresultsView .searchKey,
+#searchresultsView .searchValue							{font-style:italic; font-weight:bold;}
