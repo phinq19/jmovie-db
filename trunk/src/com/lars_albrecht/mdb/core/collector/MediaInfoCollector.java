@@ -158,7 +158,7 @@ public class MediaInfoCollector extends ACollector {
 					for (final String string : items) {
 						final String[] keyValues = string.split("\\:");
 						if (keyValues.length > 1) {
-							Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName));
+							Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName), false);
 							int pos = -1;
 							if (((pos = keys.indexOf(key)) > -1) && (keys.get(pos) instanceof Key<?>)) {
 								key = (Key<String>) keys.get(pos);
