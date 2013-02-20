@@ -17,6 +17,7 @@ public class Key<K> implements IPersistable {
 	private K		key			= null;
 	private String	infoType	= null;
 	private String	section		= null;
+	private Boolean	editable	= null;
 
 	public Key() {
 	}
@@ -26,70 +27,29 @@ public class Key<K> implements IPersistable {
 	 * @param key
 	 * @param infoType
 	 * @param section
+	 * @param editable
 	 */
-	public Key(final Integer id, final K key, final String infoType, final String section) {
+	public Key(final Integer id, final K key, final String infoType, final String section, final Boolean editable) {
 		super();
 		this.id = id;
 		this.key = key;
 		this.infoType = infoType;
 		this.section = section;
+		this.editable = editable;
 	}
 
 	/**
 	 * @param key
 	 * @param infoType
 	 * @param section
+	 * @param editable
 	 */
-	public Key(final K key, final String infoType, final String section) {
+	public Key(final K key, final String infoType, final String section, final Boolean editable) {
 		super();
 		this.key = key;
 		this.infoType = infoType;
 		this.section = section;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (!(obj instanceof Key)) {
-			return false;
-		}
-		final Key<K> other = (Key<K>) obj;
-		if ((this.id != null) && (other.id != null) && !this.id.equals(other.id)) {
-			return false;
-		}
-		if (this.infoType == null) {
-			if (other.infoType != null) {
-				return false;
-			}
-		} else if (!this.infoType.equals(other.infoType)) {
-			return false;
-		}
-		if (this.key == null) {
-			if (other.key != null) {
-				return false;
-			}
-		} else if (!this.key.equals(other.key)) {
-			return false;
-		}
-		if (this.section == null) {
-			if (other.section != null) {
-				return false;
-			}
-		} else if (!this.section.equals(other.section)) {
-			return false;
-		}
-		return true;
+		this.editable = editable;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -144,22 +104,6 @@ public class Key<K> implements IPersistable {
 		return this.section;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
-		result = (prime * result) + ((this.infoType == null) ? 0 : this.infoType.hashCode());
-		result = (prime * result) + ((this.key == null) ? 0 : this.key.hashCode());
-		result = (prime * result) + ((this.section == null) ? 0 : this.section.hashCode());
-		return result;
-	}
-
 	/**
 	 * @param id
 	 *            the id to set
@@ -209,6 +153,74 @@ public class Key<K> implements IPersistable {
 	@Override
 	public String toString() {
 		return "Id: " + this.id + " | " + "Key: " + this.key + " | " + "InfoType: " + this.infoType + " | " + "Section: " + this.section;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((this.editable == null) ? 0 : this.editable.hashCode());
+		result = prime * result + ((this.id == null) ? 0 : this.id.hashCode());
+		result = prime * result + ((this.infoType == null) ? 0 : this.infoType.hashCode());
+		result = prime * result + ((this.key == null) ? 0 : this.key.hashCode());
+		result = prime * result + ((this.section == null) ? 0 : this.section.hashCode());
+		return result;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Key)) {
+			return false;
+		}
+		final Key<?> other = (Key<?>) obj;
+		if ((this.id != null) && (other.id != null) && !this.id.equals(other.id)) {
+			return false;
+		}
+		if (this.editable == null) {
+			if (other.editable != null) {
+				return false;
+			}
+		} else if (!this.editable.equals(other.editable)) {
+			return false;
+		}
+		if (this.infoType == null) {
+			if (other.infoType != null) {
+				return false;
+			}
+		} else if (!this.infoType.equals(other.infoType)) {
+			return false;
+		}
+		if (this.key == null) {
+			if (other.key != null) {
+				return false;
+			}
+		} else if (!this.key.equals(other.key)) {
+			return false;
+		}
+		if (this.section == null) {
+			if (other.section != null) {
+				return false;
+			}
+		} else if (!this.section.equals(other.section)) {
+			return false;
+		}
+		return true;
 	}
 
 }
