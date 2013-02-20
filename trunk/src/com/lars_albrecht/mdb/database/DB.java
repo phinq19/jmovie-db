@@ -351,12 +351,17 @@ public class DB implements IDatabase {
 		return resultSet;
 	}
 
-	public static void setDBType(final Integer dbType) {
-		if ((dbType >= 0) && (dbType <= 1)) {
-			DB.DBTYPE = dbType;
+	public static void setDBType(final Integer dbType) throws Exception {
+		if (dbType != DB.DBTYPE_SQLITE) {
+			throw new Exception("Unsupported database type");
 		} else {
 			DB.DBTYPE = DB.DBTYPE_SQLITE;
 		}
+		// if ((dbType >= 0) && (dbType <= 1)) {
+		// DB.DBTYPE = dbType;
+		// } else {
+		// DB.DBTYPE = DB.DBTYPE_SQLITE;
+		// }
 	}
 
 	/**

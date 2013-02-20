@@ -29,7 +29,6 @@ public class Main {
 	}
 
 	private void initDB() {
-		DB.setDBType(DB.DBTYPE_SQLITE);
 		new DB().init();
 	}
 
