@@ -25,6 +25,7 @@ public class FileItem implements IPersistable {
 	private String							ext			= null;
 	private String							filehash	= null;
 	private ArrayList<FileAttributeList>	attributes	= null;
+	private Integer							createTS	= null;
 
 	/**
 	 * 
@@ -41,8 +42,10 @@ public class FileItem implements IPersistable {
 	 * @param dir
 	 * @param size
 	 * @param ext
+	 * @param createTS
 	 */
-	public FileItem(final Integer id, final String name, final String fullpath, final String dir, final Long size, final String ext) {
+	public FileItem(final Integer id, final String name, final String fullpath, final String dir, final Long size, final String ext,
+			final Integer createTS) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -50,6 +53,7 @@ public class FileItem implements IPersistable {
 		this.dir = dir;
 		this.size = size;
 		this.ext = ext;
+		this.createTS = createTS;
 	}
 
 	/**
@@ -66,14 +70,16 @@ public class FileItem implements IPersistable {
 	 * @param dir
 	 * @param size
 	 * @param ext
+	 * @param createTS
 	 */
-	public FileItem(final String name, final String fullpath, final String dir, final Long size, final String ext) {
+	public FileItem(final String name, final String fullpath, final String dir, final Long size, final String ext, final Integer createTS) {
 		super();
 		this.name = name;
 		this.fullpath = fullpath;
 		this.dir = dir;
 		this.size = size;
 		this.ext = ext;
+		this.createTS = createTS;
 	}
 
 	/*
@@ -106,6 +112,19 @@ public class FileItem implements IPersistable {
 			return false;
 		} else if (this.fullpath.equals(other.fullpath)) {
 			return true;
+		}
+
+		/*
+		 * if (this.attributes == null) { if (other.attributes != null) { return
+		 * false; } } else if (!this.attributes.equals(other.attributes)) {
+		 * return false; }
+		 */
+		if (this.createTS == null) {
+			if (other.createTS != null) {
+				return false;
+			}
+		} else if (!this.createTS.equals(other.createTS)) {
+			return false;
 		}
 		if (this.dir == null) {
 			if (other.dir != null) {
@@ -178,6 +197,10 @@ public class FileItem implements IPersistable {
 			result.setFilehash((String) map.get("filehash"));
 		}
 
+		if (map.containsKey("createTS")) {
+			result.setCreateTS((Integer) map.get("createTS"));
+		}
+
 		return result;
 	}
 
@@ -190,6 +213,13 @@ public class FileItem implements IPersistable {
 
 	public ArrayList<FileAttributeList> getAttributes() {
 		return this.attributes;
+	}
+
+	/**
+	 * @return the createTS
+	 */
+	public Integer getCreateTS() {
+		return this.createTS;
 	}
 
 	@Override
@@ -239,6 +269,9 @@ public class FileItem implements IPersistable {
 		final int prime = 31;
 		int result = 1;
 		if (this.id == null) {
+			// result = prime * result + ((this.attributes == null) ? 0 :
+			// this.attributes.hashCode());
+			result = (prime * result) + ((this.createTS == null) ? 0 : this.createTS.hashCode());
 			result = (prime * result) + ((this.dir == null) ? 0 : this.dir.hashCode());
 			result = (prime * result) + ((this.ext == null) ? 0 : this.ext.hashCode());
 			result = (prime * result) + ((this.filehash == null) ? 0 : this.filehash.hashCode());
@@ -253,6 +286,14 @@ public class FileItem implements IPersistable {
 
 	public void setAttributes(final ArrayList<FileAttributeList> attributes) {
 		this.attributes = attributes;
+	}
+
+	/**
+	 * @param createTS
+	 *            the createTS to set
+	 */
+	public void setCreateTS(final Integer createTS) {
+		this.createTS = createTS;
 	}
 
 	public void setDir(final String dir) {
@@ -300,6 +341,7 @@ public class FileItem implements IPersistable {
 		tempHashMap.put("size", this.getSize());
 		tempHashMap.put("ext", this.getExt());
 		tempHashMap.put("filehash", this.getFilehash());
+		tempHashMap.put("createTS", this.getCreateTS());
 
 		return tempHashMap;
 	}
@@ -309,4 +351,5 @@ public class FileItem implements IPersistable {
 		return "Id: " + this.id + " | " + "Name: " + this.name + " | " + "Fullpath: " + this.fullpath + " | " + "Dir: " + this.dir + " | "
 				+ "Size: " + this.size + " | " + "Ext: " + this.ext;
 	}
+
 }

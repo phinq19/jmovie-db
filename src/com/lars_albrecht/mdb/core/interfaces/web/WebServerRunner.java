@@ -7,7 +7,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.net.URLDecoder;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.mdb.core.controller.MainController;
@@ -31,7 +33,7 @@ public class WebServerRunner implements Runnable {
 		this.getKeyValue = new ConcurrentHashMap<String, String>();
 	}
 
-	private ConcurrentHashMap<String, String> getQuery(final String url) {
+	private ConcurrentHashMap<String, String> getQuery(final String url) throws UnsupportedEncodingException {
 		ConcurrentHashMap<String, String> resultList = null;
 		if (url != null) {
 			resultList = new ConcurrentHashMap<String, String>();
@@ -43,9 +45,9 @@ public class WebServerRunner implements Runnable {
 			for (final String string : paramsArr) {
 				final String[] paramArr = string.split("=");
 				if ((paramArr.length > 0) && (paramArr.length > 1)) {
-					resultList.put(paramArr[0], paramArr[1]);
+					resultList.put(URLDecoder.decode(paramArr[0], "utf-8"), URLDecoder.decode(paramArr[1], "utf-8"));
 				} else if (paramArr.length > 0) {
-					resultList.put(paramArr[0], "");
+					resultList.put(URLDecoder.decode(paramArr[0], "utf-8"), "");
 				}
 			}
 		}
@@ -99,7 +101,7 @@ public class WebServerRunner implements Runnable {
 				}
 
 				if (urlStr != null) {
-					final String content = new WebServerHelper(this.mainController).getContent(urlStr, this.getKeyValue,
+					final String content = new WebServerHelper(this.mainController).getFileContent(urlStr, this.getKeyValue,
 							this.headerKeyValue);
 
 					// Send the response
@@ -130,6 +132,9 @@ public class WebServerRunner implements Runnable {
 
 				}
 
+			} catch (final UnsupportedEncodingException e) {
+				e.printStackTrace();
+				System.err.println("Error on encoding query");
 			} catch (final IOException e) {
 				e.printStackTrace();
 				System.err.println("Error on connection read");

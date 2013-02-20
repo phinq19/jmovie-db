@@ -19,11 +19,12 @@ import com.lars_albrecht.mdb.core.models.Value;
 public class TypeHandler {
 
 	public static ArrayList<FileItem> castObjectListToFileItemList(final ArrayList<Object> oList) {
-
 		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
-		for (final Object oItem : oList) {
-			if (oItem instanceof FileItem) {
-				resultList.add((FileItem) oItem);
+		if (oList != null) {
+			for (final Object oItem : oList) {
+				if (oItem instanceof FileItem) {
+					resultList.add((FileItem) oItem);
+				}
 			}
 		}
 		return resultList;
@@ -84,10 +85,9 @@ public class TypeHandler {
 		final ArrayList<FileItem> tempFileItemList = new ArrayList<FileItem>();
 		for (final File file : foundFilesList) {
 			tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper
-					.getFileExtension(file.getName())));
+					.getFileExtension(file.getName()), Helper.getCurrentTimestamp().intValue()));
 		}
 
 		return tempFileItemList;
 	}
-
 }

@@ -25,16 +25,36 @@ import com.lars_albrecht.mdb.core.models.KeyValue;
  */
 public class WebServerHelper {
 
-	private MainController	mainController	= null;
+	private MainController	mainController			= null;
+
+	public final static int	SEARCHTYPE_TEXTALL		= 0;
+	public final static int	SEARCHTYPE_ATTRIBUTE	= 1;
 
 	public WebServerHelper(final MainController mainController) {
 		this.mainController = mainController;
 	}
 
+	public String generateAttributesView(final ConcurrentHashMap<String, String> GETParams) {
+		String resultStr = "<div id=\"attributesView\" class=\"contentPart\">";
+		resultStr += "<p>Diese Anzeige ist aktuell nicht verfügbar.</p>";
+		resultStr += "</div>";
+		return resultStr;
+	}
+
+	/**
+	 * Generate content for the given content, filename and parameters.
+	 * 
+	 * @param content
+	 * @param filename
+	 * @param GETParams
+	 * @param headerKeyValue
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	public String generateContent(final String content,
 			final String filename,
 			final ConcurrentHashMap<String, String> GETParams,
-			final ConcurrentHashMap<String, String> headerKeyValue) {
+			final ConcurrentHashMap<String, String> headerKeyValue) throws UnsupportedEncodingException {
 		String generatedContent = content;
 		String contentMarkerReplacement = "";
 		// System.out.println("Params: " + GETParams);
@@ -67,6 +87,9 @@ public class WebServerHelper {
 			} else if (action.equalsIgnoreCase("showInfoControl")) {
 				contentMarkerReplacement = this.generateInfoControlView(GETParams);
 				pageTitle += " | " + this.getTitleForInfoview();
+			} else if (action.equalsIgnoreCase("showAttributes")) {
+				contentMarkerReplacement = this.generateAttributesView(GETParams);
+				pageTitle += " | " + this.getTitleForAttributesView();
 			}
 
 			// replace contentmarker with "contentMarkerReplacement" if marker
@@ -91,7 +114,7 @@ public class WebServerHelper {
 			if (Template.containsMarker(generatedContent, "lastFiveAdded")) {
 				final ArrayList<FileItem> lastFiveList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
 						.findAll(new FileItem(), false, 5));
-				final String listOutput = HTML.generateListOutput(lastFiveList, null, false);
+				final String listOutput = HTML.generateListOutput(lastFiveList, null, null, false);
 				generatedContent = Template.replaceMarker(generatedContent, "lastFiveAdded", listOutput);
 			}
 			if (Template.containsMarker(generatedContent, "title")) {
@@ -111,6 +134,8 @@ public class WebServerHelper {
 					+ item.getDir().replaceAll("\\\\", "\\\\\\\\") + "</div></div>";
 			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Size</div><div class=\"value\">"
 					+ Helper.getHumanreadableFileSize(item.getSize()) + "</div></div>";
+			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Added</div><div class=\"value\">"
+					+ Helper.getFormattedTimestamp(item.getCreateTS().longValue(), null) + "</div></div>";
 
 			if ((item.getAttributes() != null) && (item.getAttributes().size() > 0)) {
 				resultStr += "<hr />";
@@ -247,17 +272,40 @@ public class WebServerHelper {
 		return resultStr;
 	}
 
-	public String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) {
+	public String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) throws UnsupportedEncodingException {
 		String resultStr = "<div id=\"searchresultsView\" class=\"contentPart\">";
 		if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
 			// get DATA for output
-			String searchStr = GETParams.get("searchStr");
-			searchStr = searchStr.replaceAll("\\+", " ");
-			ArrayList<FileItem> foundList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
-					.findAllFileItemForStringInAll(searchStr, false));
-			foundList = Helper.unique(foundList);
+			final String searchStr = URLDecoder.decode(GETParams.get("searchStr"), "utf-8");
+			int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 
-			resultStr += HTML.generateListOutput(foundList, searchStr, true);
+			String searchKey = null;
+			String searchValue = null;
+			if (searchStr.contains("=")) {
+				final String[] searchArr = searchStr.split("=");
+				if (searchArr.length == 2) {
+					searchKey = searchArr[0];
+					searchValue = searchArr[1];
+					if (this.mainController.getDataHandler().isKeyInKeyList(searchKey)) {
+						searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
+					}
+
+				}
+			}
+
+			ArrayList<FileItem> foundList = null;
+			switch (searchType) {
+				default:
+				case SEARCHTYPE_TEXTALL:
+					foundList = TypeHandler.castObjectListToFileItemList(Helper.unique(this.mainController.getDataHandler()
+							.findAllFileItemForStringInAll(searchStr, false)));
+					break;
+				case SEARCHTYPE_ATTRIBUTE:
+					foundList = TypeHandler.castObjectListToFileItemList(Helper.unique(this.mainController.getDataHandler()
+							.findAllFileItemForStringInAttributesByKeyValue(searchKey, searchValue, false)));
+					break;
+			}
+			resultStr += HTML.generateListOutput(foundList, searchStr, searchType, true);
 		} else {
 			resultStr += "<p>Suchen Sie mit hilfe der Suche</p>";
 		}
@@ -266,7 +314,7 @@ public class WebServerHelper {
 		return resultStr;
 	}
 
-	public String getContent(final String url,
+	public String getFileContent(final String url,
 			final ConcurrentHashMap<String, String> GETParams,
 			final ConcurrentHashMap<String, String> headerKeyValue) {
 		if (url != null) {
@@ -293,6 +341,10 @@ public class WebServerHelper {
 		}
 
 		return null;
+	}
+
+	public String getTitleForAttributesView() {
+		return "Attributes";
 	}
 
 	public String getTitleForDetailview(final FileItem fileItem) {
