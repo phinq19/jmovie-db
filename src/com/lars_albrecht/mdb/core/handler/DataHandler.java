@@ -490,6 +490,16 @@ public class DataHandler {
 			// INSERT OR IGNORE INTO.
 			// TODO if h2 db, than use TRANSACTION_ID() as id to set instead of
 			// nothing.
+			/*
+			 * INSERT INTO 'tablename' ('column1', 'column2') VALUES ('data1',
+			 * 'data2'), ('data3', 'data4'), ('data5', 'data6'), ('data7',
+			 * 'data8');
+			 * 
+			 * INSERT INTO 'tablename' SELECT 'data1' AS 'column1', 'data2' AS
+			 * 'column2' UNION SELECT 'data3', 'data4' UNION SELECT 'data5',
+			 * 'data6' UNION SELECT 'data7', 'data8'
+			 */
+
 			sql = "INSERT OR IGNORE INTO "
 					+ (DB.useQuotesForFields ? "'" : "")
 					+ ""
