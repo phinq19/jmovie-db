@@ -4,7 +4,7 @@
 package com.lars_albrecht.mdb.core.finder.models;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class FileAttribute {

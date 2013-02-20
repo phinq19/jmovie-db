@@ -6,7 +6,9 @@ package com.lars_albrecht.mdb.core.models;
 import java.util.HashMap;
 
 /**
- * @author albrela
+ * This model class holds the value.
+ * 
+ * @author lalbrecht
  * 
  */
 public class Value<V> implements IPersistable {

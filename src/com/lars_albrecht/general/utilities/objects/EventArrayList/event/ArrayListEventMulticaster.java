@@ -6,7 +6,7 @@ package com.lars_albrecht.general.utilities.objects.EventArrayList.event;
 import java.util.Vector;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class ArrayListEventMulticaster implements ArrayListListener {

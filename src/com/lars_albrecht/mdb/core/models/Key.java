@@ -6,7 +6,10 @@ package com.lars_albrecht.mdb.core.models;
 import java.util.HashMap;
 
 /**
- * @author albrela
+ * 
+ * This model class holds the key.
+ * 
+ * @author lalbrecht
  * 
  * @see "http://blog.buhbuhbuh.de/buhbuhbuh/entry/equals_und_hashcode_richtig_%C3%BCberschreiben"
  * 

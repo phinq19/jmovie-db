@@ -48,10 +48,6 @@ import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 /**
- * @author albrela
- *
- */
-/**
  * @author lalbrecht
  * 
  */

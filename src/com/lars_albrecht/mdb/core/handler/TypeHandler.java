@@ -13,7 +13,7 @@ import com.lars_albrecht.mdb.core.models.TypeInformation;
 import com.lars_albrecht.mdb.core.models.Value;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class TypeHandler {

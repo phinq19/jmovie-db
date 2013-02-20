@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.finder.event;
 import java.util.EventListener;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public interface FinderListener extends EventListener {

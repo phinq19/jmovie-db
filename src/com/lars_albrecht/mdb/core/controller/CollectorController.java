@@ -13,7 +13,7 @@ import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class CollectorController implements IController {

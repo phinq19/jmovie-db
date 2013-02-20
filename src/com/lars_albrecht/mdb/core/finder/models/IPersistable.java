@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.finder.models;
 import java.util.HashMap;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public interface IPersistable {

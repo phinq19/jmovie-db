@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.collector.event;
 import java.util.Vector;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class CollectorEventMulticaster implements CollectorListener {

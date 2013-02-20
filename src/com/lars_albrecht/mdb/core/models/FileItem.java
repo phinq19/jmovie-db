@@ -10,7 +10,9 @@ import java.util.HashMap;
 import com.lars_albrecht.general.utilities.ChecksumSHA1;
 
 /**
- * @author albrela
+ * This model class holds the FileItem itself.
+ * 
+ * @author lalbrecht
  * 
  */
 public class FileItem implements IPersistable {

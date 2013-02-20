@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class CollectorEvent extends EventObject {

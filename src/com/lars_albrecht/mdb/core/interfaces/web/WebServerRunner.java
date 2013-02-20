@@ -14,7 +14,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class WebServerRunner implements Runnable {

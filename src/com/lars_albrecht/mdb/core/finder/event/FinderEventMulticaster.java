@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.finder.event;
 import java.util.Vector;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class FinderEventMulticaster implements FinderListener {

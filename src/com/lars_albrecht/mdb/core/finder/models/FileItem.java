@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class FileItem implements IPersistable {

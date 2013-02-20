@@ -4,7 +4,10 @@
 package com.lars_albrecht.mdb.core.models;
 
 /**
- * @author albrela
+ * 
+ * This model class holds the key values.
+ * 
+ * @author lalbrecht
  * 
  */
 public final class KeyValue<K, V> {

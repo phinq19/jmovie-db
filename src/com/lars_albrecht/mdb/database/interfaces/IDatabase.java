@@ -4,7 +4,7 @@
 package com.lars_albrecht.mdb.database.interfaces;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public interface IDatabase {

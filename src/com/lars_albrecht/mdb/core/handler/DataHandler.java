@@ -23,7 +23,7 @@ import com.lars_albrecht.mdb.core.models.Value;
 import com.lars_albrecht.mdb.database.DB;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class DataHandler {

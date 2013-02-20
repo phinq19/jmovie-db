@@ -20,7 +20,7 @@ import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.KeyValue;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class WebServerHelper {
