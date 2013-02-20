@@ -84,8 +84,7 @@ public class TypeHandler {
 	public static ArrayList<FileItem> fileListToFileItemList(final ArrayList<File> foundFilesList) {
 		final ArrayList<FileItem> tempFileItemList = new ArrayList<FileItem>();
 		for (final File file : foundFilesList) {
-			tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper
-					.getFileExtension(file.getName()), Helper.getCurrentTimestamp().intValue()));
+			tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper.getFileExtension(file.getName()), null));
 		}
 
 		return tempFileItemList;

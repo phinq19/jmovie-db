@@ -4,6 +4,8 @@
 package com.lars_albrecht.mdb.core.models;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -198,7 +200,13 @@ public class FileItem implements IPersistable {
 		}
 
 		if (map.containsKey("createTS")) {
-			result.setCreateTS((Integer) map.get("createTS"));
+			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+			try {
+				result.setCreateTS(((Long) sdfToDate.parse((String) map.get("createTS")).getTime()).intValue());
+			} catch (final ParseException e) {
+				e.printStackTrace();
+			}
+
 		}
 
 		return result;
@@ -341,7 +349,10 @@ public class FileItem implements IPersistable {
 		tempHashMap.put("size", this.getSize());
 		tempHashMap.put("ext", this.getExt());
 		tempHashMap.put("filehash", this.getFilehash());
-		tempHashMap.put("createTS", this.getCreateTS());
+
+		if (this.getCreateTS() != null) {
+			tempHashMap.put("createTS", this.getCreateTS());
+		}
 
 		return tempHashMap;
 	}
