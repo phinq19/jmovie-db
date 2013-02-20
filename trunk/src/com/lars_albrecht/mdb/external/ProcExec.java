@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 import com.lars_albrecht.general.utilities.Helper;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  * @see "http://www.wsoftware.de/practices/proc-execs.html"
  * 

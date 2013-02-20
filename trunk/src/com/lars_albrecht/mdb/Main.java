@@ -7,7 +7,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.database.DB;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class Main {

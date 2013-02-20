@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * @author albrela
+ * This model class holds a list of KeyValues.
+ * 
+ * @author lalbrecht
  * 
  */
 public class FileAttributeList {

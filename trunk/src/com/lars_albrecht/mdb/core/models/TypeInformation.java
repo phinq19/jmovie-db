@@ -6,7 +6,10 @@ package com.lars_albrecht.mdb.core.models;
 import java.util.HashMap;
 
 /**
- * @author albrela
+ * This is the model class to store the file_id, key_id and value_id in the
+ * database.
+ * 
+ * @author lalbrecht
  * 
  */
 public class TypeInformation implements IPersistable {

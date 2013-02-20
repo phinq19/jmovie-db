@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 
 /**
- * @author albrela
  * @see "http://www.rgagnon.com/javadetails/java-0416.html"
  * 
  */

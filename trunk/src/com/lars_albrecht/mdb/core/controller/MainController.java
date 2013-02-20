@@ -14,7 +14,7 @@ import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.TypeHandler;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class MainController implements FinderListener {

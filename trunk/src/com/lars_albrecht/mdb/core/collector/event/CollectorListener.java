@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.collector.event;
 import java.util.EventListener;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public interface CollectorListener extends EventListener {

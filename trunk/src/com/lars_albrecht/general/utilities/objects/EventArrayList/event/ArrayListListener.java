@@ -6,7 +6,7 @@ package com.lars_albrecht.general.utilities.objects.EventArrayList.event;
 import java.util.EventListener;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public interface ArrayListListener extends EventListener {

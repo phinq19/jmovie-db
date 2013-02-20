@@ -6,7 +6,7 @@ package com.lars_albrecht.general.utilities.objects.EventArrayList.event;
 import java.util.EventObject;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class ArrayListEvent extends EventObject {

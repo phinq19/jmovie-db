@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileFilter;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class VideoFileFilter implements FileFilter {

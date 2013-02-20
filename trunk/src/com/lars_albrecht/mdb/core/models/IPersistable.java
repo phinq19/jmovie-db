@@ -6,7 +6,9 @@ package com.lars_albrecht.mdb.core.models;
 import java.util.HashMap;
 
 /**
- * @author albrela
+ * This interface contains the persist methods to persist a model.
+ * 
+ * @author lalbrecht
  * 
  */
 public interface IPersistable {

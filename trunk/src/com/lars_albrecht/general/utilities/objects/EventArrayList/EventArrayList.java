@@ -10,7 +10,7 @@ import com.lars_albrecht.general.utilities.objects.EventArrayList.event.ArrayLis
 import com.lars_albrecht.general.utilities.objects.EventArrayList.event.ArrayListListener;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class EventArrayList<E> extends ArrayList<E> {

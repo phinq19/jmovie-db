@@ -25,7 +25,7 @@ import com.moviejukebox.themoviedb.model.Language;
 import com.moviejukebox.themoviedb.model.MovieDb;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class TheMovieDBCollector extends ACollector {

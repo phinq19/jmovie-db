@@ -12,7 +12,7 @@ import com.lars_albrecht.mdb.core.finder.event.FinderEventMulticaster;
 import com.lars_albrecht.mdb.filter.VideoFileFilter;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class Finder implements Runnable {
