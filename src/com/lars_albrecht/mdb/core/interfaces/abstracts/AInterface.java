@@ -23,10 +23,13 @@ public abstract class AInterface implements Runnable {
 
 	@Override
 	public final void run() {
-		this.startWebServer();
+		this.starInterface();
 		this.controller.getThreadList().remove(Thread.currentThread());
 	}
 
-	public abstract void startWebServer();
+	/**
+	 * Starts the interface.
+	 */
+	public abstract void starInterface();
 
 }

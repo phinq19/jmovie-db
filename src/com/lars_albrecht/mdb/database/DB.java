@@ -423,114 +423,51 @@ public class DB implements IDatabase {
 	public void init() {
 		String sql = null;
 		try {
-			switch (DB.DBTYPE) {
-				default:
-				case 0: // sqlite
-					// fileInformation
-					sql = "CREATE TABLE IF NOT EXISTS 'fileInformation' ( ";
-					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-					sql += "'name' VARCHAR(255), ";
-					sql += "'dir' VARCHAR(255), ";
-					sql += "'ext' VARCHAR(255), ";
-					sql += "'size' LONG, ";
-					sql += "'fullpath' VARCHAR(255), ";
-					sql += "'filehash' VARCHAR(255) ";
-					sql += ");";
-					DB.update(sql);
-					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
-					DB.update(sql);
+			// fileInformation
+			sql = "CREATE TABLE IF NOT EXISTS 'fileInformation' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'name' VARCHAR(255), ";
+			sql += "'dir' VARCHAR(255), ";
+			sql += "'ext' VARCHAR(255), ";
+			sql += "'size' LONG, ";
+			sql += "'fullpath' VARCHAR(255), ";
+			sql += "'filehash' VARCHAR(255) ";
+			sql += ");";
+			DB.update(sql);
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
+			DB.update(sql);
 
-					// typeInformation_key
-					sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_key' ( ";
-					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-					sql += "'key' VARCHAR(255), ";
-					sql += "'infoType' VARCHAR(255), ";
-					sql += "'section' VARCHAR(255) ";
-					sql += "); ";
-					DB.update(sql);
-					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
-					DB.update(sql);
+			// typeInformation_key
+			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_key' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'key' VARCHAR(255), ";
+			sql += "'infoType' VARCHAR(255), ";
+			sql += "'section' VARCHAR(255) ";
+			sql += "); ";
+			DB.update(sql);
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
+			DB.update(sql);
 
-					// typeInformation_value
-					sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_value' ( ";
-					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-					sql += "'value' TEXT ";
-					sql += "); ";
-					DB.update(sql);
-					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
-					DB.update(sql);
+			// typeInformation_value
+			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_value' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'value' TEXT ";
+			sql += "); ";
+			DB.update(sql);
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
+			DB.update(sql);
 
-					// typeInformation
-					sql = "CREATE TABLE IF NOT EXISTS 'typeInformation' ( ";
-					sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-					sql += "'file_id' INTEGER, ";
-					sql += "'key_id' INTEGER, ";
-					sql += "'value_id' INTEGER ";
-					// sql += "'value' INTEGER ";
-					sql += "); ";
-					DB.update(sql);
-					sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
-					DB.update(sql);
-					break;
-				case 1: // h2
-					final ArrayList<String> tables = DB.getTables();
-
-					if (!tables.contains("FILEINFORMATION")) {
-						// fileInformation
-						sql = "CREATE TABLE fileInformation ( ";
-						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
-						sql += "name VARCHAR(255), ";
-						sql += "dir VARCHAR(255), ";
-						sql += "ext VARCHAR(255), ";
-						sql += "size LONG, ";
-						sql += "fullpath VARCHAR(255), ";
-						sql += "filehash VARCHAR(255) ";
-						sql += ");";
-						DB.update(sql);
-						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
-						DB.update(sql);
-					}
-
-					if (!tables.contains("TYPEINFORMATION_KEY")) {
-						// typeInformation_key
-						sql = "CREATE TABLE IF NOT EXISTS typeInformation_key ( ";
-						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
-						sql += "key VARCHAR(255), ";
-						sql += "infoType VARCHAR(255), ";
-						sql += "section VARCHAR(255) ";
-						sql += "); ";
-						DB.update(sql);
-						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
-						DB.update(sql);
-					}
-
-					if (!tables.contains("TYPEINFORMATION_VALUE")) {
-						// typeInformation_value
-						sql = "CREATE TABLE IF NOT EXISTS typeInformation_value ( ";
-						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
-						sql += "value VARCHAR ";
-						sql += "); ";
-						DB.update(sql);
-						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
-						DB.update(sql);
-					}
-
-					if (!tables.contains("TYPEINFORMATION")) {
-						// typeInformation
-						sql = "CREATE TABLE IF NOT EXISTS typeInformation ( ";
-						sql += "id INTEGER PRIMARY KEY AUTO_INCREMENT (1,1) NOT NULL, ";
-						sql += "file_id INTEGER, ";
-						sql += "key_id INTEGER, ";
-						sql += "value_id INTEGER ";
-						// sql += "value INTEGER ";
-						sql += "); ";
-						DB.update(sql);
-						sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
-						DB.update(sql);
-					}
-
-					break;
-			}
+			// typeInformation
+			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'file_id' INTEGER, ";
+			sql += "'key_id' INTEGER, ";
+			sql += "'value_id' INTEGER ";
+			// sql += "'value' INTEGER ";
+			sql += "); ";
+			DB.update(sql);
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
+			DB.update(sql);
 
 		} catch (final Exception e) {
 			e.printStackTrace();
