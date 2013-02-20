@@ -23,7 +23,7 @@ public class WebInterface extends AInterface {
 	}
 
 	@Override
-	public void startWebServer() {
+	public void starInterface() {
 		this.threadList.add(new Thread(new WebServerInterface(this.mainController)));
 		this.threadList.get(this.threadList.size() - 1).start();
 	}

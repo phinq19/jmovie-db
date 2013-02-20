@@ -32,8 +32,8 @@ public class MainController implements FinderListener {
 
 	@Override
 	public void finderAddFinish(final FinderEvent e) {
-		this.startCollect(e.getFiles());
 		System.out.println("Found " + e.getFiles().size() + " files");
+		this.startCollect(e.getFiles());
 	}
 
 	@Override
