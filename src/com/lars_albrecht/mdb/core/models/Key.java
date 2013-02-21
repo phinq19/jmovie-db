@@ -21,6 +21,7 @@ public class Key<K> implements IPersistable {
 	private String	infoType	= null;
 	private String	section		= null;
 	private Boolean	editable	= null;
+	private Boolean	searchable	= null;
 
 	public Key() {
 	}
@@ -31,14 +32,16 @@ public class Key<K> implements IPersistable {
 	 * @param infoType
 	 * @param section
 	 * @param editable
+	 * @param searchable
 	 */
-	public Key(final Integer id, final K key, final String infoType, final String section, final Boolean editable) {
+	public Key(final Integer id, final K key, final String infoType, final String section, final Boolean editable, final Boolean searchable) {
 		super();
 		this.id = id;
 		this.key = key;
 		this.infoType = infoType;
 		this.section = section;
 		this.editable = editable;
+		this.searchable = searchable;
 	}
 
 	/**
@@ -46,13 +49,30 @@ public class Key<K> implements IPersistable {
 	 * @param infoType
 	 * @param section
 	 * @param editable
+	 * @param searchable
 	 */
-	public Key(final K key, final String infoType, final String section, final Boolean editable) {
+	public Key(final K key, final String infoType, final String section, final Boolean editable, final Boolean searchable) {
 		super();
 		this.key = key;
 		this.infoType = infoType;
 		this.section = section;
 		this.editable = editable;
+		this.searchable = searchable;
+	}
+
+	/**
+	 * @return the searchable
+	 */
+	public Boolean getSearchable() {
+		return this.searchable;
+	}
+
+	/**
+	 * @param searchable
+	 *            the searchable to set
+	 */
+	public void setSearchable(final Boolean searchable) {
+		this.searchable = searchable;
 	}
 
 	/*
@@ -80,6 +100,13 @@ public class Key<K> implements IPersistable {
 				return false;
 			}
 		} else if (!this.editable.equals(other.editable)) {
+			return false;
+		}
+		if (this.searchable == null) {
+			if (other.searchable != null) {
+				return false;
+			}
+		} else if (!this.searchable.equals(other.searchable)) {
 			return false;
 		}
 		if (this.infoType == null) {
@@ -130,6 +157,15 @@ public class Key<K> implements IPersistable {
 				result.setEditable(tempEdit == 0 ? false : true);
 			} else if (map.get("editable") instanceof Boolean) {
 				result.setEditable((Boolean) map.get("editable"));
+			}
+		}
+
+		if (map.containsKey("searchable")) {
+			if (map.get("searchable") instanceof Integer) {
+				final Integer tempSearch = (Integer) map.get("searchable");
+				result.setSearchable(tempSearch == 0 ? false : true);
+			} else if (map.get("searchable") instanceof Boolean) {
+				result.setSearchable((Boolean) map.get("searchable"));
 			}
 		}
 
@@ -184,6 +220,7 @@ public class Key<K> implements IPersistable {
 		final int prime = 31;
 		int result = 1;
 		result = (prime * result) + ((this.editable == null) ? 0 : this.editable.hashCode());
+		result = (prime * result) + ((this.searchable == null) ? 0 : this.searchable.hashCode());
 		result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
 		result = (prime * result) + ((this.infoType == null) ? 0 : this.infoType.hashCode());
 		result = (prime * result) + ((this.key == null) ? 0 : this.key.hashCode());
@@ -242,13 +279,32 @@ public class Key<K> implements IPersistable {
 		tempHashMap.put("infoType", this.getInfoType());
 		tempHashMap.put("section", this.getSection());
 		tempHashMap.put("editable", this.getEditable());
+		tempHashMap.put("searchable", this.getSearchable());
 
 		return tempHashMap;
 	}
 
 	@Override
 	public String toString() {
-		return "Id: " + this.id + " | " + "Key: " + this.key + " | " + "InfoType: " + this.infoType + " | " + "Section: " + this.section;
+		return "Id: " + this.id + " | " + "Key: " + this.key + " | " + "InfoType: " + this.infoType + " | " + "Section: " + this.section
+				+ " | " + "Editable: " + this.editable + " | " + "Searchable: " + this.searchable;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#clone()
+	 */
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		final Key<K> tempKey = new Key<K>();
+		tempKey.editable = this.editable;
+		tempKey.id = this.id;
+		tempKey.infoType = this.infoType;
+		tempKey.key = this.key;
+		tempKey.searchable = this.searchable;
+		tempKey.section = this.section;
+		return tempKey;
 	}
 
 }

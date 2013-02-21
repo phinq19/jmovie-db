@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,10 +26,11 @@ import com.lars_albrecht.mdb.core.models.KeyValue;
  */
 public class WebServerHelper {
 
-	private MainController mainController = null;
+	private MainController	mainController			= null;
 
-	public final static int SEARCHTYPE_TEXTALL = 0;
-	public final static int SEARCHTYPE_ATTRIBUTE = 1;
+	public final static int	SEARCHTYPE_MIXED		= 0;
+	public final static int	SEARCHTYPE_TEXTALL		= 1;
+	public final static int	SEARCHTYPE_ATTRIBUTE	= 2;
 
 	public WebServerHelper(final MainController mainController) {
 		this.mainController = mainController;
@@ -51,8 +53,10 @@ public class WebServerHelper {
 	 * @return
 	 * @throws UnsupportedEncodingException
 	 */
-	public String generateContent(final String content, final String filename, final ConcurrentHashMap<String, String> GETParams, final ConcurrentHashMap<String, String> headerKeyValue)
-			throws UnsupportedEncodingException {
+	public String generateContent(final String content,
+			final String filename,
+			final ConcurrentHashMap<String, String> GETParams,
+			final ConcurrentHashMap<String, String> headerKeyValue) throws UnsupportedEncodingException {
 		String generatedContent = content;
 		String contentMarkerReplacement = "";
 		// System.out.println("Params: " + GETParams);
@@ -100,7 +104,8 @@ public class WebServerHelper {
 			if (Template.containsMarker(content, "searchTerm")) {
 				if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
 					try {
-						generatedContent = Template.replaceMarker(generatedContent, "searchTerm", URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
+						generatedContent = Template.replaceMarker(generatedContent, "searchTerm",
+								URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
 					} catch (final UnsupportedEncodingException e) {
 						generatedContent = e.getMessage();
 					}
@@ -109,7 +114,8 @@ public class WebServerHelper {
 				}
 			}
 			if (Template.containsMarker(generatedContent, "lastFiveAdded")) {
-				final ArrayList<FileItem> lastFiveList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler().findAll(new FileItem(), false, 5));
+				final ArrayList<FileItem> lastFiveList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
+						.findAll(new FileItem(), false, 5));
 				final String listOutput = HTML.generateListOutput(lastFiveList, null, null, false);
 				generatedContent = Template.replaceMarker(generatedContent, "lastFiveAdded", listOutput);
 			}
@@ -126,13 +132,16 @@ public class WebServerHelper {
 		if ((item != null) && (item.getId() != null)) {
 			resultStr += "<h2>" + item.getName() + " (" + item.getId() + ")" + "</h2>";
 			resultStr += "<div class=\"path\">" + item.getFullpath().replaceAll("\\\\", "\\\\\\\\") + "</div>";
-			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Dir</div><div class=\"value\">" + item.getDir().replaceAll("\\\\", "\\\\\\\\") + "</div></div>";
+			resultStr += "<div class=\"listWrapper\"><div class=\"key\">Dir</div><div class=\"value\">"
+					+ item.getDir().replaceAll("\\\\", "\\\\\\\\") + "</div></div>";
 
 			if (item.getSize() != null) {
-				resultStr += "<div class=\"listWrapper\"><div class=\"key\">Size</div><div class=\"value\">" + Helper.getHumanreadableFileSize(item.getSize()) + "</div></div>";
+				resultStr += "<div class=\"listWrapper\"><div class=\"key\">Size</div><div class=\"value\">"
+						+ Helper.getHumanreadableFileSize(item.getSize()) + "</div></div>";
 			}
 			if (item.getCreateTS() != null) {
-				resultStr += "<div class=\"listWrapper\"><div class=\"key\">Added</div><div class=\"value\">" + Helper.getFormattedTimestamp(item.getCreateTS().longValue(), null) + "</div></div>";
+				resultStr += "<div class=\"listWrapper\"><div class=\"key\">Added</div><div class=\"value\">"
+						+ Helper.getFormattedTimestamp(item.getCreateTS().longValue(), null) + "</div></div>";
 			}
 
 			if ((item.getAttributes() != null) && (item.getAttributes().size() > 0)) {
@@ -145,7 +154,8 @@ public class WebServerHelper {
 				String currentInfoType = null;
 				int i = 0;
 				for (final FileAttributeList attributeList : item.getAttributes()) {
-					if ((currentInfoType == null) || !currentInfoType.equalsIgnoreCase(attributeList.getKeyValues().get(0).getKey().getInfoType())) {
+					if ((currentInfoType == null)
+							|| !currentInfoType.equalsIgnoreCase(attributeList.getKeyValues().get(0).getKey().getInfoType())) {
 						currentInfoType = attributeList.getKeyValues().get(0).getKey().getInfoType();
 						if (i > 0) {
 							resultStr += "</div>";
@@ -172,13 +182,26 @@ public class WebServerHelper {
 								if (attributeListCpy.getKeyValues().contains(keyValue)) {
 									resultStr += "<tr class=\"" + ((evenOdd % 2) == 0 ? "even" : "odd") + "\">";
 									resultStr += "<td>" + keyValue.getKey().getKey() + "</td>";
-									resultStr += "<td>" + Helper.implode(this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey()), ", ", null, null) + "</td>";
+									if (!keyValue.getKey().getSearchable()
+											|| this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey()).size() > 1) {
+										resultStr += "<td>"
+												+ Helper.implode(this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey()), ", ",
+														null, null) + "</td>";
+									} else {
+										resultStr += "<td>"
+												+ "<a href=\"?"
+												+ "action=showSearchresults&searchStr="
+												+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + keyValue.getValue().getValue(),
+														"utf-8") + "\">" + keyValue.getValue().getValue() + "</a>" + "</td>";
+									}
 									resultStr += "</tr>";
 									attributeListCpy = this.removeKeysFromFileAttributeList(attributeListCpy, keyValue.getKey().getKey());
 									evenOdd++;
 								}
 							}
 						} catch (final CloneNotSupportedException e) {
+							e.printStackTrace();
+						} catch (final UnsupportedEncodingException e) {
 							e.printStackTrace();
 						}
 						resultStr += "</table>";
@@ -243,19 +266,25 @@ public class WebServerHelper {
 			resultStr += "<div id=\"statusArea\">";
 
 			resultStr += "<p>" + "Collections will be refreshed ..." + "<br />";
-			final ArrayList<FileItem> fileList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler().findAll(new FileItem(), false, null));
+			final ArrayList<FileItem> fileList = TypeHandler.castObjectListToFileItemList(this.mainController.getDataHandler().findAll(
+					new FileItem(), false, null));
 			if ((fileList != null) && (fileList.size() > 0)) {
 				resultStr += "Collections can be refreshed ... work in progress" + "</p>";
 				this.mainController.getcController().collectInfos(fileList);
 			} else {
-				resultStr += "Collections cannot be refreshed" + (fileList.size() == 0 ? ", because no files are available" : "") + ". Process stopped." + "</p>";
+				resultStr += "Collections cannot be refreshed" + (fileList.size() == 0 ? ", because no files are available" : "")
+						+ ". Process stopped." + "</p>";
 			}
 
 			resultStr += "</div>";
 		}
 		resultStr += "<nav><ul>";
-		resultStr += "<li><a href=\"" + (isStartFinder ? "javascript:void(0)\" class=\"disabled" : "?action=showInfoControl&do=startFinder") + "\">" + "Start Finder" + "</a></li>";
-		resultStr += "<li><a href=\"" + (isStartCollectors ? "javascript:void(0)\" class=\"disabled" : "?action=showInfoControl&do=startCollectors") + "\">" + "Start Collectors" + "</a></li>";
+		resultStr += "<li><a href=\""
+				+ (isStartFinder ? "javascript:void(0)\" class=\"disabled" : "?action=showInfoControl&do=startFinder") + "\">"
+				+ "Start Finder" + "</a></li>";
+		resultStr += "<li><a href=\""
+				+ (isStartCollectors ? "javascript:void(0)\" class=\"disabled" : "?action=showInfoControl&do=startCollectors") + "\">"
+				+ "Start Collectors" + "</a></li>";
 		resultStr += "</ul></nav>";
 		resultStr += "</div>";
 		return resultStr;
@@ -270,29 +299,43 @@ public class WebServerHelper {
 
 			String searchKey = null;
 			String searchValue = null;
-			if (searchStr.contains("=")) {
-				final String[] searchArr = searchStr.split("=");
-				if (searchArr.length == 2) {
-					searchKey = searchArr[0];
-					searchValue = searchArr[1];
-					if (this.mainController.getDataHandler().isKeyInKeyList(searchKey)) {
-						searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
-					}
+			String[] searchStrList = null;
+			final ArrayList<FileItem> foundList = new ArrayList<FileItem>();
+			if (searchStr.contains(" ")) {
+				searchStrList = searchStr.split(" ");
+			} else {
+				searchStrList = new String[] {
+					searchStr
+				};
+			}
+			for (final String searchStrItem : searchStrList) {
+				searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
+				if (searchStrItem.contains("=")) {
+					final String[] searchArr = searchStrItem.split("=");
+					if (searchArr.length == 2) {
+						searchKey = searchArr[0];
+						searchValue = searchArr[1];
+						if (this.mainController.getDataHandler().isKeyInKeyList(searchKey)) {
+							searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
+						}
 
+					}
+				}
+
+				switch (searchType) {
+					default:
+					case SEARCHTYPE_TEXTALL:
+						foundList.addAll(TypeHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
+								.findAllFileItemForStringInAll(searchStrItem, false))));
+						break;
+					case SEARCHTYPE_ATTRIBUTE:
+						foundList.addAll(TypeHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
+								.findAllFileItemForStringInAttributesByKeyValue(searchKey, searchValue, false))));
+						break;
 				}
 			}
-
-			ArrayList<FileItem> foundList = null;
-			switch (searchType) {
-			default:
-			case SEARCHTYPE_TEXTALL:
-				foundList = TypeHandler.castObjectListToFileItemList(Helper.unique(this.mainController.getDataHandler().findAllFileItemForStringInAll(searchStr, false)));
-				break;
-			case SEARCHTYPE_ATTRIBUTE:
-				foundList = TypeHandler.castObjectListToFileItemList(Helper.unique(this.mainController.getDataHandler().findAllFileItemForStringInAttributesByKeyValue(searchKey, searchValue, false)));
-				break;
-			}
-			resultStr += HTML.generateListOutput(foundList, searchStr, searchType, true);
+			resultStr += HTML.generateListOutput(Helper.uniqueList(foundList), searchStrList,
+					searchStrList.length > 1 ? WebServerHelper.SEARCHTYPE_MIXED : searchType, true);
 		} else {
 			resultStr += "<p>Suchen Sie mit hilfe der Suche</p>";
 		}
@@ -301,7 +344,18 @@ public class WebServerHelper {
 		return resultStr;
 	}
 
-	public String getFileContent(final String url, final ConcurrentHashMap<String, String> GETParams, final ConcurrentHashMap<String, String> headerKeyValue) {
+	/**
+	 * Returns the content of the file from the url. It is like "index.html".
+	 * The file must be in /web/
+	 * 
+	 * @param url
+	 * @param GETParams
+	 * @param headerKeyValue
+	 * @return
+	 */
+	public String getFileContent(final String url,
+			final ConcurrentHashMap<String, String> GETParams,
+			final ConcurrentHashMap<String, String> headerKeyValue) {
 		if (url != null) {
 			final File file = (new File(new File("").getAbsolutePath() + "/trunk/web/" + url));
 			// System.out.println("APATH: " + file.getAbsolutePath());
@@ -356,7 +410,8 @@ public class WebServerHelper {
 		final ArrayList<Object> resultList = new ArrayList<Object>();
 		if ((list != null) && (list.getKeyValues().size() > 0) && (key != null)) {
 			for (final KeyValue<String, Object> keyValue : list.getKeyValues()) {
-				if ((keyValue != null) && (keyValue.getKey() != null) && keyValue.getKey().getKey().equals(key) && (keyValue.getValue() != null)) {
+				if ((keyValue != null) && (keyValue.getKey() != null) && keyValue.getKey().getKey().equals(key)
+						&& (keyValue.getValue() != null)) {
 					resultList.add(keyValue.getValue().getValue());
 				}
 			}
@@ -364,11 +419,13 @@ public class WebServerHelper {
 		return resultList;
 	}
 
-	private FileAttributeList removeKeysFromFileAttributeList(final FileAttributeList list, final String key) throws CloneNotSupportedException {
+	private FileAttributeList
+			removeKeysFromFileAttributeList(final FileAttributeList list, final String key) throws CloneNotSupportedException {
 		final FileAttributeList resultList = (FileAttributeList) list.clone();
 		if ((list != null) && (list.getKeyValues().size() > 0) && (key != null)) {
 			for (final KeyValue<String, Object> keyValue : list.getKeyValues()) {
-				if ((keyValue != null) && (keyValue.getKey() != null) && keyValue.getKey().getKey().equals(key) && (keyValue.getValue() != null)) {
+				if ((keyValue != null) && (keyValue.getKey() != null) && keyValue.getKey().getKey().equals(key)
+						&& (keyValue.getValue() != null)) {
 					resultList.getKeyValues().remove(keyValue);
 				}
 			}

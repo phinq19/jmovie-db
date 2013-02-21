@@ -188,8 +188,8 @@ public abstract class ACollector implements Runnable {
 	}
 
 	private void preparePersist() {
-		this.keysToAdd = Helper.unique(this.keysToAdd);
-		this.valuesToAdd = Helper.unique(this.valuesToAdd);
+		this.keysToAdd = Helper.uniqueList(this.keysToAdd);
+		this.valuesToAdd = Helper.uniqueList(this.valuesToAdd);
 	}
 
 	@Override

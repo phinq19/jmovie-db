@@ -252,7 +252,7 @@ public class DataHandler {
 		HashMap<String, Object> tempMapValue = null;
 		ResultSet rs = null;
 		final String sql = "SELECT "
-				+ "	tiKey.id AS 'keyId', tiKey.Key AS 'keyKey', tiKey.infoType AS 'keyInfoType', tiKey.section AS 'keySection', tiValue.id as 'valueId', tiValue.value as 'valueValue' "
+				+ "	tiKey.id AS 'keyId', tiKey.Key AS 'keyKey', tiKey.infoType AS 'keyInfoType', tiKey.section AS 'keySection', tiKey.editable AS 'keyEditable', tiKey.searchable AS 'keySearchable', tiValue.id as 'valueId', tiValue.value as 'valueValue' "
 				+ "FROM " + "	fileInformation as fi " + "LEFT JOIN " + " 	typeInformation as ti " + "ON " + " 	ti.file_id = fi.id "
 				+ " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON " + " 	tiKey.id = ti.key_id " + "LEFT JOIN "
 				+ "	typeInformation_value AS tiValue " + "ON " + "	tiValue.id = ti.value_id " + "WHERE " + "	fi.id = '" + id
@@ -517,6 +517,7 @@ public class DataHandler {
 	}
 
 	public void reloadData() {
+		System.out.println("reload Data");
 		this.loadKeys();
 		this.loadValues();
 		this.loadTypeInformation();
