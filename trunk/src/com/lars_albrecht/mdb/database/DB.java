@@ -447,7 +447,8 @@ public class DB implements IDatabase {
 			sql += "'key' VARCHAR(255), ";
 			sql += "'infoType' VARCHAR(255), ";
 			sql += "'section' VARCHAR(255), ";
-			sql += "'editable' INTEGER ";
+			sql += "'editable' INTEGER, ";
+			sql += "'searchable' INTEGER ";
 			sql += "); ";
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";

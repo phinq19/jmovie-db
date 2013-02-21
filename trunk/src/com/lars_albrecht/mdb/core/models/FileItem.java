@@ -360,7 +360,7 @@ public class FileItem implements IPersistable {
 	@Override
 	public String toString() {
 		return "Id: " + this.id + " | " + "Name: " + this.name + " | " + "Fullpath: " + this.fullpath + " | " + "Dir: " + this.dir + " | "
-				+ "Size: " + this.size + " | " + "Ext: " + this.ext;
+				+ "Size: " + this.size + " | " + "Ext: " + this.ext + " | " + this.getAttributes();
 	}
 
 }

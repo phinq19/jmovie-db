@@ -622,7 +622,7 @@ public class Helper {
 		return Character.toUpperCase(text.charAt(0)) + text.substring(1);
 	}
 
-	public static <C> ArrayList<C> unique(final ArrayList<C> list) {
+	public static <C> ArrayList<C> uniqueList(final ArrayList<C> list) {
 		final ArrayList<C> resultList = new ArrayList<C>();
 		final Iterator<C> iterator = list.iterator();
 

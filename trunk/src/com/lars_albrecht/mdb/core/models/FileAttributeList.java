@@ -14,7 +14,6 @@ import java.util.Collection;
  */
 public class FileAttributeList {
 
-	private Integer								id			= null;
 	private ArrayList<KeyValue<String, Object>>	keyValues	= new ArrayList<KeyValue<String, Object>>();
 	private String								sectionName	= null;
 	private int									hash		= -1;
@@ -58,7 +57,6 @@ public class FileAttributeList {
 	public FileAttributeList(final Integer id, final ArrayList<KeyValue<String, Object>> keyValues, final String sectionName,
 			final int hash, final Integer fileId) {
 		super();
-		this.id = id;
 		this.keyValues = keyValues;
 		this.sectionName = sectionName;
 		this.hash = hash;
@@ -76,7 +74,6 @@ public class FileAttributeList {
 		final FileAttributeList tempList = new FileAttributeList();
 		tempList.fileId = this.fileId;
 		tempList.hash = this.hash;
-		tempList.id = this.id;
 		tempList.keyValues.addAll((Collection<? extends KeyValue<String, Object>>) this.keyValues.clone());
 		tempList.sectionName = this.sectionName;
 
@@ -100,13 +97,6 @@ public class FileAttributeList {
 	 */
 	public int getHash() {
 		return this.hash;
-	}
-
-	/**
-	 * @return the id
-	 */
-	public Integer getId() {
-		return this.id;
 	}
 
 	/**
@@ -140,14 +130,6 @@ public class FileAttributeList {
 	}
 
 	/**
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(final Integer id) {
-		this.id = id;
-	}
-
-	/**
 	 * @param keyValues
 	 *            the keyValues to set
 	 */
@@ -165,7 +147,7 @@ public class FileAttributeList {
 
 	@Override
 	public String toString() {
-		return "Id: " + this.id + " | " + "KeyValues: " + this.keyValues + " | " + "Hash: " + this.hash;
+		return "KeyValues: " + this.keyValues + " | " + "Hash: " + this.hash;
 	}
 
 }

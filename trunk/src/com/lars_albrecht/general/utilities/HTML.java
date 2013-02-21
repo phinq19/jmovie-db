@@ -4,6 +4,7 @@
 package com.lars_albrecht.general.utilities;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
 import com.lars_albrecht.mdb.core.models.FileItem;
@@ -18,36 +19,58 @@ public class HTML {
 	 * Generate HTML Output from FileItem-List.
 	 * 
 	 * @param fileItemList
-	 * @param searchTerm
+	 * @param searchTerms
 	 * @param searchType
 	 * @param printOutCount
 	 * @return
 	 */
 	public static String generateListOutput(final ArrayList<FileItem> fileItemList,
-			final String searchTerm,
+			final String[] searchTerms,
 			final Integer searchType,
 			final boolean printOutCount) {
 		String resultStr = "";
 		if (fileItemList.size() > 0) {
-			if (printOutCount && (searchTerm != null)) {
+			if (printOutCount && (searchTerms != null)) {
 				switch (searchType) {
 					default:
 					case WebServerHelper.SEARCHTYPE_TEXTALL:
 						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()
-								+ "</span>x wurde \"<span class=\"searchTerm\">" + searchTerm + "</span>\" gefunden</p>";
+								+ "</span> Ergebnisse wurden für \"<span class=\"searchTerm\">" + Arrays.toString(searchTerms)
+								+ "</span>\" gefunden</p>";
 						break;
 					case WebServerHelper.SEARCHTYPE_ATTRIBUTE:
 						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()
-								+ "</span>x wurde das Attribut \"<span class=\"searchKey\">" + searchTerm.split("=")[0]
-								+ "</span>\" mit dem Wert \"<span class=\"searchValue\">" + searchTerm.split("=")[1]
-								+ "</span>\" gefunden</p>";
+								+ "</span> Ergebnisse wurden für das Attribut \"<span class=\"searchKey\">"
+								+ Arrays.toString(searchTerms).split("=")[0] + "</span>\" mit dem Wert \"<span class=\"searchValue\">"
+								+ Arrays.toString(searchTerms).split("=")[1] + "</span>\" gefunden</p>";
+						break;
+					case WebServerHelper.SEARCHTYPE_MIXED:
+						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()
+								+ "</span> Ergebnisse wurden gefunden. Folgendes wurde gesucht:";
+						resultStr += "";
+
+						int searchTermCount = 0;
+						for (final String string : searchTerms) {
+							if (string.contains("=")) {
+								resultStr += "<ul><li>Für das Attribut <span class=\"searchKey\">" + string.split("=")[0]
+										+ "</span> mit dem Wert <span class=\"searchValue\">" + string.split("=")[1] + "</span></li></ul>";
+							} else {
+								resultStr += "<ul><li>Für den Suchbegriff <span class=\"searchTerm\">" + string + "</span></li></ul>";
+							}
+							searchTermCount++;
+							if (searchTermCount != searchTerms.length) {
+								resultStr += " ODER ";
+							}
+						}
+						resultStr += "</ul>";
+						resultStr += "</p>";
 						break;
 				}
 			} else if (printOutCount) {
 				resultStr += "<p>" + fileItemList.size() + " Einträge gefunden</p>";
-			} else if (searchTerm != null) {
+			} else if (searchTerms != null) {
 
-				resultStr += "<p>" + searchTerm + " wurde gesucht</p>";
+				resultStr += "<p>" + searchTerms + " wurde gesucht</p>";
 			}
 			resultStr += "<div class=\"resulttable\">";
 			resultStr += "<table>";
@@ -64,7 +87,7 @@ public class HTML {
 			resultStr += "</div>";
 
 		} else {
-			resultStr = "<p>Keine Ergebnisse</p>";
+			resultStr = "<p>Keine Ergebnisse für: " + Arrays.toString(searchTerms) + "</p>";
 		}
 		return resultStr;
 	}
