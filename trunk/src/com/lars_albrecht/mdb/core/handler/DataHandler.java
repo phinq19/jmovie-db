@@ -209,6 +209,12 @@ public class DataHandler {
 		return tempList;
 	}
 
+	/**
+	 * Finds all information for a fileId and returns a FileItem.
+	 * 
+	 * @param fileId
+	 * @return FileItem
+	 */
 	public FileItem findAllInfoForAllByFileId(final Integer fileId) {
 		HashMap<String, Object> tempMap = null;
 		FileItem resultItem = new FileItem();
@@ -458,7 +464,96 @@ public class DataHandler {
 				tempArrayList.add(this.persist((IPersistable) object));
 			}
 		}
+
 		return tempArrayList;
+	}
+
+	/**
+	 * TODO Fix this method TODO Order of values and keys is lost <br />
+	 * TODO return a full bunch of entries with id. Is it possible with multi
+	 * inserts?<br />
+	 * 
+	 * 
+	 * @param objects
+	 * @return
+	 * @throws Exception
+	 */
+	public ArrayList<?> persistNew(final ArrayList<?> objects) throws Exception {
+		final ArrayList<IPersistable> tempArrayList = new ArrayList<IPersistable>();
+		if ((objects != null) && (objects.size() > 0)) {
+
+			final IPersistable tempPersistable = (IPersistable) objects.get(0);
+			String insertStr = "INSERT OR IGNORE INTO '"
+					+ tempPersistable.getDatabaseTable()
+					+ "' ("
+					+ Helper.implode(tempPersistable.toHashMap().keySet(), ",", "" + (DB.useQuotesForFields ? "'" : "") + "", ""
+							+ (DB.useQuotesForFields ? "'" : "") + "") + ")";
+
+			final ConcurrentHashMap<Integer, Object> insertValues = new ConcurrentHashMap<Integer, Object>();
+			boolean isFirst = true;
+			for (final Object object : objects) {
+				final ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>> insertItem = this.generateSQLiteMultiInsertItem(
+						(IPersistable) object, isFirst, insertValues.size() > 0 ? insertValues.size() : 1);
+				Map.Entry<String, ConcurrentHashMap<Integer, Object>> tempItem = null;
+				if (insertItem != null && insertItem.size() > 0) {
+					tempItem = insertItem.entrySet().iterator().next();
+					insertStr += tempItem.getKey();
+					insertValues.putAll(tempItem.getValue());
+					isFirst = false;
+				}
+			}
+
+			System.out.println(insertValues.size());
+
+			System.out.println(DB.updatePS(insertStr, insertValues));
+
+		}
+
+		return tempArrayList;
+	}
+
+	private ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>> generateSQLiteMultiInsertItem(final IPersistable object,
+			final boolean isFirst,
+			final int valueStartIndex) throws Exception {
+		final ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>> resultMap = new ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>>();
+		final ConcurrentHashMap<Integer, Object> resultValues = new ConcurrentHashMap<Integer, Object>();
+
+		String valueStr = null;
+
+		final HashMap<String, Object> tempObject = object.toHashMap();
+		/*
+		 * INSERT INTO 'tablename' ('column1', 'column2') VALUES ('data1',
+		 * 'data2'), ('data3', 'data4'), ('data5', 'data6'), ('data7', 'data8');
+		 * 
+		 * INSERT INTO 'tablename' SELECT 'data1' AS 'column1', 'data2' AS
+		 * 'column2' UNION SELECT 'data3', 'data4' UNION SELECT 'data5', 'data6'
+		 * UNION SELECT 'data7', 'data8'
+		 */
+
+		int i = valueStartIndex;
+		valueStr = isFirst ? " SELECT " : " UNION ALL SELECT ";
+		for (final Map.Entry<String, Object> entry : tempObject.entrySet()) {
+			Object x = null;
+			if (entry.getValue() == null) {
+				x = "";
+			} else {
+				x = entry.getValue();
+			}
+			resultValues.put(i, x);
+
+			if (i != valueStartIndex) {
+				valueStr += ",";
+			}
+			valueStr += "?";
+
+			i++;
+		}
+
+		if (valueStr != null && resultValues.size() > 0) {
+			resultMap.put(valueStr, resultValues);
+		}
+
+		return resultMap;
 	}
 
 	public IPersistable persist(final IPersistable object) throws Exception {

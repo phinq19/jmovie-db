@@ -182,18 +182,21 @@ public class WebServerHelper {
 								if (attributeListCpy.getKeyValues().contains(keyValue)) {
 									resultStr += "<tr class=\"" + ((evenOdd % 2) == 0 ? "even" : "odd") + "\">";
 									resultStr += "<td>" + keyValue.getKey().getKey() + "</td>";
-									if (!keyValue.getKey().getSearchable()
-											|| this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey()).size() > 1) {
-										resultStr += "<td>"
-												+ Helper.implode(this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey()), ", ",
-														null, null) + "</td>";
-									} else {
-										resultStr += "<td>"
-												+ "<a href=\"?"
-												+ "action=showSearchresults&searchStr="
-												+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + keyValue.getValue().getValue(),
-														"utf-8") + "\">" + keyValue.getValue().getValue() + "</a>" + "</td>";
+									resultStr += "<td>";
+									final ArrayList<Object> tempList = this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey());
+									for (int j = 0; j < tempList.size(); j++) {
+										if (j != 0) {
+											resultStr += ", ";
+										}
+										if (keyValue.getKey().getSearchable()) {
+											resultStr += "<a href=\"?" + "action=showSearchresults&searchStr="
+													+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + tempList.get(j), "utf-8")
+													+ "\">" + tempList.get(j) + "</a>";
+										} else {
+											resultStr += tempList.get(j);
+										}
 									}
+									resultStr += "</td>";
 									resultStr += "</tr>";
 									attributeListCpy = this.removeKeysFromFileAttributeList(attributeListCpy, keyValue.getKey().getKey());
 									evenOdd++;
