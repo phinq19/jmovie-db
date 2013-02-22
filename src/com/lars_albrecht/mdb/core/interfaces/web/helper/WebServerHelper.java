@@ -382,6 +382,37 @@ public class WebServerHelper {
 		return null;
 	}
 
+	/**
+	 * Returns the content of the file from the url. It is like "index.html".
+	 * The file must be in /web/
+	 * 
+	 * @param url
+	 * @param GETParams
+	 * @param headerKeyValue
+	 * @return
+	 */
+	public String getAjaxContent(final String url,
+			final ConcurrentHashMap<String, String> GETParams,
+			final ConcurrentHashMap<String, String> headerKeyValue) {
+		String content = null;
+		if (url != null) {
+			content = "";
+			if (GETParams != null && GETParams.size() > 0 && GETParams.containsKey("action") && GETParams.get("action") != null) {
+				final String action = GETParams.get("action");
+				if (action.equalsIgnoreCase("getStatus")) {
+					if (this.mainController.getfController().getThreadList().size() > 0) {
+						content += "<p>Finder is running</p>";
+					}
+					if (this.mainController.getcController().getThreadList().size() > 0) {
+						content += "<p>Collector is running</p>";
+					}
+				}
+			}
+		}
+
+		return content;
+	}
+
 	public String getTitleForAttributesView() {
 		return "Attributes";
 	}
