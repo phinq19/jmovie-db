@@ -89,10 +89,11 @@ public class WebServerRunner implements Runnable {
 					if (keyValue.length > 1) {
 						this.headerKeyValue.put(keyValue[0].trim(), keyValue[1].trim());
 					}
-					if (line.startsWith("GET ")) {
-						final int urlStart = 5;
+					if (line.startsWith("GET ") || line.startsWith("POST ")) {
+						final int urlStart = line.startsWith("GET ") ? 5 : 6;
 						final int urlEnd = line.indexOf(" HTTP/1.1");
 						urlStr = line.substring(urlStart, urlEnd);
+						System.out.println("URL: " + urlStr);
 						if (urlStr.indexOf("?") > -1) {
 							this.getKeyValue = this.getQuery(urlStr);
 							urlStr = urlStr.substring(0, urlStr.indexOf("?"));
@@ -100,36 +101,53 @@ public class WebServerRunner implements Runnable {
 					}
 				}
 
+				String content = null;
 				if (urlStr != null) {
-					final String content = new WebServerHelper(this.mainController).getFileContent(urlStr, this.getKeyValue,
-							this.headerKeyValue);
+					if (!urlStr.startsWith("ajax.html")) {
+						content = new WebServerHelper(this.mainController).getFileContent(urlStr, this.getKeyValue, this.headerKeyValue);
 
-					// Send the response
-					// Send the headers
-					if ((content == null) || urlStr.endsWith(".ico")) {
-						out.println("HTTP/1.0 404 Not Found");
-					} else {
-						out.println("HTTP/1.0 200 OK");
-					}
-
-					if (urlStr != null) {
-						if (urlStr.endsWith(".js")) {
-							out.println("Content-Type: text/javascript; charset=utf-8");
-						} else if (urlStr.endsWith(".css")) {
-							out.println("Content-Type: text/css; charset=utf-8");
-						} else if (urlStr.endsWith(".ico")) {
-							out.println("image/x-icon; charset=utf-8");
+						// Send the response
+						// Send the headers
+						if ((content == null) || urlStr.endsWith(".ico")) {
+							out.println("HTTP/1.0 404 Not Found");
 						} else {
+							out.println("HTTP/1.0 200 OK");
+						}
+
+						if (urlStr != null) {
+							if (urlStr.endsWith(".js")) {
+								out.println("Content-Type: text/javascript; charset=utf-8");
+							} else if (urlStr.endsWith(".css")) {
+								out.println("Content-Type: text/css; charset=utf-8");
+							} else if (urlStr.endsWith(".ico")) {
+								out.println("image/x-icon; charset=utf-8");
+							} else {
+								out.println("Content-Type: text/html; charset=utf-8");
+							}
+						}
+
+						// out.println("Content-Type: text/html");
+						out.println("Server: MDB");
+						// this blank line signals the end of the headers
+						out.println("");
+						out.println(content != null ? content : "");
+
+					} else if (urlStr.startsWith("ajax.html")) {
+						content = new WebServerHelper(this.mainController).getAjaxContent(urlStr, this.getKeyValue, this.headerKeyValue);
+						if (content != null) {
+							out.println("HTTP/1.0 200 OK");
 							out.println("Content-Type: text/html; charset=utf-8");
+							out.println("Server: MDB");
+							out.println("");
+							out.println(content);
+						} else {
+							out.println("HTTP/1.0 404 Not Found");
+							out.println("Content-Type: text/html; charset=utf-8");
+							out.println("Server: MDB");
+							out.println("");
+							out.println("404");
 						}
 					}
-
-					// out.println("Content-Type: text/html");
-					out.println("Server: MDB");
-					// this blank line signals the end of the headers
-					out.println("");
-					out.println(content != null ? content : "");
-
 				}
 
 			} catch (final UnsupportedEncodingException e) {

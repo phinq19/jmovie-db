@@ -1,6 +1,8 @@
 h2, h3, h4, h5											{margin:0;}
 
-#contentContainer										{padding:10px; border-top: 20px solid #000000; border-left: 1px solid #000; 
+.main aside												{margin-bottom:20px; clear:right;}
+
+#contentContainer										{padding:10px; border-top: 20px solid #000000; border-left: 1px solid #000; margin-bottom:20px; 
 															-webkit-box-shadow: 0 5px 5px #333;
 											        		   -moz-box-shadow: 0 5px 5px #333;
 											        		        box-shadow: 0 5px 5px #333;
