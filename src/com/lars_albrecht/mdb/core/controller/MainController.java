@@ -103,7 +103,7 @@ public class MainController implements FinderListener {
 
 	public void run() {
 		this.startInterfaces();
-		// this.startSearch();
+		this.startSearch();
 	}
 
 	private void startCollect(final ArrayList<File> foundFilesList) {

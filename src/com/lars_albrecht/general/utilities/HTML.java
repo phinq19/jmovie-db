@@ -16,7 +16,9 @@ import com.lars_albrecht.mdb.core.models.FileItem;
 public class HTML {
 
 	/**
-	 * Generate HTML Output from FileItem-List.
+	 * Generate HTML Output from FileItem-List. <br />
+	 * TODO do generic! <br />
+	 * TODO make Arrays.toString unnecessary <br />
 	 * 
 	 * @param fileItemList
 	 * @param searchTerms
