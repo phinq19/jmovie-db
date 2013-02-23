@@ -29,24 +29,24 @@ import com.lars_albrecht.mdb.database.interfaces.IDatabase;
  */
 public class DB implements IDatabase {
 
-	private static Connection connection = null;
+	private static Connection	connection			= null;
 
-	private final static String dbUsername = "moviedb";
-	private final static String dbPassword = "mypw";
-	private final static String dbName = "moviedb";
-	private final static String dbUrlH2 = "jdbc:h2:";
-	private final static String StrdbH2 = "org.h2.Driver";
-	private final static String dbUrlSQLite = "jdbc:sqlite:";
-	private final static String StrdbSQLite = "org.sqlite.JDBC";
-	private final static String dboptions = "";
-	private final static String dbFile = "mdb.sqlite";
+	private final static String	dbUsername			= "moviedb";
+	private final static String	dbPassword			= "mypw";
+	private final static String	dbName				= "moviedb";
+	private final static String	dbUrlH2				= "jdbc:h2:";
+	private final static String	StrdbH2				= "org.h2.Driver";
+	private final static String	dbUrlSQLite			= "jdbc:sqlite:";
+	private final static String	StrdbSQLite			= "org.sqlite.JDBC";
+	private final static String	dboptions			= "";
+	private final static String	dbFile				= "mdb.sqlite";
 
-	public static final Integer DBTYPE_SQLITE = 0;
-	public static final Integer DBTYPE_H2 = 1;
+	public static final Integer	DBTYPE_SQLITE		= 0;
+	public static final Integer	DBTYPE_H2			= 1;
 
-	private static Integer DBTYPE = DB.DBTYPE_SQLITE;
+	private static Integer		DBTYPE				= DB.DBTYPE_SQLITE;
 
-	public static boolean useQuotesForFields = false;
+	public static boolean		useQuotesForFields	= false;
 
 	/**
 	 * Sets a dynamic object in a PreparedStatement.
@@ -60,7 +60,8 @@ public class DB implements IDatabase {
 	 * @return PreparedStatement
 	 * @throws Exception
 	 */
-	private static PreparedStatement addDynamicValue(final PreparedStatement pst, final int index, final Object objectToSet) throws Exception {
+	private static PreparedStatement
+			addDynamicValue(final PreparedStatement pst, final int index, final Object objectToSet) throws Exception {
 		if (objectToSet.getClass() == Integer.class) {
 			pst.setInt(index, ((Integer) objectToSet).intValue());
 		} else if (objectToSet.getClass() == String.class) {
@@ -123,16 +124,16 @@ public class DB implements IDatabase {
 		Connection con = null;
 		try {
 			switch (dbType) {
-			default:
-			case 0: // sqlite
-				Class.forName(DB.StrdbSQLite);
-				con = DriverManager.getConnection(DB.dbUrlSQLite + DB.dbFile);
-				DB.useQuotesForFields = true;
-				break;
-			case 1: // h2
-				Class.forName(DB.StrdbH2);
-				con = DriverManager.getConnection(DB.dbUrlH2 + DB.dbName + DB.dboptions, DB.dbUsername, DB.dbPassword);
-				DB.useQuotesForFields = false;
+				default:
+				case 0: // sqlite
+					Class.forName(DB.StrdbSQLite);
+					con = DriverManager.getConnection(DB.dbUrlSQLite + DB.dbFile);
+					DB.useQuotesForFields = true;
+					break;
+				case 1: // h2
+					Class.forName(DB.StrdbH2);
+					con = DriverManager.getConnection(DB.dbUrlH2 + DB.dbName + DB.dboptions, DB.dbUsername, DB.dbPassword);
+					DB.useQuotesForFields = false;
 			}
 
 		} catch (final ClassNotFoundException e) {
@@ -223,15 +224,15 @@ public class DB implements IDatabase {
 	private static synchronized int getLastInsertedRowId(final Statement st) throws SQLException {
 		int result = -1;
 		switch (DB.DBTYPE) {
-		default:
-		case 0: // sqlite
-			result = st.getGeneratedKeys().getInt("last_insert_rowid()");
-			break;
-		case 1: // h2
-			final ResultSet rs = DB.query("CALL IDENTITY()");
-			if (rs.first()) {
-				result = ((Long) rs.getObject(1)).intValue();
-			}
+			default:
+			case 0: // sqlite
+				result = st.getGeneratedKeys().getInt("last_insert_rowid()");
+				break;
+			case 1: // h2
+				final ResultSet rs = DB.query("CALL IDENTITY()");
+				if (rs.first()) {
+					result = ((Long) rs.getObject(1)).intValue();
+				}
 		}
 
 		return result;
@@ -247,16 +248,16 @@ public class DB implements IDatabase {
 		String dbInfoField = null;
 		String dbInfoWhere = null;
 		switch (DB.DBTYPE) {
-		default:
-		case 0: // sqlite
-			dbInfoTable = "sqlite_master";
-			dbInfoField = "name";
-			dbInfoWhere = "type = 'table'";
-			break;
-		case 1: // h2
-			dbInfoTable = "INFORMATION_SCHEMA.TABLES";
-			dbInfoField = "TABLE_NAME";
-			dbInfoWhere = "TABLE_SCHEMA = 'PUBLIC'";
+			default:
+			case 0: // sqlite
+				dbInfoTable = "sqlite_master";
+				dbInfoField = "name";
+				dbInfoWhere = "type = 'table'";
+				break;
+			case 1: // h2
+				dbInfoTable = "INFORMATION_SCHEMA.TABLES";
+				dbInfoField = "TABLE_NAME";
+				dbInfoWhere = "TABLE_SCHEMA = 'PUBLIC'";
 		}
 
 		final ResultSet rs = DB.query("SELECT * FROM " + dbInfoTable + " WHERE " + dbInfoWhere + ";");
@@ -336,7 +337,8 @@ public class DB implements IDatabase {
 	 * @return ArrayList<ConcurrentHashMap<String, Object>>
 	 * @throws SQLException
 	 */
-	public static ArrayList<ConcurrentHashMap<String, Object>> returnResultFromItems(final String sql, final ArrayList<String> fields) throws SQLException {
+	public static ArrayList<ConcurrentHashMap<String, Object>>
+			returnResultFromItems(final String sql, final ArrayList<String> fields) throws SQLException {
 		final ArrayList<ConcurrentHashMap<String, Object>> resultSet = new ArrayList<ConcurrentHashMap<String, Object>>();
 		final ResultSet rs = DB.query(sql);
 		for (; rs.next();) {
@@ -402,7 +404,7 @@ public class DB implements IDatabase {
 	 * @param values
 	 * @throws Exception
 	 */
-	public static synchronized int updatePS(final String expression, final ConcurrentHashMap<Integer, Object> values) throws Exception {
+	public static synchronized int updatePS(final String expression, final Map<Integer, Object> values) throws Exception {
 		PreparedStatement st = null;
 		System.out.println("SQL: " + expression);
 		st = DB.getConnection().prepareStatement(expression); // statements
@@ -479,4 +481,5 @@ public class DB implements IDatabase {
 			e.printStackTrace();
 		}
 	}
+
 }

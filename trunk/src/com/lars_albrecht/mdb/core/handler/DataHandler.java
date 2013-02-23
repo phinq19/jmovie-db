@@ -8,6 +8,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -457,7 +458,7 @@ public class DataHandler {
 		return this;
 	}
 
-	public ArrayList<?> persist(final ArrayList<?> objects) throws Exception {
+	public ArrayList<?> persistOld(final ArrayList<?> objects) throws Exception {
 		final ArrayList<IPersistable> tempArrayList = new ArrayList<IPersistable>();
 		if ((objects != null) && (objects.size() > 0)) {
 			for (final Object object : objects) {
@@ -478,7 +479,7 @@ public class DataHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<?> persistNew(final ArrayList<?> objects) throws Exception {
+	public ArrayList<?> persist(final ArrayList<?> objects) throws Exception {
 		final ArrayList<IPersistable> tempArrayList = new ArrayList<IPersistable>();
 		if ((objects != null) && (objects.size() > 0)) {
 
@@ -489,12 +490,12 @@ public class DataHandler {
 					+ Helper.implode(tempPersistable.toHashMap().keySet(), ",", "" + (DB.useQuotesForFields ? "'" : "") + "", ""
 							+ (DB.useQuotesForFields ? "'" : "") + "") + ")";
 
-			final ConcurrentHashMap<Integer, Object> insertValues = new ConcurrentHashMap<Integer, Object>();
+			final LinkedHashMap<Integer, Object> insertValues = new LinkedHashMap<Integer, Object>();
 			boolean isFirst = true;
 			for (final Object object : objects) {
-				final ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>> insertItem = this.generateSQLiteMultiInsertItem(
+				final LinkedHashMap<String, LinkedHashMap<Integer, Object>> insertItem = this.generateSQLiteMultiInsertItem(
 						(IPersistable) object, isFirst, insertValues.size() > 0 ? insertValues.size() : 1);
-				Map.Entry<String, ConcurrentHashMap<Integer, Object>> tempItem = null;
+				Map.Entry<String, LinkedHashMap<Integer, Object>> tempItem = null;
 				if (insertItem != null && insertItem.size() > 0) {
 					tempItem = insertItem.entrySet().iterator().next();
 					insertStr += tempItem.getKey();
@@ -505,6 +506,8 @@ public class DataHandler {
 
 			System.out.println(insertValues.size());
 
+			// TODO look at this!! I havent yet
+			System.out.println(insertValues);
 			System.out.println(DB.updatePS(insertStr, insertValues));
 
 		}
@@ -512,11 +515,11 @@ public class DataHandler {
 		return tempArrayList;
 	}
 
-	private ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>> generateSQLiteMultiInsertItem(final IPersistable object,
+	private LinkedHashMap<String, LinkedHashMap<Integer, Object>> generateSQLiteMultiInsertItem(final IPersistable object,
 			final boolean isFirst,
 			final int valueStartIndex) throws Exception {
-		final ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>> resultMap = new ConcurrentHashMap<String, ConcurrentHashMap<Integer, Object>>();
-		final ConcurrentHashMap<Integer, Object> resultValues = new ConcurrentHashMap<Integer, Object>();
+		final LinkedHashMap<String, LinkedHashMap<Integer, Object>> resultMap = new LinkedHashMap<String, LinkedHashMap<Integer, Object>>();
+		final LinkedHashMap<Integer, Object> resultValues = new LinkedHashMap<Integer, Object>();
 
 		String valueStr = null;
 
@@ -530,6 +533,9 @@ public class DataHandler {
 		 * UNION SELECT 'data7', 'data8'
 		 */
 
+		/**
+		 * union: 61 / 13 union all: 61/15/153
+		 */
 		int i = valueStartIndex;
 		valueStr = isFirst ? " SELECT " : " UNION ALL SELECT ";
 		for (final Map.Entry<String, Object> entry : tempObject.entrySet()) {
