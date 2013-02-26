@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
+import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.Key;
@@ -96,6 +97,7 @@ public abstract class ACollector implements Runnable {
 			final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 			final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
 			final ArrayList<TypeInformation> typeInfo = this.mainController.getDataHandler().getTypeInformation();
+			final ArrayList<TypeInformation> attributesToPersist = new ArrayList<TypeInformation>();
 			for (final FileAttributeList fileAttributes : fileAttributeListList) {
 				for (final KeyValue<String, Object> keyValue : fileAttributes.getKeyValues()) {
 					// System.out.println(keyValue.getKey().getInfoType() +
@@ -115,11 +117,13 @@ public abstract class ACollector implements Runnable {
 					}
 
 					tempTypeInfo = new TypeInformation(fileItemId, keyId, valueId);
+
 					if ((fileItemId > -1) && (keyId > -1) && (valueId > -1) && (tempTypeInfo != null) && !typeInfo.contains(tempTypeInfo)) {
-						this.mainController.getDataHandler().persist(tempTypeInfo);
+						attributesToPersist.add(tempTypeInfo);
 					}
 				}
 			}
+			this.mainController.getDataHandler().persist(attributesToPersist);
 		}
 	}
 
@@ -152,36 +156,19 @@ public abstract class ACollector implements Runnable {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void persistKeys() {
 		try {
-			// this.mainController.getDataHandler().getKeys().addAll((Collection<?
-			// extends Key<?>>)
-			// this.mainController.getDataHandler().persist(this.keysToAdd));
-			final ArrayList<Key<?>> currentKeys = this.mainController.getDataHandler().getKeys();
-			final ArrayList<Key<String>> persistedKeys = (ArrayList<Key<String>>) this.mainController.getDataHandler().persist(
-					this.keysToAdd);
-			if ((persistedKeys != null) && (persistedKeys.size() > 0)) {
-				currentKeys.addAll(persistedKeys);
-			}
-
+			this.mainController.getDataHandler().persist(this.keysToAdd);
+			this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_KEYS);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	private void persistValues() {
 		try {
-			// this.mainController.getDataHandler().getValues().addAll((ArrayList<Value<Object>>)
-			// this.mainController.getDataHandler().persist(this.valuesToAdd));
-
-			final ArrayList<Value<?>> currentValues = this.mainController.getDataHandler().getValues();
-			final ArrayList<Value<Object>> persistedValues = (ArrayList<Value<Object>>) this.mainController.getDataHandler().persist(
-					this.valuesToAdd);
-			if ((persistedValues != null) && (persistedValues.size() > 0)) {
-				currentValues.addAll(persistedValues);
-			}
+			this.mainController.getDataHandler().persist(this.valuesToAdd);
+			this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_VALUES);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -200,7 +187,7 @@ public abstract class ACollector implements Runnable {
 		this.fileAttributeListToAdd = this.getFileAttributeListToAdd();
 		this.preparePersist();
 		this.persist();
-		this.mainController.getDataHandler().reloadData();
+		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_ALL);
 		this.controller.getThreadList().remove(Thread.currentThread());
 	}
 

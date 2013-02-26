@@ -15,6 +15,7 @@ import com.lars_albrecht.general.utilities.HTML;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.TypeHandler;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
@@ -224,7 +225,8 @@ public class WebServerHelper {
 
 	public String generateInfoControlView(final ConcurrentHashMap<String, String> GETParams) {
 		String resultStr = "<div id=\"infoView\" class=\"contentPart\">";
-		this.mainController.getDataHandler().reloadData();
+		this.mainController.getDataHandler();
+		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_ALL);
 		final ConcurrentHashMap<String, Integer> info = this.mainController.getDataHandler().getInfoFromDatabase();
 		if (info != null) {
 			resultStr += "<h2>Informationen</h2>";
