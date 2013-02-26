@@ -29,13 +29,19 @@ import com.lars_albrecht.mdb.database.DB;
  */
 public class DataHandler {
 
-	private ArrayList<Key<?>>			keys			= null;
-	private ArrayList<Value<?>>			values			= null;
-	private ArrayList<FileItem>			fileItems		= null;
-	private ArrayList<TypeInformation>	typeInformation	= null;
+	private ArrayList<Key<?>>			keys				= null;
+	private ArrayList<Value<?>>			values				= null;
+	private ArrayList<FileItem>			fileItems			= null;
+	private ArrayList<TypeInformation>	typeInformation		= null;
+
+	public static final int				RELOAD_ALL			= 0;
+	public static final int				RELOAD_KEYS			= 1;
+	public static final int				RELOAD_VALUES		= 2;
+	public static final int				RELOAD_TYPEINFO		= 3;
+	public static final int				RELOAD_FILEITEMS	= 4;
 
 	public DataHandler(final MainController mainController) {
-		this.reloadData();
+		this.reloadData(DataHandler.RELOAD_ALL);
 	}
 
 	/**
@@ -458,29 +464,15 @@ public class DataHandler {
 		return this;
 	}
 
-	public ArrayList<?> persistOld(final ArrayList<?> objects) throws Exception {
-		final ArrayList<IPersistable> tempArrayList = new ArrayList<IPersistable>();
-		if ((objects != null) && (objects.size() > 0)) {
-			for (final Object object : objects) {
-				tempArrayList.add(this.persist((IPersistable) object));
-			}
-		}
-
-		return tempArrayList;
-	}
-
 	/**
-	 * TODO Fix this method TODO Order of values and keys is lost <br />
-	 * TODO return a full bunch of entries with id. Is it possible with multi
+	 * TODO return a full bunch of entries with id. Is it possible with multiple
 	 * inserts?<br />
 	 * 
 	 * 
 	 * @param objects
-	 * @return
 	 * @throws Exception
 	 */
-	public ArrayList<?> persist(final ArrayList<?> objects) throws Exception {
-		final ArrayList<IPersistable> tempArrayList = new ArrayList<IPersistable>();
+	public void persist(final ArrayList<?> objects) throws Exception {
 		if ((objects != null) && (objects.size() > 0)) {
 
 			final IPersistable tempPersistable = (IPersistable) objects.get(0);
@@ -492,10 +484,11 @@ public class DataHandler {
 
 			final LinkedHashMap<Integer, Object> insertValues = new LinkedHashMap<Integer, Object>();
 			boolean isFirst = true;
+			LinkedHashMap<String, LinkedHashMap<Integer, Object>> insertItem = null;
+			Map.Entry<String, LinkedHashMap<Integer, Object>> tempItem = null;
 			for (final Object object : objects) {
-				final LinkedHashMap<String, LinkedHashMap<Integer, Object>> insertItem = this.generateSQLiteMultiInsertItem(
-						(IPersistable) object, isFirst, insertValues.size() > 0 ? insertValues.size() : 1);
-				Map.Entry<String, LinkedHashMap<Integer, Object>> tempItem = null;
+				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
+						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
 				if (insertItem != null && insertItem.size() > 0) {
 					tempItem = insertItem.entrySet().iterator().next();
 					insertStr += tempItem.getKey();
@@ -504,15 +497,8 @@ public class DataHandler {
 				}
 			}
 
-			System.out.println(insertValues.size());
-
-			// TODO look at this!! I havent yet
-			System.out.println(insertValues);
-			System.out.println(DB.updatePS(insertStr, insertValues));
-
+			DB.updatePS(insertStr, insertValues);
 		}
-
-		return tempArrayList;
 	}
 
 	private LinkedHashMap<String, LinkedHashMap<Integer, Object>> generateSQLiteMultiInsertItem(final IPersistable object,
@@ -524,21 +510,11 @@ public class DataHandler {
 		String valueStr = null;
 
 		final HashMap<String, Object> tempObject = object.toHashMap();
-		/*
-		 * INSERT INTO 'tablename' ('column1', 'column2') VALUES ('data1',
-		 * 'data2'), ('data3', 'data4'), ('data5', 'data6'), ('data7', 'data8');
-		 * 
-		 * INSERT INTO 'tablename' SELECT 'data1' AS 'column1', 'data2' AS
-		 * 'column2' UNION SELECT 'data3', 'data4' UNION SELECT 'data5', 'data6'
-		 * UNION SELECT 'data7', 'data8'
-		 */
-
-		/**
-		 * union: 61 / 13 union all: 61/15/153
-		 */
-		int i = valueStartIndex;
+		int i = valueStartIndex > 0 ? valueStartIndex : 1;
 		valueStr = isFirst ? " SELECT " : " UNION ALL SELECT ";
 		for (final Map.Entry<String, Object> entry : tempObject.entrySet()) {
+			System.out.println(tempObject.entrySet());
+
 			Object x = null;
 			if (entry.getValue() == null) {
 				x = "";
@@ -558,10 +534,19 @@ public class DataHandler {
 		if (valueStr != null && resultValues.size() > 0) {
 			resultMap.put(valueStr, resultValues);
 		}
-
+		System.out.println(resultMap);
 		return resultMap;
 	}
 
+	/**
+	 * Deprecated function. Replaced with
+	 * "public void persist(final ArrayList<?> objects)".
+	 * 
+	 * @param object
+	 * @return
+	 * @throws Exception
+	 */
+	@Deprecated
 	public IPersistable persist(final IPersistable object) throws Exception {
 		final HashMap<String, Object> tempObject = object.toHashMap();
 		final String databaseTable = object.getDatabaseTable();
@@ -617,7 +602,7 @@ public class DataHandler {
 		return object;
 	}
 
-	public void reloadData() {
+	public void reloadData(final int reloadType) {
 		System.out.println("reload Data");
 		this.loadKeys();
 		this.loadValues();

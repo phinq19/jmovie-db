@@ -64,7 +64,7 @@ public class MediaInfoCollector extends ACollector {
 
 	private String getDataStrForFile(final String filepath) {
 		String line = null;
-		final String command = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.cliexe");
+		final String command = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.cli");
 		final String templatePath = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.template");
 		if ((command != null) && (templatePath != null) && new File(command).exists() && new File(templatePath).exists()) {
 			final ProcExec pe = new ProcExec();
