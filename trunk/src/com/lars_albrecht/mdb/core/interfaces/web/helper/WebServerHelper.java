@@ -51,7 +51,7 @@ public class WebServerHelper {
 	 * @param filename
 	 * @param GETParams
 	 * @param headerKeyValue
-	 * @return
+	 * @return String
 	 * @throws UnsupportedEncodingException
 	 */
 	public String generateContent(final String content,
@@ -356,7 +356,7 @@ public class WebServerHelper {
 	 * @param url
 	 * @param GETParams
 	 * @param headerKeyValue
-	 * @return
+	 * @return String
 	 */
 	public String getFileContent(final String url,
 			final ConcurrentHashMap<String, String> GETParams,
@@ -394,7 +394,7 @@ public class WebServerHelper {
 	 * @param url
 	 * @param GETParams
 	 * @param headerKeyValue
-	 * @return
+	 * @return String
 	 */
 	public String getAjaxContent(final String url,
 			final ConcurrentHashMap<String, String> GETParams,
