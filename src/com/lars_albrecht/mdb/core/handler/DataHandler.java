@@ -6,6 +6,7 @@ package com.lars_albrecht.mdb.core.handler;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -48,8 +49,9 @@ public class DataHandler {
 	 * currently UNUSED
 	 * 
 	 * @param fullpath
-	 * @return
+	 * @return boolean
 	 */
+	@Deprecated
 	public boolean fileItemFullpathPersisted(final String fullpath) {
 		boolean result = false;
 		ResultSet rs = null;
@@ -175,11 +177,10 @@ public class DataHandler {
 	 * Returns a list of FileItems which are searched by the search term
 	 * searchStr.
 	 * 
-	 * @param searchStr
-	 *            String
+	 * @param key
+	 * @param value
 	 * @param withSubtypes
-	 *            Boolean
-	 * @return ArrayList<FileItem>
+	 * @return ArrayList<Object>
 	 */
 	public ArrayList<Object>
 			findAllFileItemForStringInAttributesByKeyValue(final String key, final String value, final Boolean withSubtypes) {
@@ -389,6 +390,14 @@ public class DataHandler {
 		return this.values;
 	}
 
+	/**
+	 * Returns the index of a section in a FileAttributeList.
+	 * 
+	 * @param fileAttribList
+	 * @param sectionName
+	 * @param infoType
+	 * @return int
+	 */
 	private int indexOfSectionInFileAttributeList(final ArrayList<FileAttributeList> fileAttribList,
 			final String sectionName,
 			final String infoType) {
@@ -412,6 +421,12 @@ public class DataHandler {
 		return -1;
 	}
 
+	/**
+	 * Returns the position of a key in this.keys.
+	 * 
+	 * @param searchKey
+	 * @return Integer
+	 */
 	public Integer keyPos(final Key<?> searchKey) {
 		for (final Key<?> key : this.getKeys()) {
 			if ((key.getKey() == searchKey.getKey()) && (key.getSection() == searchKey.getSection())
@@ -465,9 +480,8 @@ public class DataHandler {
 	}
 
 	/**
-	 * TODO return a full bunch of entries with id. Is it possible with multiple
-	 * inserts?<br />
-	 * 
+	 * Persist a list of IPersistable's into the database using the IPersistable
+	 * interface.
 	 * 
 	 * @param objects
 	 * @throws Exception
@@ -484,15 +498,13 @@ public class DataHandler {
 
 			final LinkedHashMap<Integer, Object> insertValues = new LinkedHashMap<Integer, Object>();
 			boolean isFirst = true;
-			LinkedHashMap<String, LinkedHashMap<Integer, Object>> insertItem = null;
-			Map.Entry<String, LinkedHashMap<Integer, Object>> tempItem = null;
+			Map.Entry<String, LinkedHashMap<Integer, Object>> insertItem = null;
 			for (final Object object : objects) {
 				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
 						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
-				if (insertItem != null && insertItem.size() > 0) {
-					tempItem = insertItem.entrySet().iterator().next();
-					insertStr += tempItem.getKey();
-					insertValues.putAll(tempItem.getValue());
+				if (insertItem != null && insertItem.getKey() != null && !insertItem.getKey().equalsIgnoreCase("")) {
+					insertStr += insertItem.getKey();
+					insertValues.putAll(insertItem.getValue());
 					isFirst = false;
 				}
 			}
@@ -501,10 +513,20 @@ public class DataHandler {
 		}
 	}
 
-	private LinkedHashMap<String, LinkedHashMap<Integer, Object>> generateSQLiteMultiInsertItem(final IPersistable object,
+	/**
+	 * Returns a Map.Entry<String, LinkedHashMap<Integer, Object>> with the sql
+	 * part as Key and the value-set as value.
+	 * 
+	 * @param object
+	 * @param isFirst
+	 * @param valueStartIndex
+	 * @return Map.Entry<String, LinkedHashMap<Integer, Object>>
+	 * @throws Exception
+	 */
+	private Map.Entry<String, LinkedHashMap<Integer, Object>> generateSQLiteMultiInsertItem(final IPersistable object,
 			final boolean isFirst,
 			final int valueStartIndex) throws Exception {
-		final LinkedHashMap<String, LinkedHashMap<Integer, Object>> resultMap = new LinkedHashMap<String, LinkedHashMap<Integer, Object>>();
+		Map.Entry<String, LinkedHashMap<Integer, Object>> resultEntry = null;
 		final LinkedHashMap<Integer, Object> resultValues = new LinkedHashMap<Integer, Object>();
 
 		String valueStr = null;
@@ -513,7 +535,6 @@ public class DataHandler {
 		int i = valueStartIndex > 0 ? valueStartIndex : 1;
 		valueStr = isFirst ? " SELECT " : " UNION ALL SELECT ";
 		for (final Map.Entry<String, Object> entry : tempObject.entrySet()) {
-			System.out.println(tempObject.entrySet());
 
 			Object x = null;
 			if (entry.getValue() == null) {
@@ -532,21 +553,19 @@ public class DataHandler {
 		}
 
 		if (valueStr != null && resultValues.size() > 0) {
-			resultMap.put(valueStr, resultValues);
+			resultEntry = new AbstractMap.SimpleEntry<String, LinkedHashMap<Integer, Object>>(valueStr, resultValues);
 		}
-		System.out.println(resultMap);
-		return resultMap;
+		return resultEntry;
 	}
 
 	/**
-	 * Deprecated function. Replaced with
-	 * "public void persist(final ArrayList<?> objects)".
+	 * Persist one item at time. Use persist(final ArrayList<?> objects) to
+	 * persist a list of items.
 	 * 
 	 * @param object
-	 * @return
+	 * @return IPersistable
 	 * @throws Exception
 	 */
-	@Deprecated
 	public IPersistable persist(final IPersistable object) throws Exception {
 		final HashMap<String, Object> tempObject = object.toHashMap();
 		final String databaseTable = object.getDatabaseTable();
@@ -576,16 +595,6 @@ public class DataHandler {
 			// INSERT OR IGNORE INTO.
 			// TODO if h2 db, than use TRANSACTION_ID() as id to set instead of
 			// nothing.
-			/*
-			 * INSERT INTO 'tablename' ('column1', 'column2') VALUES ('data1',
-			 * 'data2'), ('data3', 'data4'), ('data5', 'data6'), ('data7',
-			 * 'data8');
-			 * 
-			 * INSERT INTO 'tablename' SELECT 'data1' AS 'column1', 'data2' AS
-			 * 'column2' UNION SELECT 'data3', 'data4' UNION SELECT 'data5',
-			 * 'data6' UNION SELECT 'data7', 'data8'
-			 */
-
 			sql = "INSERT OR IGNORE INTO "
 					+ (DB.useQuotesForFields ? "'" : "")
 					+ ""
@@ -602,8 +611,14 @@ public class DataHandler {
 		return object;
 	}
 
+	/**
+	 * Reload the data from the database to the current object stack to handle
+	 * the objects fast and to reduce database selects.
+	 * 
+	 * @param reloadType
+	 */
 	public void reloadData(final int reloadType) {
-		System.out.println("reload Data");
+		// System.out.println("reload Data");
 		this.loadKeys();
 		this.loadValues();
 		this.loadTypeInformation();
@@ -615,7 +630,7 @@ public class DataHandler {
 	 * parameters.
 	 * 
 	 * @param key
-	 * @return
+	 * @return boolean
 	 */
 	public boolean isKeyInKeyList(final String key) {
 		for (final Key<?> thisKey : this.keys) {
