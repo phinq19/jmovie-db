@@ -15,7 +15,7 @@ import com.lars_albrecht.moviedb.model.FieldList;
 import com.lars_albrecht.moviedb.model.FieldModel;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class MovieHelper {
