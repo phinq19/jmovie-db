@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.interfaces.web;
 import com.lars_albrecht.mdb.core.controller.MainController;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class WebServerInterface implements Runnable {

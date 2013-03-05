@@ -6,7 +6,7 @@ package com.lars_albrecht.mdb.core.controller.interfaces;
 import java.util.ArrayList;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public interface IController {

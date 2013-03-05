@@ -10,7 +10,7 @@ import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class InterfaceController implements IController {

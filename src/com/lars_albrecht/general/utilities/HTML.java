@@ -10,7 +10,7 @@ import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class HTML {
