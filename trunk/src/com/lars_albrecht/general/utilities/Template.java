@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class Template {

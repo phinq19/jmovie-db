@@ -8,7 +8,7 @@ import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 
 /**
  * 
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public abstract class AInterface implements Runnable {

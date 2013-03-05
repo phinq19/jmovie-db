@@ -7,7 +7,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class FieldModel implements Comparable<FieldModel> {

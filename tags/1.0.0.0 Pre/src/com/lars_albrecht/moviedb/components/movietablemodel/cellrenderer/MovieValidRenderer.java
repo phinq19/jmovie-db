@@ -11,7 +11,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 @SuppressWarnings("serial")

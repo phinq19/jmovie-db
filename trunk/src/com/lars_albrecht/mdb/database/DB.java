@@ -437,6 +437,7 @@ public class DB implements IDatabase {
 			sql += "'size' LONG, ";
 			sql += "'fullpath' VARCHAR(255), ";
 			sql += "'filehash' VARCHAR(255), ";
+			sql += "'filetype' INTEGER, ";
 			sql += "'createTS' DATE DEFAULT (datetime('now','localtime')) ";
 			sql += ");";
 			DB.update(sql);

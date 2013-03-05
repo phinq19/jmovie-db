@@ -4,7 +4,7 @@
 package com.lars_albrecht.mdb.core.interfaces.web.interfaces;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public interface IRunner {

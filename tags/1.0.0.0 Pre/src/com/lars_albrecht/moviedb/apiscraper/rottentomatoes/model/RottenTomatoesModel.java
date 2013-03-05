@@ -8,7 +8,7 @@ import com.lars_albrecht.moviedb.annotation.ViewInTab;
 import com.lars_albrecht.moviedb.model.abstracts.MovieModel;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class RottenTomatoesModel extends MovieModel {

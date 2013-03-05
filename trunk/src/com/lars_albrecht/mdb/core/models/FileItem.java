@@ -28,6 +28,7 @@ public class FileItem implements IPersistable {
 	private String							filehash	= null;
 	private ArrayList<FileAttributeList>	attributes	= null;
 	private Integer							createTS	= null;
+	private Integer							filetype	= null;
 
 	/**
 	 * 
@@ -44,10 +45,11 @@ public class FileItem implements IPersistable {
 	 * @param dir
 	 * @param size
 	 * @param ext
+	 * @param filetype
 	 * @param createTS
 	 */
 	public FileItem(final Integer id, final String name, final String fullpath, final String dir, final Long size, final String ext,
-			final Integer createTS) {
+			final Integer filetype, final Integer createTS) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -55,6 +57,7 @@ public class FileItem implements IPersistable {
 		this.dir = dir;
 		this.size = size;
 		this.ext = ext;
+		this.filetype = filetype;
 		this.createTS = createTS;
 	}
 
@@ -135,6 +138,13 @@ public class FileItem implements IPersistable {
 		} else if (!this.dir.equals(other.dir)) {
 			return false;
 		}
+		if (this.filetype == null) {
+			if (other.filetype != null) {
+				return false;
+			}
+		} else if (!this.filetype.equals(other.filetype)) {
+			return false;
+		}
 		if (this.ext == null) {
 			if (other.ext != null) {
 				return false;
@@ -193,6 +203,10 @@ public class FileItem implements IPersistable {
 
 		if (map.containsKey("ext")) {
 			result.setExt((String) map.get("ext"));
+		}
+
+		if (map.containsKey("filetype") && (map.get("filetype") != "") && !map.get("filetype").equals("")) {
+			result.setFiletype((Integer) map.get("filetype"));
 		}
 
 		if (map.containsKey("filehash") && (map.get("filehash") != "") && !map.get("filehash").equals("")) {
@@ -286,6 +300,7 @@ public class FileItem implements IPersistable {
 			result = (prime * result) + ((this.fullpath == null) ? 0 : this.fullpath.hashCode());
 			result = (prime * result) + ((this.name == null) ? 0 : this.name.hashCode());
 			result = (prime * result) + ((this.size == null) ? 0 : this.size.hashCode());
+			result = (prime * result) + ((this.filetype == null) ? 0 : this.filetype.hashCode());
 		} else {
 			result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
 		}
@@ -337,6 +352,21 @@ public class FileItem implements IPersistable {
 		this.size = size;
 	}
 
+	/**
+	 * @return the filetype
+	 */
+	public Integer getFiletype() {
+		return this.filetype;
+	}
+
+	/**
+	 * @param filetype
+	 *            the filetype to set
+	 */
+	public void setFiletype(final Integer filetype) {
+		this.filetype = filetype;
+	}
+
 	@Override
 	public HashMap<String, Object> toHashMap() {
 		final HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
@@ -349,6 +379,7 @@ public class FileItem implements IPersistable {
 		tempHashMap.put("size", this.getSize());
 		tempHashMap.put("ext", this.getExt());
 		tempHashMap.put("filehash", this.getFilehash());
+		tempHashMap.put("filetype", this.getFiletype());
 
 		if (this.getCreateTS() != null) {
 			tempHashMap.put("createTS", this.getCreateTS());

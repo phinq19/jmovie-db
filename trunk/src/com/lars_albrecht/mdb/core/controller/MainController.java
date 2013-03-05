@@ -20,6 +20,7 @@ import com.lars_albrecht.mdb.core.handler.TypeHandler;
 public class MainController implements FinderListener {
 
 	private FinderController					fController	= null;
+	private final TypeController				tController	= null;
 	private CollectorController					cController	= null;
 	private InterfaceController					iController	= null;
 	private DataHandler							dataHandler	= null;
@@ -99,6 +100,10 @@ public class MainController implements FinderListener {
 				"module.finder.path"));
 		this.globalVars.put("searchPathList", tempList);
 
+	}
+
+	private void startTyper(final ArrayList<File> foundFilesList) {
+		this.cController.run(TypeHandler.fileListToFileItemList(foundFilesList));
 	}
 
 	public void run() {

@@ -11,7 +11,7 @@ import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerInterface;
 
 /**
- * @author ibsisini
+ * @author lalbrecht
  * 
  */
 public class WebInterface extends AInterface {
