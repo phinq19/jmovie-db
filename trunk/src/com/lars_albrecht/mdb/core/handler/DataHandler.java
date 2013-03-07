@@ -444,7 +444,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadFileItems(final boolean withArguments) {
-		this.fileItems = TypeHandler.castObjectListToFileItemList(this.findAll(new FileItem(), withArguments, null));
+		this.fileItems = ObjectHandler.castObjectListToFileItemList(this.findAll(new FileItem(), withArguments, null));
 		return this;
 	}
 
@@ -454,7 +454,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadKeys() {
-		this.keys = TypeHandler.castObjectListToKeyList(this.findAll(new Key<String>(), false, null));
+		this.keys = ObjectHandler.castObjectListToKeyList(this.findAll(new Key<String>(), false, null));
 		return this;
 	}
 
@@ -464,7 +464,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadTypeInformation() {
-		this.typeInformation = TypeHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), false, null));
+		this.typeInformation = ObjectHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), false, null));
 		return this;
 	}
 
@@ -474,7 +474,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadValues() {
-		this.values = TypeHandler.castObjectListToValueList(this.findAll(new Value<Object>(), false, null));
+		this.values = ObjectHandler.castObjectListToValueList(this.findAll(new Value<Object>(), false, null));
 
 		return this;
 	}

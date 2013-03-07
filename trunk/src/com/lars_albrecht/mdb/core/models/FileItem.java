@@ -28,7 +28,7 @@ public class FileItem implements IPersistable {
 	private String							filehash	= null;
 	private ArrayList<FileAttributeList>	attributes	= null;
 	private Integer							createTS	= null;
-	private Integer							filetype	= null;
+	private String							filetype	= null;
 
 	/**
 	 * 
@@ -49,7 +49,7 @@ public class FileItem implements IPersistable {
 	 * @param createTS
 	 */
 	public FileItem(final Integer id, final String name, final String fullpath, final String dir, final Long size, final String ext,
-			final Integer filetype, final Integer createTS) {
+			final String filetype, final Integer createTS) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -206,7 +206,7 @@ public class FileItem implements IPersistable {
 		}
 
 		if (map.containsKey("filetype") && (map.get("filetype") != "") && !map.get("filetype").equals("")) {
-			result.setFiletype((Integer) map.get("filetype"));
+			result.setFiletype((String) map.get("filetype"));
 		}
 
 		if (map.containsKey("filehash") && (map.get("filehash") != "") && !map.get("filehash").equals("")) {
@@ -355,7 +355,7 @@ public class FileItem implements IPersistable {
 	/**
 	 * @return the filetype
 	 */
-	public Integer getFiletype() {
+	public String getFiletype() {
 		return this.filetype;
 	}
 
@@ -363,7 +363,7 @@ public class FileItem implements IPersistable {
 	 * @param filetype
 	 *            the filetype to set
 	 */
-	public void setFiletype(final Integer filetype) {
+	public void setFiletype(final String filetype) {
 		this.filetype = filetype;
 	}
 
