@@ -11,7 +11,8 @@ import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.FinderListener;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
-import com.lars_albrecht.mdb.core.handler.TypeHandler;
+import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
  * @author lalbrecht
@@ -20,7 +21,7 @@ import com.lars_albrecht.mdb.core.handler.TypeHandler;
 public class MainController implements FinderListener {
 
 	private FinderController					fController	= null;
-	private final TypeController				tController	= null;
+	private TypeController						tController	= null;
 	private CollectorController					cController	= null;
 	private InterfaceController					iController	= null;
 	private DataHandler							dataHandler	= null;
@@ -33,8 +34,8 @@ public class MainController implements FinderListener {
 
 	@Override
 	public void finderAddFinish(final FinderEvent e) {
-		System.out.println("Found " + e.getFiles().size() + " files");
-		this.startCollect(e.getFiles());
+		System.out.println("Found " + e.getFiles().size() + " files. Type them and start to collect.");
+		this.startCollect(this.startTyper(ObjectHandler.fileListToFileItemList(e.getFiles())));
 	}
 
 	@Override
@@ -75,6 +76,13 @@ public class MainController implements FinderListener {
 	}
 
 	/**
+	 * @return the tController
+	 */
+	public TypeController gettController() {
+		return this.tController;
+	}
+
+	/**
 	 * @return the globalVars
 	 */
 	public ConcurrentHashMap<String, Object> getGlobalVars() {
@@ -86,6 +94,8 @@ public class MainController implements FinderListener {
 		System.out.println(RessourceBundleEx.getInstance().getProperty("application.name") + " ("
 				+ RessourceBundleEx.getInstance().getProperty("application.version") + ")");
 
+		this.tController = new TypeController(this);
+
 		this.fController = new FinderController(this);
 		this.fController.addFinderEventListener(this);
 
@@ -96,14 +106,14 @@ public class MainController implements FinderListener {
 		this.dataHandler = new DataHandler(this);
 		this.globalVars = new ConcurrentHashMap<String, Object>();
 
-		final ArrayList<?> tempList = TypeHandler.castStringListToFileList(RessourceBundleEx.getInstance().getProperties(
+		final ArrayList<?> tempList = ObjectHandler.castStringListToFileList(RessourceBundleEx.getInstance().getProperties(
 				"module.finder.path"));
 		this.globalVars.put("searchPathList", tempList);
 
 	}
 
-	private void startTyper(final ArrayList<File> foundFilesList) {
-		this.cController.run(TypeHandler.fileListToFileItemList(foundFilesList));
+	private ArrayList<FileItem> startTyper(final ArrayList<FileItem> fileItemList) {
+		return this.tController.findOutType(fileItemList);
 	}
 
 	public void run() {
@@ -111,8 +121,8 @@ public class MainController implements FinderListener {
 		this.startSearch();
 	}
 
-	private void startCollect(final ArrayList<File> foundFilesList) {
-		this.cController.run(TypeHandler.fileListToFileItemList(foundFilesList));
+	private void startCollect(final ArrayList<FileItem> fileItemList) {
+		this.cController.run(fileItemList);
 	}
 
 	private void startInterfaces() {

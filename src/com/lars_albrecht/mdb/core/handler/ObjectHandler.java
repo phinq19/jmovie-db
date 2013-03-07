@@ -16,7 +16,7 @@ import com.lars_albrecht.mdb.core.models.Value;
  * @author lalbrecht
  * 
  */
-public class TypeHandler {
+public class ObjectHandler {
 
 	public static ArrayList<FileItem> castObjectListToFileItemList(final ArrayList<Object> oList) {
 		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();

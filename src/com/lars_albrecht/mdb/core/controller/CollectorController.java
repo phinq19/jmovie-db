@@ -51,7 +51,6 @@ public class CollectorController implements IController {
 	private void initCollector() {
 		this.collectors.add(new MediaInfoCollector(this.mainController, this));
 		this.collectors.add(new TheMovieDBCollector(this.mainController, this));
-
 	}
 
 	@SuppressWarnings("unchecked")
