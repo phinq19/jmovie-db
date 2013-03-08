@@ -25,6 +25,7 @@ import com.omertron.thetvdbapi.model.Series;
 
 /**
  * @author lalbrecht
+ * @see "https://github.com/Omertron/api-thetvdb"
  * 
  */
 public class TheTVDBCollector extends ACollector {

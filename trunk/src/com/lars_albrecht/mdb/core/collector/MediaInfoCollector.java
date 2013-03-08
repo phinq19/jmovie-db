@@ -25,6 +25,7 @@ import com.lars_albrecht.mdb.external.ProcExec;
 
 /**
  * @author lalbrecht
+ * @see "http://mediainfo.sourceforge.net/"
  * 
  */
 public class MediaInfoCollector extends ACollector {

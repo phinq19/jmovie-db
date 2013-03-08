@@ -27,6 +27,7 @@ import com.omertron.themoviedbapi.model.MovieDb;
 
 /**
  * @author lalbrecht
+ * @see "https://github.com/Omertron/api-themoviedb"
  * 
  */
 public class TheMovieDBCollector extends ACollector {
