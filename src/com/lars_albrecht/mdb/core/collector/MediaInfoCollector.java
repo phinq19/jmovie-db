@@ -152,6 +152,26 @@ public class MediaInfoCollector extends ACollector {
 				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
 				for (String completeSection : sections) {
+					// TODO
+					/**
+					 * Exception in thread "Thread-240"
+					 * java.lang.StringIndexOutOfBoundsException: String index
+					 * out of range: -1 at
+					 * java.lang.String.substring(String.java:1958) at
+					 * com.lars_albrecht
+					 * .mdb.core.collector.MediaInfoCollector.parseDataString
+					 * (MediaInfoCollector.java:155) at
+					 * com.lars_albrecht.mdb.core.collector.MediaInfoCollector.
+					 * getFileAttributeListsForItem(MediaInfoCollector.java:93)
+					 * at
+					 * com.lars_albrecht.mdb.core.collector.MediaInfoCollector
+					 * .doCollect(MediaInfoCollector.java:61) at
+					 * com.lars_albrecht
+					 * .mdb.core.collector.abstracts.ACollector.
+					 * run(ACollector.java:184) at
+					 * java.lang.Thread.run(Thread.java:722)
+					 */
+					System.out.println("complete Section: " + completeSection);
 					final String sectionName = completeSection.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
 					completeSection = completeSection.substring(completeSection.indexOf("}") + 1);
 					final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
