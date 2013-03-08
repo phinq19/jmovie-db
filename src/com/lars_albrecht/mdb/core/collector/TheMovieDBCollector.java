@@ -10,6 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
@@ -34,7 +35,8 @@ public class TheMovieDBCollector extends ACollector {
 	private ArrayList<Value<?>>											valuesToAdd				= null;
 	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>	fileAttributeListToAdd	= null;
 
-	private final String												apiKey					= "d2bfb8abb70809759df091b8d23876af";
+	private final String												apiKey					= RessourceBundleEx.getInstance()
+																										.getProperty("apikey.themoviedb");
 	private final String												langKey					= "de";
 
 	public TheMovieDBCollector(final MainController mainController, final IController controller) {
@@ -43,8 +45,6 @@ public class TheMovieDBCollector extends ACollector {
 		this.fileAttributeListToAdd = new ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>();
 		this.keysToAdd = new ArrayList<Key<String>>();
 		this.valuesToAdd = new ArrayList<Value<?>>();
-
-		this.init();
 	}
 
 	@Override
@@ -274,6 +274,7 @@ public class TheMovieDBCollector extends ACollector {
 						new Value<Object>(movie.getHomepage())));
 			}
 
+			// add genres
 			if (movie.getGenres() != null) {
 				for (final Genre genre : movie.getGenres()) {
 					keyValueList.add(new KeyValue<String, Object>(new Key<String>("genre", infoType, "genre", false, true),
@@ -302,9 +303,6 @@ public class TheMovieDBCollector extends ACollector {
 	@Override
 	public ArrayList<Value<?>> getValuesToAdd() {
 		return this.valuesToAdd;
-	}
-
-	private void init() {
 	}
 
 }

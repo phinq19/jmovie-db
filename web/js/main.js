@@ -11,6 +11,12 @@ function loadStatus(){
 		url: "/ajax.html?action=getStatus",
 		data: { 'action' : 'test'}
 	}).done(function( msg ) {
-		$('#status').html(msg);
+		var message = $.trim(msg);
+		if(message != ''){
+			$('#status').html(message);
+		} else {
+			$('#status').html('No Status');
+		}
+		
 	});
 }
