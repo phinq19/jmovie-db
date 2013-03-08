@@ -18,6 +18,9 @@ import com.lars_albrecht.mdb.core.typer.abstracts.ATyper;
  */
 public class VideoTyper extends ATyper {
 
+	private final static String	TYPE_SERIE	= "serie";
+	private final static String	TYPE_MOVIE	= "movie";
+
 	public VideoTyper(final MainController mainController) {
 		super(mainController);
 	}
@@ -27,15 +30,15 @@ public class VideoTyper extends ATyper {
 		final Pattern pattern = Pattern.compile("(S[0-9]{1,2}E[0-9]{1,2})");
 		final Matcher matcher = pattern.matcher(fileItem.getName());
 		if (matcher.find()) {
-			return "serie";
+			return VideoTyper.TYPE_SERIE;
 		} else {
-			return "movie";
+			return VideoTyper.TYPE_MOVIE;
 		}
 	}
 
 	@Override
 	public ArrayList<String> getTypes() {
-		return (ArrayList<String>) Arrays.asList("serie", "movie");
+		return new ArrayList<String>(Arrays.asList(VideoTyper.TYPE_SERIE, VideoTyper.TYPE_MOVIE));
 	}
 
 }
