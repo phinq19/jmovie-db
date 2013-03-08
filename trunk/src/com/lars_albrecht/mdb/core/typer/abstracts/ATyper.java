@@ -49,4 +49,11 @@ public abstract class ATyper {
 	 */
 	protected abstract String getTypeForFileItem(final FileItem fileItem);
 
+	/**
+	 * Returns a list of types for the given typer.
+	 * 
+	 * @return ArrayList<String>
+	 */
+	public abstract ArrayList<String> getTypes();
+
 }

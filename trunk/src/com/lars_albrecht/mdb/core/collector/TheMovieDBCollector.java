@@ -18,11 +18,11 @@ import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.Key;
 import com.lars_albrecht.mdb.core.models.KeyValue;
 import com.lars_albrecht.mdb.core.models.Value;
-import com.moviejukebox.themoviedb.MovieDbException;
-import com.moviejukebox.themoviedb.TheMovieDb;
-import com.moviejukebox.themoviedb.model.Genre;
-import com.moviejukebox.themoviedb.model.Language;
-import com.moviejukebox.themoviedb.model.MovieDb;
+import com.omertron.themoviedbapi.MovieDbException;
+import com.omertron.themoviedbapi.TheMovieDbApi;
+import com.omertron.themoviedbapi.model.Genre;
+import com.omertron.themoviedbapi.model.Language;
+import com.omertron.themoviedbapi.model.MovieDb;
 
 /**
  * @author lalbrecht
@@ -59,9 +59,9 @@ public class TheMovieDBCollector extends ACollector {
 
 	private MovieDb findMovie(final String[] titles, final Integer year) {
 		ArrayList<MovieDb> tempList = null;
-		TheMovieDb tmdb = null;
+		TheMovieDbApi tmdb = null;
 		try {
-			tmdb = new TheMovieDb(this.apiKey);
+			tmdb = new TheMovieDbApi(this.apiKey);
 			// tmdb.getConfiguration().setBaseUrl("http://api.themoviedb.org/3/");
 			// search with different combinations to find the movie.
 			// implode titles to one title
