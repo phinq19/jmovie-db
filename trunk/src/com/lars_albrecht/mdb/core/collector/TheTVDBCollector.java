@@ -245,7 +245,7 @@ public class TheTVDBCollector extends ACollector {
 				keyValueList.add(new KeyValue<String, Object>(new Key<String>("status", infoType, "facts", false, false),
 						new Value<Object>(serie.getStatus())));
 			}
-			if (new Integer(serie.getRuntime()) != null) {
+			if (serie.getRuntime() != null) {
 				keyValueList.add(new KeyValue<String, Object>(new Key<String>("runtime", infoType, "facts", false, false),
 						new Value<Object>(serie.getRuntime())));
 			}
