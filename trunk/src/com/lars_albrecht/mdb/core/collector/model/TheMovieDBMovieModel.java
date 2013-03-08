@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.mdb.core.collector;
+package com.lars_albrecht.mdb.core.collector.model;
 
 import java.awt.Image;
 import java.util.ArrayList;

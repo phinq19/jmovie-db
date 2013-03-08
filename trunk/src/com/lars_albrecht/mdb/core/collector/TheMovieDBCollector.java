@@ -52,7 +52,9 @@ public class TheMovieDBCollector extends ACollector {
 		this.fileAttributeListToAdd.clear();
 		for (final FileItem item : this.fileItems) {
 			// collect all data for all found items in the list
-			this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
+			if (item.getFiletype().equalsIgnoreCase("movie")) {
+				this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
+			}
 
 		}
 	}
