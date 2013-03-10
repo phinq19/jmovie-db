@@ -405,22 +405,37 @@ public class DB implements IDatabase {
 	 * @throws Exception
 	 */
 	public static synchronized int updatePS(final String expression, final Map<Integer, Object> values) throws Exception {
-		PreparedStatement st = null;
-		System.out.println("SQL: " + expression);
-		st = DB.getConnection().prepareStatement(expression); // statements
-		for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
-			st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
-		}
+		int lastInsertedId = -1;
+		if (expression != null && values != null && values.size() > 0) {
+			PreparedStatement st = null;
+			System.out.println("SQL: " + expression);
+			// http://sqlite.org/limits.html
+			// [SQLITE_ERROR] SQL error or missing database (too many SQL
+			// variables)
+			// TODO Fix!
+			try {
+				st = DB.getConnection().prepareStatement(expression); // statements
+				for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
+					st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
+				}
 
-		// System.out.println(expression);
-		// System.out.println(values);
-		final int result = st.executeUpdate(); // run the query
-		if (result == -1) {
-			// Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
-		}
+				// System.out.println(expression);
+				// System.out.println(values);
+				final int result = st.executeUpdate(); // run the query
+				if (result == -1) {
+					// Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
+				}
 
-		final int lastInsertedId = DB.getLastInsertedRowId(st);
-		st.close();
+				lastInsertedId = DB.getLastInsertedRowId(st);
+			} catch (final SQLException e) {
+				System.out.println("ERROR ON SQL: " + expression + " | with (" + values.size() + ")values: " + values);
+				e.printStackTrace();
+			} finally {
+				if (st != null) {
+					st.close();
+				}
+			}
+		}
 		return lastInsertedId;
 	}
 

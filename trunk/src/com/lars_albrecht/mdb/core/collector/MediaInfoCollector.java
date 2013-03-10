@@ -152,58 +152,41 @@ public class MediaInfoCollector extends ACollector {
 				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
 				for (String completeSection : sections) {
-					// TODO
-					/**
-					 * Exception in thread "Thread-240"
-					 * java.lang.StringIndexOutOfBoundsException: String index
-					 * out of range: -1 at
-					 * java.lang.String.substring(String.java:1958) at
-					 * com.lars_albrecht
-					 * .mdb.core.collector.MediaInfoCollector.parseDataString
-					 * (MediaInfoCollector.java:155) at
-					 * com.lars_albrecht.mdb.core.collector.MediaInfoCollector.
-					 * getFileAttributeListsForItem(MediaInfoCollector.java:93)
-					 * at
-					 * com.lars_albrecht.mdb.core.collector.MediaInfoCollector
-					 * .doCollect(MediaInfoCollector.java:61) at
-					 * com.lars_albrecht
-					 * .mdb.core.collector.abstracts.ACollector.
-					 * run(ACollector.java:184) at
-					 * java.lang.Thread.run(Thread.java:722)
-					 */
-					System.out.println("complete Section: " + completeSection);
-					final String sectionName = completeSection.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
-					completeSection = completeSection.substring(completeSection.indexOf("}") + 1);
-					final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
-					final String[] items = completeSection.split("\\|");
-					for (final String string : items) {
-						final String[] keyValues = string.split("\\:");
-						if (keyValues.length > 1) {
-							Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName), false,
-									false);
-							int pos = -1;
-							if (((pos = keys.indexOf(key)) > -1) && (keys.get(pos) instanceof Key<?>)) {
-								key = (Key<String>) keys.get(pos);
-							} else {
-								if (!this.keysToAdd.contains(key)) {
-									this.keysToAdd.add(key);
+					if (completeSection != null && !completeSection.equalsIgnoreCase("")) {
+						final String sectionName = completeSection
+								.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
+						completeSection = completeSection.substring(completeSection.indexOf("}") + 1);
+						final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
+						final String[] items = completeSection.split("\\|");
+						for (final String string : items) {
+							final String[] keyValues = string.split("\\:");
+							if (keyValues.length > 1) {
+								Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName),
+										false, false);
+								int pos = -1;
+								if (((pos = keys.indexOf(key)) > -1) && (keys.get(pos) instanceof Key<?>)) {
+									key = (Key<String>) keys.get(pos);
+								} else {
+									if (!this.keysToAdd.contains(key)) {
+										this.keysToAdd.add(key);
+									}
 								}
-							}
-							Value<Object> value = new Value<Object>(keyValues[1]);
-							pos = -1;
-							if (((pos = values.indexOf(value)) > -1) && (values.get(pos) instanceof Value<?>)) {
-								value = (Value<Object>) values.get(pos);
-							} else {
-								if (!this.valuesToAdd.contains(value)) {
-									this.valuesToAdd.add(value);
+								Value<Object> value = new Value<Object>(keyValues[1]);
+								pos = -1;
+								if (((pos = values.indexOf(value)) > -1) && (values.get(pos) instanceof Value<?>)) {
+									value = (Value<Object>) values.get(pos);
+								} else {
+									if (!this.valuesToAdd.contains(value)) {
+										this.valuesToAdd.add(value);
+									}
 								}
+
+								keyValueList.add(new KeyValue<String, Object>(key, value));
 							}
 
-							keyValueList.add(new KeyValue<String, Object>(key, value));
 						}
-
+						resultList.put(this.getSectionname(sectionName), keyValueList);
 					}
-					resultList.put(this.getSectionname(sectionName), keyValueList);
 				}
 			}
 
