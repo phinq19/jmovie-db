@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.mdb.core.collector;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -60,7 +61,7 @@ public class TheMovieDBCollector extends ACollector {
 		}
 	}
 
-	private MovieDb findMovie(final String[] titles, final Integer year) {
+	private MovieDb findMovie(final String[] titles, final Integer year) throws IOException {
 		ArrayList<MovieDb> tempList = null;
 		TheMovieDbApi tmdb = null;
 		try {
@@ -107,9 +108,18 @@ public class TheMovieDBCollector extends ACollector {
 				}
 
 			}
-
 		} catch (final MovieDbException e) {
-			e.printStackTrace();
+			// e.printStackTrace();
+			/*
+			 * TODO @see "http://docs.themoviedb.apiary.io/" Request Rate
+			 * Limiting
+			 * 
+			 * We do enforce a small amount of rate limiting. Please be aware
+			 * that should you exceed these limits, you will receive a 503
+			 * error. 30 requests every 10 seconds per IP Maximum 20
+			 * simultaneous connections
+			 */
+			System.out.println("error, try to ignore");
 		}
 		// TODO if more than one result in list, than try to find the right
 		int id = -1;
@@ -206,97 +216,103 @@ public class TheMovieDBCollector extends ACollector {
 
 	private ArrayList<FileAttributeList> getMovieInfo(final String[] titles, final Integer year) {
 		final ArrayList<FileAttributeList> tempKeyValueList = new ArrayList<FileAttributeList>();
-		final MovieDb movie = this.findMovie(titles, year);
-		final String infoType = "themoviedb";
+		MovieDb movie;
+		try {
+			movie = this.findMovie(titles, year);
 
-		if (movie != null) {
-			final FileAttributeList attributeList = new FileAttributeList();
-			final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
-			// TODO move to own method
+			final String infoType = "themoviedb";
 
-			// add general infos
-			if (new Integer(movie.getId()) != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("tmdb_id", infoType, "general", false, false),
-						new Value<Object>(new Integer(movie.getId()))));
-			}
-			if (movie.getImdbID() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("imdb_id", infoType, "general", false, false),
-						new Value<Object>(movie.getImdbID())));
-			}
-			if (movie.getOriginalTitle() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("original_title", infoType, "general", false, false),
-						new Value<Object>(movie.getOriginalTitle())));
-			}
-			if (movie.getTitle() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("title", infoType, "general", false, false),
-						new Value<Object>(movie.getTitle())));
-			}
-			if (movie.getOverview() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "general", false, false),
-						new Value<Object>(movie.getOverview())));
-			}
+			if (movie != null) {
+				final FileAttributeList attributeList = new FileAttributeList();
+				final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
+				// TODO move to own method
 
-			if (movie.getTagline() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("tagline", infoType, "general", false, false),
-						new Value<Object>(movie.getTagline())));
-			}
-
-			// add movie facts
-			if (new Long(movie.getBudget()) != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("budget", infoType, "facts", false, false),
-						new Value<Object>(movie.getBudget())));
-			}
-			if (movie.getBelongsToCollection() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, false),
-						new Value<Object>(movie.getBelongsToCollection().getId())));
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("collection_name", infoType, "facts", false, true),
-						new Value<Object>(movie.getBelongsToCollection().getName())));
-			}
-			if (movie.getStatus() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("status", infoType, "facts", false, false),
-						new Value<Object>(movie.getStatus())));
-			}
-			if (new Integer(movie.getRuntime()) != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("runtime", infoType, "facts", false, false),
-						new Value<Object>(movie.getRuntime())));
-			}
-			if (new Long(movie.getRevenue()) != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("revenue", infoType, "facts", false, false),
-						new Value<Object>(movie.getRevenue())));
-			}
-			if (movie.getSpokenLanguages() != null) {
-				for (final Language language : movie.getSpokenLanguages()) {
-					keyValueList.add(new KeyValue<String, Object>(new Key<String>("language", infoType, "facts", false, true),
-							new Value<Object>(language.getName())));
+				// add general infos
+				if (new Integer(movie.getId()) != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("tmdb_id", infoType, "general", false, false),
+							new Value<Object>(new Integer(movie.getId()))));
 				}
-			}
-			if (movie.getHomepage() != null) {
-				keyValueList.add(new KeyValue<String, Object>(new Key<String>("homepage", infoType, "facts", false, false),
-						new Value<Object>(movie.getHomepage())));
-			}
-
-			// add genres
-			if (movie.getGenres() != null) {
-				for (final Genre genre : movie.getGenres()) {
-					keyValueList.add(new KeyValue<String, Object>(new Key<String>("genre", infoType, "genre", false, true),
-							new Value<Object>(genre.getName())));
+				if (movie.getImdbID() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("imdb_id", infoType, "general", false, false),
+							new Value<Object>(movie.getImdbID())));
 				}
-			}
-
-			for (final KeyValue<String, Object> keyValue : keyValueList) {
-				if ((keyValue != null) && (keyValue.getKey() != null) && !this.keysToAdd.contains(keyValue.getKey())) {
-					this.keysToAdd.add(keyValue.getKey());
+				if (movie.getOriginalTitle() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("original_title", infoType, "general", false, false),
+							new Value<Object>(movie.getOriginalTitle())));
+				}
+				if (movie.getTitle() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("title", infoType, "general", false, false),
+							new Value<Object>(movie.getTitle())));
+				}
+				if (movie.getOverview() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "general", false, false),
+							new Value<Object>(movie.getOverview())));
 				}
 
-				if ((keyValue != null) && (keyValue.getValue() != null) && !this.valuesToAdd.contains(keyValue.getValue())) {
-					this.valuesToAdd.add(keyValue.getValue());
+				if (movie.getTagline() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("tagline", infoType, "general", false, false),
+							new Value<Object>(movie.getTagline())));
 				}
+
+				// add movie facts
+				if (new Long(movie.getBudget()) != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("budget", infoType, "facts", false, false),
+							new Value<Object>(movie.getBudget())));
+				}
+				if (movie.getBelongsToCollection() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, false),
+							new Value<Object>(movie.getBelongsToCollection().getId())));
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("collection_name", infoType, "facts", false, true),
+							new Value<Object>(movie.getBelongsToCollection().getName())));
+				}
+				if (movie.getStatus() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("status", infoType, "facts", false, false),
+							new Value<Object>(movie.getStatus())));
+				}
+				if (new Integer(movie.getRuntime()) != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("runtime", infoType, "facts", false, false),
+							new Value<Object>(movie.getRuntime())));
+				}
+				if (new Long(movie.getRevenue()) != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("revenue", infoType, "facts", false, false),
+							new Value<Object>(movie.getRevenue())));
+				}
+				if (movie.getSpokenLanguages() != null) {
+					for (final Language language : movie.getSpokenLanguages()) {
+						keyValueList.add(new KeyValue<String, Object>(new Key<String>("language", infoType, "facts", false, true),
+								new Value<Object>(language.getName())));
+					}
+				}
+				if (movie.getHomepage() != null) {
+					keyValueList.add(new KeyValue<String, Object>(new Key<String>("homepage", infoType, "facts", false, false),
+							new Value<Object>(movie.getHomepage())));
+				}
+
+				// add genres
+				if (movie.getGenres() != null) {
+					for (final Genre genre : movie.getGenres()) {
+						keyValueList.add(new KeyValue<String, Object>(new Key<String>("genre", infoType, "genre", false, true),
+								new Value<Object>(genre.getName())));
+					}
+				}
+
+				for (final KeyValue<String, Object> keyValue : keyValueList) {
+					if ((keyValue != null) && (keyValue.getKey() != null) && !this.keysToAdd.contains(keyValue.getKey())) {
+						this.keysToAdd.add(keyValue.getKey());
+					}
+
+					if ((keyValue != null) && (keyValue.getValue() != null) && !this.valuesToAdd.contains(keyValue.getValue())) {
+						this.valuesToAdd.add(keyValue.getValue());
+					}
+				}
+
+				attributeList.setSectionName(infoType);
+				attributeList.setKeyValues(keyValueList);
+
+				tempKeyValueList.add(attributeList);
 			}
-
-			attributeList.setSectionName(infoType);
-			attributeList.setKeyValues(keyValueList);
-
-			tempKeyValueList.add(attributeList);
+		} catch (final IOException e) {
+			// TODO catch ! e.printStackTrace();
 		}
 		return tempKeyValueList;
 	}

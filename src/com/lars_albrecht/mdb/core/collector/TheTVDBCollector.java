@@ -147,7 +147,7 @@ public class TheTVDBCollector extends ACollector {
 			if ((m.group(2) != null) && (m.group(3) != null) && (m.group(4) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(2));
 				((ArrayList<String>) data.get("titles")).add(m.group(3));
-				data.replace("episode", Integer.parseInt(m.group(4)));
+				data.replace("episode", m.group(4));
 			}
 
 			if ((m.group(6) != null) && (m.group(7) != null)) {
