@@ -490,7 +490,7 @@ public class DataHandler {
 		if ((objects != null) && (objects.size() > 0)) {
 
 			final IPersistable tempPersistable = (IPersistable) objects.get(0);
-			String insertStr = "INSERT OR IGNORE INTO '"
+			final String insertStr = "INSERT OR IGNORE INTO '"
 					+ tempPersistable.getDatabaseTable()
 					+ "' ("
 					+ Helper.implode(tempPersistable.toHashMap().keySet(), ",", "" + (DB.useQuotesForFields ? "'" : "") + "", ""
@@ -499,17 +499,22 @@ public class DataHandler {
 			final LinkedHashMap<Integer, Object> insertValues = new LinkedHashMap<Integer, Object>();
 			boolean isFirst = true;
 			Map.Entry<String, LinkedHashMap<Integer, Object>> insertItem = null;
+			String sql = insertStr;
 			for (final Object object : objects) {
 				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
 						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
 				if (insertItem != null && insertItem.getKey() != null && !insertItem.getKey().equalsIgnoreCase("")) {
-					insertStr += insertItem.getKey();
+					sql += insertItem.getKey();
 					insertValues.putAll(insertItem.getValue());
 					isFirst = false;
 				}
 			}
+			// 1000000
+			System.out.println("SQL BYTES: " + sql.getBytes().length);
+			if (sql.getBytes().length >= 1000000) {
 
-			DB.updatePS(insertStr, insertValues);
+			}
+			DB.updatePS(sql, insertValues);
 		}
 	}
 
