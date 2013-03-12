@@ -51,6 +51,8 @@ public class DB implements IDatabase {
 	/**
 	 * Sets a dynamic object in a PreparedStatement.
 	 * 
+	 * TODO change this method to handle more than one db-type at once.
+	 * 
 	 * @param pst
 	 *            PreparedStatement
 	 * @param index
@@ -94,6 +96,8 @@ public class DB implements IDatabase {
 			pst.setBytes(index, ((byte[]) objectToSet));
 		} else if (objectToSet.getClass() == Object[].class) {
 			pst.setArray(index, (Array) Arrays.asList(((Object[]) objectToSet)));
+		} else {
+			throw new Exception("Unknown type submitted: " + objectToSet.getClass().getName());
 		}
 		return pst;
 	}
@@ -409,18 +413,12 @@ public class DB implements IDatabase {
 		if (expression != null && values != null && values.size() > 0) {
 			PreparedStatement st = null;
 			System.out.println("SQL: " + expression);
-			// http://sqlite.org/limits.html
-			// [SQLITE_ERROR] SQL error or missing database (too many SQL
-			// variables)
-			// TODO Fix!
 			try {
 				st = DB.getConnection().prepareStatement(expression); // statements
 				for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
 					st = DB.addDynamicValue(st, entry.getKey(), entry.getValue());
 				}
 
-				// System.out.println(expression);
-				// System.out.println(values);
 				final int result = st.executeUpdate(); // run the query
 				if (result == -1) {
 					// Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);

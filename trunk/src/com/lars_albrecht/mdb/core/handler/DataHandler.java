@@ -27,6 +27,10 @@ import com.lars_albrecht.mdb.database.DB;
 /**
  * @author lalbrecht
  * 
+ * 
+ *         TODO To support multiple databases, use a base class and create a
+ *         class for each database type?
+ * 
  */
 public class DataHandler {
 
@@ -299,7 +303,6 @@ public class DataHandler {
 					} else if (rsmd.getColumnLabel(i).startsWith("value")) {
 						tempMapValue.put(originalName, rs.getObject(i));
 					}
-
 				}
 
 				final Key<String> key = (Key<String>) (new Key<String>()).fromHashMap(tempMapKey);
