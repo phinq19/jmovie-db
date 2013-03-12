@@ -81,7 +81,7 @@ public class DataHandler {
 	 * 
 	 * @param object
 	 * @param limit
-	 * @return
+	 * @return ArrayList<Object>
 	 */
 	public ArrayList<Object> findAll(final IPersistable object, final Integer limit) {
 		HashMap<String, Object> tempMap = null;
@@ -488,7 +488,10 @@ public class DataHandler {
 
 	/**
 	 * Persist a list of IPersistable's into the database using the IPersistable
-	 * interface.
+	 * interface. Insert not more than 500 items at time, because SQLite has a
+	 * limit of 500 (http://sqlite.org/limits.html @ point 7).
+	 * 
+	 * @see "http://sqlite.org/limits.html"
 	 * 
 	 * @param objects
 	 * @throws Exception
@@ -507,28 +510,36 @@ public class DataHandler {
 			boolean isFirst = true;
 			Map.Entry<String, LinkedHashMap<Integer, Object>> insertItem = null;
 			String sql = insertStr;
-			final int maxBytesForSQLite = 100000;
+
+			// max count for sqlite inserts
+			final int maxCount = 500;
+			int itemCount = 0;
+
+			// contains count of items which have are null, key = null and where
+			// key = ""
+			int missedItems = 0;
 			for (final Object object : objects) {
 				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
 						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
 				if (insertItem != null && insertItem.getKey() != null && !insertItem.getKey().equalsIgnoreCase("")) {
-					System.out.println("current length: " + sql.getBytes().length);
-					if (sql.getBytes().length >= maxBytesForSQLite) {
+					if (itemCount >= maxCount) {
 						DB.updatePS(sql, insertValues);
-						System.out.println("add new");
+						itemCount = 1;
 						sql = insertStr;
 						insertValues.clear();
 						isFirst = true;
 					} else {
-						System.out.println("fill exists");
+						itemCount++;
 						sql += insertItem.getKey();
 						insertValues.putAll(insertItem.getValue());
 						isFirst = false;
 					}
-					if (objects.indexOf(object) == objects.size() - 1) {
+					if (objects.indexOf(object) == (objects.size() - 1 + missedItems)) {
 						DB.updatePS(sql, insertValues);
 					}
 
+				} else {
+					missedItems++;
 				}
 			}
 
@@ -584,11 +595,15 @@ public class DataHandler {
 	 * Persist one item at time. Use persist(final ArrayList<?> objects) to
 	 * persist a list of items.
 	 * 
+	 * TODO Make this method unnecessary.
+	 * 
 	 * @param object
 	 * @return IPersistable
 	 * @throws Exception
 	 */
+	@Deprecated
 	public IPersistable persist(final IPersistable object) throws Exception {
+		System.out.println("persist one item");
 		final HashMap<String, Object> tempObject = object.toHashMap();
 		final String databaseTable = object.getDatabaseTable();
 		int result = -1;

@@ -142,6 +142,14 @@ public abstract class ACollector implements Runnable {
 
 	}
 
+	/**
+	 * Persist fileItems and attributes. Take this.fileAttributeListToAdd which
+	 * contains the fileItem and an ArrayList of FileAttributeList
+	 * (ArrayList<FileAttributeList>).
+	 * 
+	 * TODO update this method to insert all attributes at once. TODO Update
+	 * this method to insert all fileitems at once.
+	 */
 	private void persistFileItemsAndAttributes() {
 		FileItem tempItem = null;
 		if ((this.fileAttributeListToAdd != null) && (this.fileAttributeListToAdd.size() > 0)) {

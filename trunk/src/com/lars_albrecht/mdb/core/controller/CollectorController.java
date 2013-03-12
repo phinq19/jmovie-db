@@ -37,9 +37,12 @@ public class CollectorController implements IController {
 	}
 
 	public void collectInfos(final ArrayList<FileItem> fileItems) {
+		Thread tempThread = null;
 		for (final ACollector collector : this.collectors) {
 			collector.setFileItems(fileItems);
-			IController.threadList.add(new Thread(collector));
+			tempThread = new Thread(collector);
+			tempThread.setName("Thread " + collector.getInfoType());
+			IController.threadList.add(tempThread);
 			IController.threadList.get(IController.threadList.size() - 1).start();
 		}
 	}
