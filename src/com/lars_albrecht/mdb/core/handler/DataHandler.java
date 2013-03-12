@@ -46,7 +46,7 @@ public class DataHandler {
 	}
 
 	/**
-	 * currently UNUSED
+	 * Currently unused.
 	 * 
 	 * @param fullpath
 	 * @return boolean
@@ -71,7 +71,15 @@ public class DataHandler {
 		return result;
 	}
 
-	public ArrayList<Object> findAll(final IPersistable object, final Boolean withSubtypes, final Integer limit) {
+	/**
+	 * Finds all items of the given IPersistable object in database and return a
+	 * list of them.
+	 * 
+	 * @param object
+	 * @param limit
+	 * @return
+	 */
+	public ArrayList<Object> findAll(final IPersistable object, final Integer limit) {
 		HashMap<String, Object> tempMap = null;
 		final ArrayList<Object> resultList = new ArrayList<Object>();
 		if (object != null) {
@@ -102,7 +110,7 @@ public class DataHandler {
 		return resultList;
 	}
 
-	public ArrayList<Object> findAllByFileItemValue(final String fileItemValue, final Boolean withSubtypes) {
+	public ArrayList<Object> findAllByFileItemValue(final String fileItemValue) {
 		final FileItem fileItem = new FileItem();
 		HashMap<String, Object> tempMap = null;
 		final ArrayList<Object> resultList = new ArrayList<Object>();
@@ -136,13 +144,11 @@ public class DataHandler {
 	 * 
 	 * @param searchStr
 	 *            String
-	 * @param withSubtypes
-	 *            Boolean
 	 * @return ArrayList<FileItem>
 	 */
-	public ArrayList<Object> findAllFileItemForStringInAll(final String searchStr, final Boolean withSubtypes) {
+	public ArrayList<Object> findAllFileItemForStringInAll(final String searchStr) {
 		ArrayList<Object> tempList = null;
-		tempList = this.findAllByFileItemValue(searchStr, withSubtypes);
+		tempList = this.findAllByFileItemValue(searchStr);
 
 		final FileItem fileItem = new FileItem();
 		HashMap<String, Object> tempMap = null;
@@ -179,11 +185,9 @@ public class DataHandler {
 	 * 
 	 * @param key
 	 * @param value
-	 * @param withSubtypes
 	 * @return ArrayList<Object>
 	 */
-	public ArrayList<Object>
-			findAllFileItemForStringInAttributesByKeyValue(final String key, final String value, final Boolean withSubtypes) {
+	public ArrayList<Object> findAllFileItemForStringInAttributesByKeyValue(final String key, final String value) {
 		final ArrayList<Object> tempList = new ArrayList<Object>();
 
 		if (key != null && value != null) {
@@ -333,7 +337,7 @@ public class DataHandler {
 	 */
 	public ArrayList<FileItem> getFileItems() {
 		if (this.fileItems == null) {
-			this.loadFileItems(false);
+			this.loadFileItems();
 		}
 		return this.fileItems;
 	}
@@ -443,8 +447,8 @@ public class DataHandler {
 	 * @param withArguments
 	 * @return
 	 */
-	private DataHandler loadFileItems(final boolean withArguments) {
-		this.fileItems = ObjectHandler.castObjectListToFileItemList(this.findAll(new FileItem(), withArguments, null));
+	private DataHandler loadFileItems() {
+		this.fileItems = ObjectHandler.castObjectListToFileItemList(this.findAll(new FileItem(), null));
 		return this;
 	}
 
@@ -454,7 +458,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadKeys() {
-		this.keys = ObjectHandler.castObjectListToKeyList(this.findAll(new Key<String>(), false, null));
+		this.keys = ObjectHandler.castObjectListToKeyList(this.findAll(new Key<String>(), null));
 		return this;
 	}
 
@@ -464,7 +468,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadTypeInformation() {
-		this.typeInformation = ObjectHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), false, null));
+		this.typeInformation = ObjectHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), null));
 		return this;
 	}
 
@@ -474,7 +478,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadValues() {
-		this.values = ObjectHandler.castObjectListToValueList(this.findAll(new Value<Object>(), false, null));
+		this.values = ObjectHandler.castObjectListToValueList(this.findAll(new Value<Object>(), null));
 
 		return this;
 	}
@@ -637,7 +641,7 @@ public class DataHandler {
 		this.loadKeys();
 		this.loadValues();
 		this.loadTypeInformation();
-		this.loadFileItems(false);
+		this.loadFileItems();
 	}
 
 	/**

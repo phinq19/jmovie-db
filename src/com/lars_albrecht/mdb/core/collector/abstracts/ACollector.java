@@ -81,6 +81,8 @@ public abstract class ACollector implements Runnable {
 		System.out.println("persist now (" + this.getInfoType() + ")");
 		this.persistKeys();
 		this.persistValues();
+		// TODO remove persist of file items here! This is a collector, not a
+		// general class !
 		this.persistFileItemsAndAttributes();
 		System.out.println("end persist (" + this.getInfoType() + ")");
 	}
