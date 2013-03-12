@@ -24,7 +24,7 @@ public class HTML {
 	 * @param searchTerms
 	 * @param searchType
 	 * @param printOutCount
-	 * @return
+	 * @return String
 	 */
 	public static String generateListOutput(final ArrayList<FileItem> fileItemList,
 			final String[] searchTerms,
