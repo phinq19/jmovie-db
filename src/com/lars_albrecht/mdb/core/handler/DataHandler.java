@@ -500,21 +500,31 @@ public class DataHandler {
 			boolean isFirst = true;
 			Map.Entry<String, LinkedHashMap<Integer, Object>> insertItem = null;
 			String sql = insertStr;
+			final int maxBytesForSQLite = 100000;
 			for (final Object object : objects) {
 				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
 						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
 				if (insertItem != null && insertItem.getKey() != null && !insertItem.getKey().equalsIgnoreCase("")) {
-					sql += insertItem.getKey();
-					insertValues.putAll(insertItem.getValue());
-					isFirst = false;
+					System.out.println("current length: " + sql.getBytes().length);
+					if (sql.getBytes().length >= maxBytesForSQLite) {
+						DB.updatePS(sql, insertValues);
+						System.out.println("add new");
+						sql = insertStr;
+						insertValues.clear();
+						isFirst = true;
+					} else {
+						System.out.println("fill exists");
+						sql += insertItem.getKey();
+						insertValues.putAll(insertItem.getValue());
+						isFirst = false;
+					}
+					if (objects.indexOf(object) == objects.size() - 1) {
+						DB.updatePS(sql, insertValues);
+					}
+
 				}
 			}
-			// 1000000
-			System.out.println("SQL BYTES: " + sql.getBytes().length);
-			if (sql.getBytes().length >= 1000000) {
 
-			}
-			DB.updatePS(sql, insertValues);
 		}
 	}
 
