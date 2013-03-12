@@ -265,7 +265,7 @@ public class Helper {
 	 * 
 	 * @param timestamp
 	 * @param pattern
-	 * @return
+	 * @return String
 	 */
 	public static String getFormattedTimestamp(final Long timestamp, String pattern) {
 		if (pattern == null) {
