@@ -116,7 +116,7 @@ public class WebServerHelper {
 			}
 			if (Template.containsMarker(generatedContent, "lastFiveAdded")) {
 				final ArrayList<FileItem> lastFiveList = ObjectHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
-						.findAll(new FileItem(), false, 5));
+						.findAll(new FileItem(), 5));
 				final String listOutput = HTML.generateListOutput(lastFiveList, null, null, false);
 				generatedContent = Template.replaceMarker(generatedContent, "lastFiveAdded", listOutput);
 			}
@@ -272,7 +272,7 @@ public class WebServerHelper {
 
 			resultStr += "<p>" + "Collections will be refreshed ..." + "<br />";
 			final ArrayList<FileItem> fileList = ObjectHandler.castObjectListToFileItemList(this.mainController.getDataHandler().findAll(
-					new FileItem(), false, null));
+					new FileItem(), null));
 			if ((fileList != null) && (fileList.size() > 0)) {
 				resultStr += "Collections can be refreshed ... work in progress" + "</p>";
 				this.mainController.getcController().collectInfos(fileList);
@@ -331,11 +331,11 @@ public class WebServerHelper {
 					default:
 					case SEARCHTYPE_TEXTALL:
 						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAll(searchStrItem, false))));
+								.findAllFileItemForStringInAll(searchStrItem))));
 						break;
 					case SEARCHTYPE_ATTRIBUTE:
 						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAttributesByKeyValue(searchKey, searchValue, false))));
+								.findAllFileItemForStringInAttributesByKeyValue(searchKey, searchValue))));
 						break;
 				}
 			}
