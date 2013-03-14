@@ -7,9 +7,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
+import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
+import com.lars_albrecht.mdb.core.collector.event.ICollectorListener;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
-import com.lars_albrecht.mdb.core.finder.event.FinderListener;
+import com.lars_albrecht.mdb.core.finder.event.IFinderListener;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.models.FileItem;
@@ -18,7 +21,7 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  * @author lalbrecht
  * 
  */
-public class MainController implements FinderListener {
+public class MainController implements IFinderListener, ICollectorListener {
 
 	private FinderController					fController	= null;
 	private TypeController						tController	= null;
@@ -102,6 +105,7 @@ public class MainController implements FinderListener {
 		this.iController = new InterfaceController(this);
 
 		this.cController = new CollectorController(this);
+		this.cController.addCollectorEventListener(this);
 
 		this.dataHandler = new DataHandler(this);
 		this.globalVars = new ConcurrentHashMap<String, Object>();
@@ -132,6 +136,20 @@ public class MainController implements FinderListener {
 	@SuppressWarnings("unchecked")
 	public void startSearch() {
 		this.fController.run((ArrayList<File>) this.globalVars.get("searchPathList"));
+	}
+
+	@Override
+	public void collectorsEndAll(final CollectorEvent e) {
+		System.out.println("All collectors ended");
+		System.out.println("Times:");
+		for (final String string : Debug.getFormattedTimes()) {
+			System.out.println(string);
+		}
+	}
+
+	@Override
+	public void collectorsEndSingle(final CollectorEvent e) {
+		System.out.println("Collector " + e.getCollectorName() + " ends");
 	}
 
 }

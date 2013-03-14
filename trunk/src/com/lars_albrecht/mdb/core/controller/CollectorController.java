@@ -9,7 +9,9 @@ import com.lars_albrecht.mdb.core.collector.MediaInfoCollector;
 import com.lars_albrecht.mdb.core.collector.TheMovieDBCollector;
 import com.lars_albrecht.mdb.core.collector.TheTVDBCollector;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
+import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEventMulticaster;
+import com.lars_albrecht.mdb.core.collector.event.ICollectorListener;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
@@ -17,11 +19,10 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  * @author lalbrecht
  * 
  */
-public class CollectorController implements IController {
+public class CollectorController implements IController, ICollectorListener {
 
 	private ArrayList<ACollector>		collectors				= null;
 
-	@SuppressWarnings("unused")
 	private CollectorEventMulticaster	collectorMulticaster	= null;
 	private MainController				mainController			= null;
 
@@ -33,6 +34,7 @@ public class CollectorController implements IController {
 		this.mainController = mainController;
 		this.collectors = new ArrayList<ACollector>();
 		this.collectorMulticaster = new CollectorEventMulticaster();
+		this.collectorMulticaster.add(this);
 		this.initCollector();
 	}
 
@@ -65,4 +67,24 @@ public class CollectorController implements IController {
 			this.collectInfos((ArrayList<FileItem>) params[0]);
 		}
 	}
+
+	@Override
+	public void collectorsEndAll(final CollectorEvent e) {
+	}
+
+	@Override
+	public void collectorsEndSingle(final CollectorEvent e) {
+		if (this.getThreadList().size() == 0) {
+			this.collectorMulticaster.collectorsEndAll((new CollectorEvent(this, CollectorEvent.COLLECTOR_ENDALL_COLLECTOR, null)));
+		}
+	}
+
+	public void addCollectorEventListener(final ICollectorListener listener) {
+		this.collectorMulticaster.add(listener);
+	}
+
+	public CollectorEventMulticaster getCollectorMulticaster() {
+		return this.collectorMulticaster;
+	}
+
 }

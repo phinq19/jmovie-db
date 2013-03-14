@@ -7,7 +7,11 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
+import com.lars_albrecht.mdb.core.collector.event.CollectorEventMulticaster;
+import com.lars_albrecht.mdb.core.controller.CollectorController;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
@@ -30,6 +34,8 @@ public abstract class ACollector implements Runnable {
 	private ArrayList<Key<String>>										keysToAdd				= null;
 	private ArrayList<Value<?>>											valuesToAdd				= null;
 	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>	fileAttributeListToAdd	= null;
+	private ArrayList<TypeInformation>									typeInformationToAdd	= null;
+	private CollectorEventMulticaster									collectorMulticaster	= null;
 
 	/**
 	 * Default constructor.
@@ -42,6 +48,10 @@ public abstract class ACollector implements Runnable {
 		this.controller = controller;
 		this.keysToAdd = new ArrayList<Key<String>>();
 		this.valuesToAdd = new ArrayList<Value<?>>();
+		this.typeInformationToAdd = new ArrayList<TypeInformation>();
+		if (controller instanceof CollectorController) {
+			this.collectorMulticaster = ((CollectorController) controller).getCollectorMulticaster();
+		}
 	}
 
 	/**
@@ -93,13 +103,12 @@ public abstract class ACollector implements Runnable {
 	 * @param fileAttributeListList
 	 * @throws Exception
 	 */
-	private void persistAttributes(final int fileItemId, final ArrayList<FileAttributeList> fileAttributeListList) throws Exception {
+	private void prepareAttributes(final int fileItemId, final ArrayList<FileAttributeList> fileAttributeListList) throws Exception {
 		if (fileAttributeListList.size() > 0) {
 			TypeInformation tempTypeInfo = null;
 			final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 			final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
 			final ArrayList<TypeInformation> typeInfo = this.mainController.getDataHandler().getTypeInformation();
-			final ArrayList<TypeInformation> attributesToPersist = new ArrayList<TypeInformation>();
 			for (final FileAttributeList fileAttributes : fileAttributeListList) {
 				for (final KeyValue<String, Object> keyValue : fileAttributes.getKeyValues()) {
 					// System.out.println(keyValue.getKey().getInfoType() +
@@ -121,20 +130,27 @@ public abstract class ACollector implements Runnable {
 					tempTypeInfo = new TypeInformation(fileItemId, keyId, valueId);
 
 					if ((fileItemId > -1) && (keyId > -1) && (valueId > -1) && (tempTypeInfo != null) && !typeInfo.contains(tempTypeInfo)) {
-						attributesToPersist.add(tempTypeInfo);
+						this.typeInformationToAdd.add(tempTypeInfo);
 					}
 				}
 			}
-			this.mainController.getDataHandler().persist(attributesToPersist);
 		}
 	}
 
+	/**
+	 * Persist a single fileItem.
+	 * 
+	 * @param fileItem
+	 * @return
+	 * @throws Exception
+	 */
 	private FileItem persistFileItem(final FileItem fileItem) throws Exception {
 		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItems();
 		int pos = -1;
 		if ((pos = fileItems.indexOf(fileItem)) > -1) {
 			return fileItems.get(pos);
 		} else {
+			@SuppressWarnings("deprecation")
 			final FileItem tempFileItem = (FileItem) this.mainController.getDataHandler().persist(fileItem);
 			fileItems.add(tempFileItem);
 			return tempFileItem;
@@ -143,12 +159,14 @@ public abstract class ACollector implements Runnable {
 	}
 
 	/**
-	 * Persist fileItems and attributes. Take this.fileAttributeListToAdd which
-	 * contains the fileItem and an ArrayList of FileAttributeList
-	 * (ArrayList<FileAttributeList>).
+	 * Persist fileItems and attributes (typeInformation). Take
+	 * this.fileAttributeListToAdd which contains the fileItem and an ArrayList
+	 * of FileAttributeList (ArrayList<FileAttributeList>). To persist the
+	 * typeInformation, a new method called "persistTypeInformation" was
+	 * created. In this method here, a method called "prepareAttributes" was
+	 * created to add specific items to a general list.
 	 * 
-	 * TODO update this method to insert all attributes at once. TODO Update
-	 * this method to insert all fileitems at once.
+	 * TODO Update this method to insert all fileitems at once.
 	 */
 	private void persistFileItemsAndAttributes() {
 		FileItem tempItem = null;
@@ -156,13 +174,25 @@ public abstract class ACollector implements Runnable {
 			for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
 				try {
 					if (((tempItem = this.persistFileItem(entry.getKey())) != null) && (tempItem.getId() > -1)) {
-						this.persistAttributes(tempItem.getId(), entry.getValue());
+						this.prepareAttributes(tempItem.getId(), entry.getValue());
 						this.mainController.getDataHandler().getFileItems().add(tempItem);
 					}
 				} catch (final Exception e) {
 					e.printStackTrace();
 				}
 			}
+		}
+		this.persistTypeInformation();
+	}
+
+	/**
+	 * Persist typeInformation.
+	 */
+	private void persistTypeInformation() {
+		try {
+			this.mainController.getDataHandler().persist(this.typeInformationToAdd);
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -184,6 +214,10 @@ public abstract class ACollector implements Runnable {
 		}
 	}
 
+	/**
+	 * Prepare keyList and valueList for persist. e.g. delete duplicated
+	 * entries.
+	 */
 	private void preparePersist() {
 		this.keysToAdd = Helper.uniqueList(this.keysToAdd);
 		this.valuesToAdd = Helper.uniqueList(this.valuesToAdd);
@@ -191,14 +225,20 @@ public abstract class ACollector implements Runnable {
 
 	@Override
 	public final void run() {
+		Debug.startTimer("Collector collect time: " + this.getInfoType());
 		this.doCollect();
+		Debug.stopTimer("Collector collect time: " + this.getInfoType());
 		this.keysToAdd = this.getKeysToAdd();
 		this.valuesToAdd = this.getValuesToAdd();
 		this.fileAttributeListToAdd = this.getFileAttributeListToAdd();
 		this.preparePersist();
+		Debug.startTimer("Collector persist time: " + this.getInfoType());
 		this.persist();
+		Debug.stopTimer("Collector persist time: " + this.getInfoType());
 		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_ALL);
 		this.controller.getThreadList().remove(Thread.currentThread());
+		this.collectorMulticaster.collectorsEndSingle((new CollectorEvent(this, CollectorEvent.COLLECTOR_ENDSINGLE_COLLECTOR, this
+				.getInfoType())));
 	}
 
 	public final void setFileItems(final ArrayList<FileItem> fileItems) {

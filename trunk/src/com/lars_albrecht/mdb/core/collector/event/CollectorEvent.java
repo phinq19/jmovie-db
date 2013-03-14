@@ -3,8 +3,6 @@
  */
 package com.lars_albrecht.mdb.core.collector.event;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.EventObject;
 
 /**
@@ -16,26 +14,33 @@ public class CollectorEvent extends EventObject {
 	/**
 	 * 
 	 */
-	private static final long	serialVersionUID	= 8832074186744046862L;
+	private static final long	serialVersionUID				= -3781749746615106706L;
 
-	public final static int		FINDER_FOUNDDIR		= 10001;
-	public final static int		FINDER_FOUNDFILE	= 10002;
-	public final static int		FINDER_PREADD		= 10010;
-	public final static int		FINDER_AFTERADD		= 10011;
-	public final static int		FINDER_AFTERPERSIST	= 10020;
-	public final static int		FINDER_ADDFINISH	= 10100;
+	public final static int		COLLECTOR_ENDALL_COLLECTOR		= 20001;
+	public final static int		COLLECTOR_ENDSINGLE_COLLECTOR	= 20002;
 
 	protected int				id;
-	protected ArrayList<File>	files;
+	protected String			collectorName;
 
-	public CollectorEvent(final Object source, final int id, final ArrayList<File> files) {
+	public CollectorEvent(final Object source, final int id, final String collectorName) {
 		super(source);
 		this.id = id;
-		this.files = files;
+		this.collectorName = collectorName;
 	}
 
-	public ArrayList<File> getFiles() {
-		return this.files;
+	/**
+	 * @return the collectorName
+	 */
+	public String getCollectorName() {
+		return this.collectorName;
+	}
+
+	/**
+	 * @param collectorName
+	 *            the collectorName to set
+	 */
+	public void setCollectorName(final String collectorName) {
+		this.collectorName = collectorName;
 	}
 
 	public int getId() {

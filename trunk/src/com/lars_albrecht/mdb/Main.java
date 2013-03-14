@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.mdb;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.database.DB;
 
@@ -25,6 +26,7 @@ public class Main {
 	}
 
 	private void init() {
+		Debug.loglevel = Debug.LEVEL_ALL;
 		this.initDB();
 	}
 

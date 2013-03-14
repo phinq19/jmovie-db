@@ -33,7 +33,6 @@ public class Finder implements Runnable {
 		this.controller = controller;
 		this.dir = dir;
 		this.multicaster = controller.getFinderMulticaster();
-
 	}
 
 	/**

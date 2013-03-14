@@ -9,11 +9,11 @@ import java.util.Vector;
  * @author lalbrecht
  * 
  */
-public class FinderEventMulticaster implements FinderListener {
+public class FinderEventMulticaster implements IFinderListener {
 
-	protected Vector<FinderListener>	listener	= new Vector<FinderListener>();
+	protected Vector<IFinderListener>	listener	= new Vector<IFinderListener>();
 
-	public void add(final FinderListener a) {
+	public void add(final IFinderListener a) {
 		if (!this.listener.contains(a)) {
 			this.listener.addElement(a);
 		}
@@ -54,7 +54,7 @@ public class FinderEventMulticaster implements FinderListener {
 		}
 	}
 
-	public void remove(final FinderListener l) {
+	public void remove(final IFinderListener l) {
 		this.listener.remove(l);
 	}
 

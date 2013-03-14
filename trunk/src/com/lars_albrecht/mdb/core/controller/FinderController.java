@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.finder.Finder;
 import com.lars_albrecht.mdb.core.finder.event.FinderEventMulticaster;
-import com.lars_albrecht.mdb.core.finder.event.FinderListener;
+import com.lars_albrecht.mdb.core.finder.event.IFinderListener;
 
 /**
  * @author lalbrecht
@@ -24,7 +24,7 @@ public class FinderController implements IController {
 		this.finderMulticaster = new FinderEventMulticaster();
 	}
 
-	public void addFinderEventListener(final FinderListener listener) {
+	public void addFinderEventListener(final IFinderListener listener) {
 		this.finderMulticaster.add(listener);
 	}
 
@@ -53,7 +53,7 @@ public class FinderController implements IController {
 		return this.threadList;
 	}
 
-	public void removeFinderEventListener(final FinderListener listener) {
+	public void removeFinderEventListener(final IFinderListener listener) {
 		this.finderMulticaster.remove(listener);
 	}
 
