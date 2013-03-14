@@ -125,7 +125,7 @@ public class DataHandler {
 			where = " WHERE ((name || fullpath || dir|| size|| ext || filehash) LIKE '%" + fileItemValue + "%')";
 
 			final String sql = "SELECT * FROM " + fileItem.getDatabaseTable() + where;
-			System.out.println("SQL: " + sql);
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();
@@ -166,7 +166,7 @@ public class DataHandler {
 					+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
 					+ " 	tiKey.id = ti.key_id " + "LEFT JOIN " + "	typeInformation_value AS tiValue " + "ON "
 					+ "	tiValue.id = ti.value_id " + where;
-			System.out.println("SQL: " + sql);
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();
@@ -207,7 +207,7 @@ public class DataHandler {
 						+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
 						+ " 	tiKey.id = ti.key_id " + "LEFT JOIN " + "	typeInformation_value AS tiValue " + "ON "
 						+ "	tiValue.id = ti.value_id " + where;
-				System.out.println("SQL: " + sql);
+				Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 				try {
 					rs = DB.query(sql);
 					final ResultSetMetaData rsmd = rs.getMetaData();
@@ -241,7 +241,7 @@ public class DataHandler {
 			where = " WHERE id = '" + fileId + "'";
 
 			final String sql = "SELECT * FROM " + resultItem.getDatabaseTable() + where;
-			System.out.println("SQL: " + sql);
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();
@@ -281,7 +281,7 @@ public class DataHandler {
 				+ "	typeInformation_value AS tiValue " + "ON " + "	tiValue.id = ti.value_id " + "WHERE " + "	fi.id = '" + id
 				+ "' ORDER BY keyInfoType, keySection ";
 		try {
-			System.out.println("SQL: " + sql);
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			rs = DB.query(sql);
 			final ResultSetMetaData rsmd = rs.getMetaData();
 			FileAttributeList tempFileAttributeList = null;
@@ -604,9 +604,9 @@ public class DataHandler {
 	 */
 	@Deprecated
 	public IPersistable persist(final IPersistable object) throws Exception {
-		System.out.println("persist one item");
 		final HashMap<String, Object> tempObject = object.toHashMap();
 		final String databaseTable = object.getDatabaseTable();
+		Debug.log(Debug.LEVEL_TRACE, "persist one time to table " + databaseTable);
 		int result = -1;
 		if ((tempObject != null) && (tempObject.size() > 0)) {
 			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
@@ -656,7 +656,6 @@ public class DataHandler {
 	 * @param reloadType
 	 */
 	public void reloadData(final int reloadType) {
-		// System.out.println("reload Data");
 		Debug.startTimer("DataHandler reloadData time");
 		this.loadKeys();
 		this.loadValues();

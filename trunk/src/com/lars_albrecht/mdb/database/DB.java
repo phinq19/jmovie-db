@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.mdb.database.interfaces.IDatabase;
 
 /**
@@ -288,7 +289,6 @@ public class DB implements IDatabase {
 
 		// repeated calls to execute but we
 		// choose to make a new one each time
-		// System.out.println(expression);
 		rs = st.executeQuery(expression); // run the query
 
 		// do something with the result set.
@@ -393,7 +393,6 @@ public class DB implements IDatabase {
 		Statement st = null;
 		st = DB.getConnection().createStatement(); // statements
 		final int i = st.executeUpdate(expression); // run the query
-		// System.out.println(expression);
 		if (i == -1) {
 			// Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
 		}
@@ -412,7 +411,7 @@ public class DB implements IDatabase {
 		int lastInsertedId = -1;
 		if (expression != null && values != null && values.size() > 0) {
 			PreparedStatement st = null;
-			System.out.println("SQL: " + expression);
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + expression);
 			try {
 				st = DB.getConnection().prepareStatement(expression); // statements
 				for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
@@ -426,7 +425,7 @@ public class DB implements IDatabase {
 
 				lastInsertedId = DB.getLastInsertedRowId(st);
 			} catch (final SQLException e) {
-				System.out.println("ERROR ON SQL: " + expression + " | with (" + values.size() + ")values: " + values);
+				Debug.log(Debug.LEVEL_ERROR, "ERROR ON SQL: " + expression + " | with (" + values.size() + ")values: " + values);
 				e.printStackTrace();
 			} finally {
 				if (st != null) {

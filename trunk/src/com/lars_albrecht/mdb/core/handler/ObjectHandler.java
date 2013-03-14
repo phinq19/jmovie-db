@@ -6,6 +6,7 @@ package com.lars_albrecht.mdb.core.handler;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.Key;
@@ -89,7 +90,7 @@ public class ObjectHandler {
 						.getFileExtension(file.getName()), null));
 
 			} catch (final NullPointerException e) {
-				System.out.println("null pointer " + file + " " + file.getName() + " - " + file.getAbsolutePath());
+				Debug.log(Debug.LEVEL_ERROR, "null pointer " + file + " " + file.getName() + " - " + file.getAbsolutePath());
 			}
 		}
 

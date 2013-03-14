@@ -88,13 +88,13 @@ public abstract class ACollector implements Runnable {
 	public abstract ArrayList<Value<?>> getValuesToAdd();
 
 	private void persist() {
-		System.out.println("persist now (" + this.getInfoType() + ")");
+		Debug.log(Debug.LEVEL_DEBUG, "persist now (" + this.getInfoType() + ")");
 		this.persistKeys();
 		this.persistValues();
 		// TODO remove persist of file items here! This is a collector, not a
 		// general class !
 		this.persistFileItemsAndAttributes();
-		System.out.println("end persist (" + this.getInfoType() + ")");
+		Debug.log(Debug.LEVEL_DEBUG, "end persist (" + this.getInfoType() + ")");
 	}
 
 	/**
@@ -111,14 +111,10 @@ public abstract class ACollector implements Runnable {
 			final ArrayList<TypeInformation> typeInfo = this.mainController.getDataHandler().getTypeInformation();
 			for (final FileAttributeList fileAttributes : fileAttributeListList) {
 				for (final KeyValue<String, Object> keyValue : fileAttributes.getKeyValues()) {
-					// System.out.println(keyValue.getKey().getInfoType() +
-					// " - " + keyValue.getKey().getSection());
 					int keyPos = -1;
 					int keyId = -1;
 					if ((keyPos = keys.indexOf(keyValue.getKey())) > -1) {
 						keyId = keys.get(keyPos).getId();
-					} else {
-						// System.out.println("KEY: " + keyValue.getKey());
 					}
 
 					int valuePos = -1;

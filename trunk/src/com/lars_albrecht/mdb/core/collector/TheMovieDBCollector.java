@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
@@ -119,7 +120,7 @@ public class TheMovieDBCollector extends ACollector {
 			 * error. 30 requests every 10 seconds per IP Maximum 20
 			 * simultaneous connections
 			 */
-			System.out.println("error, try to ignore");
+			Debug.log(Debug.LEVEL_ERROR, e.getExceptionType() + " in MovieDBCollector, try to ignore: " + e.getMessage());
 		}
 		// TODO if more than one result in list, than try to find the right
 		int id = -1;
@@ -245,7 +246,7 @@ public class TheMovieDBCollector extends ACollector {
 				}
 			}
 		} catch (final IOException e) {
-			System.err.println(e.getMessage());
+			Debug.log(Debug.LEVEL_ERROR, e.getMessage());
 		}
 		return tempKeyValueList;
 	}
