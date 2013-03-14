@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
@@ -656,10 +657,12 @@ public class DataHandler {
 	 */
 	public void reloadData(final int reloadType) {
 		// System.out.println("reload Data");
+		Debug.startTimer("DataHandler reloadData time");
 		this.loadKeys();
 		this.loadValues();
 		this.loadTypeInformation();
 		this.loadFileItems();
+		Debug.stopTimer("DataHandler reloadData time");
 	}
 
 	/**

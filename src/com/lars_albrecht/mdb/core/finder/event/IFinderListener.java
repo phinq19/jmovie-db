@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.mdb.core.collector.event;
+package com.lars_albrecht.mdb.core.finder.event;
 
 import java.util.EventListener;
 
@@ -9,7 +9,7 @@ import java.util.EventListener;
  * @author lalbrecht
  * 
  */
-public interface CollectorListener extends EventListener {
+public interface IFinderListener extends EventListener {
 
 	/**
 	 * Called after all directories are searched for new files. Event contains
@@ -17,7 +17,7 @@ public interface CollectorListener extends EventListener {
 	 * 
 	 * @param e
 	 */
-	public void finderAddFinish(CollectorEvent e);
+	public void finderAddFinish(FinderEvent e);
 
 	/**
 	 * Called after found filelist is added. Event contains an ArrayList<File>
@@ -25,15 +25,7 @@ public interface CollectorListener extends EventListener {
 	 * 
 	 * @param e
 	 */
-	public void finderAfterAdd(CollectorEvent e);
-
-	/**
-	 * Called after found filelist is persist. Event contains an ArrayList<File>
-	 * with all found files.
-	 * 
-	 * @param e
-	 */
-	public void finderAfterPersist(CollectorEvent e);
+	public void finderAfterAdd(FinderEvent e);
 
 	/**
 	 * Called when a directory is found. Event contains an ArrayList<File> with
@@ -41,7 +33,7 @@ public interface CollectorListener extends EventListener {
 	 * 
 	 * @param e
 	 */
-	public void finderFoundDir(CollectorEvent e);
+	public void finderFoundDir(FinderEvent e);
 
 	/**
 	 * Called when a file is found. Event contains an ArrayList<File> with the
@@ -49,7 +41,7 @@ public interface CollectorListener extends EventListener {
 	 * 
 	 * @param e
 	 */
-	public void finderFoundFile(CollectorEvent e);
+	public void finderFoundFile(FinderEvent e);
 
 	/**
 	 * Called before found filelist is added. Event contains an ArrayList<File>
@@ -57,6 +49,6 @@ public interface CollectorListener extends EventListener {
 	 * 
 	 * @param e
 	 */
-	public void finderPreAdd(CollectorEvent e);
+	public void finderPreAdd(FinderEvent e);
 
 }

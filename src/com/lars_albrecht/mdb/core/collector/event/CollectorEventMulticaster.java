@@ -9,59 +9,31 @@ import java.util.Vector;
  * @author lalbrecht
  * 
  */
-public class CollectorEventMulticaster implements CollectorListener {
+public class CollectorEventMulticaster implements ICollectorListener {
 
-	protected Vector<CollectorListener>	listener	= new Vector<CollectorListener>();
+	protected Vector<ICollectorListener>	listener	= new Vector<ICollectorListener>();
 
-	public void add(final CollectorListener a) {
+	public void add(final ICollectorListener a) {
 		if (!this.listener.contains(a)) {
 			this.listener.addElement(a);
 		}
 	}
 
 	@Override
-	public void finderAddFinish(final CollectorEvent e) {
+	public void collectorsEndAll(final CollectorEvent e) {
 		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderAddFinish(e);
+			(this.listener.elementAt(i)).collectorsEndAll(e);
 		}
 	}
 
 	@Override
-	public void finderAfterAdd(final CollectorEvent e) {
+	public void collectorsEndSingle(final CollectorEvent e) {
 		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderAfterAdd(e);
+			(this.listener.elementAt(i)).collectorsEndSingle(e);
 		}
 	}
 
-	@Override
-	public void finderAfterPersist(final CollectorEvent e) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderAfterPersist(e);
-		}
-	}
-
-	@Override
-	public void finderFoundDir(final CollectorEvent e) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderFoundDir(e);
-		}
-	}
-
-	@Override
-	public void finderFoundFile(final CollectorEvent e) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderFoundFile(e);
-		}
-	}
-
-	@Override
-	public void finderPreAdd(final CollectorEvent e) {
-		for (int i = 0; i < this.listener.size(); i++) {
-			(this.listener.elementAt(i)).finderPreAdd(e);
-		}
-	}
-
-	public void remove(final CollectorListener l) {
+	public void remove(final ICollectorListener l) {
 		this.listener.remove(l);
 	}
 
