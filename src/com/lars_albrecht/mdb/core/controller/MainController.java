@@ -37,7 +37,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 	@Override
 	public void finderAddFinish(final FinderEvent e) {
-		System.out.println("Found " + e.getFiles().size() + " files. Type them and start to collect.");
+		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
 		this.startCollect(this.startTyper(ObjectHandler.fileListToFileItemList(e.getFiles())));
 	}
 
@@ -94,7 +94,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 	private void init() {
 		RessourceBundleEx.getInstance().setPrefix("mdb");
-		System.out.println(RessourceBundleEx.getInstance().getProperty("application.name") + " ("
+		Debug.log(Debug.LEVEL_INFO, RessourceBundleEx.getInstance().getProperty("application.name") + " ("
 				+ RessourceBundleEx.getInstance().getProperty("application.version") + ")");
 
 		this.tController = new TypeController(this);
@@ -140,16 +140,16 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 	@Override
 	public void collectorsEndAll(final CollectorEvent e) {
-		System.out.println("All collectors ended");
-		System.out.println("Times:");
+		Debug.log(Debug.LEVEL_INFO, "All collectors ended");
+		Debug.log(Debug.LEVEL_DEBUG, "Times: ");
 		for (final String string : Debug.getFormattedTimes()) {
-			System.out.println(string);
+			Debug.log(Debug.LEVEL_DEBUG, string);
 		}
 	}
 
 	@Override
 	public void collectorsEndSingle(final CollectorEvent e) {
-		System.out.println("Collector " + e.getCollectorName() + " ends");
+		Debug.log(Debug.LEVEL_TRACE, "Collector " + e.getCollectorName() + " ends");
 	}
 
 }

@@ -60,7 +60,7 @@ public class Finder implements Runnable {
 								this.multicaster.finderFoundDir((new FinderEvent(this, FinderEvent.FINDER_FOUNDDIR, tempDirList)));
 
 								// start new thread to find new files in
-								// subfolder
+								// sub folder
 								this.controller.findFiles(tempDirList);
 							} else if (file.isFile()) {
 								final ArrayList<File> tempFileList = new ArrayList<File>();

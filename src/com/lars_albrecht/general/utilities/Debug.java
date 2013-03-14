@@ -3,8 +3,11 @@
  */
 package com.lars_albrecht.general.utilities;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +42,11 @@ public class Debug {
 			}
 			tempList.add(msg);
 			Debug.logList.put(level, tempList);
-			final String pre = "->\tMSG: ";
+			String timeStr = null;
+			TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
+			final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.GERMAN);
+			timeStr = df.format(new Date().getTime());
+			final String pre = "->\t" + timeStr + "\tMSG: ";
 			if (Debug.loglevel > Debug.LEVEL_ERROR) {
 				System.err.println(pre + msg);
 			} else {
