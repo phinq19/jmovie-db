@@ -523,7 +523,9 @@ public class DataHandler {
 				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
 						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
 				if (insertItem != null && insertItem.getKey() != null && !insertItem.getKey().equalsIgnoreCase("")) {
-					if (itemCount >= maxCount) {
+					// TODO find error reason for: [SQLITE_ERROR] SQL error or
+					// missing database (too many SQL variables)
+					if (itemCount == maxCount) {
 						DB.updatePS(sql, insertValues);
 						itemCount = 1;
 						sql = insertStr;
