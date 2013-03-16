@@ -513,8 +513,11 @@ public class DataHandler {
 			String sql = insertStr;
 
 			// max count for sqlite inserts
-			final int maxCount = 500;
-			int itemCount = 0;
+			final int maxObjectCount = 500;
+			int objectItemCount = 0;
+			// max count for sqlite items
+			final int maxVariables = 500;
+			int variablesCount = 0;
 
 			// contains count of items which have are null, key = null and where
 			// key = ""
@@ -523,16 +526,19 @@ public class DataHandler {
 				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
 						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
 				if (insertItem != null && insertItem.getKey() != null && !insertItem.getKey().equalsIgnoreCase("")) {
-					// TODO find error reason for: [SQLITE_ERROR] SQL error or
-					// missing database (too many SQL variables)
-					if (itemCount == maxCount) {
+					// TODO variablesCount tries to fix the error for:
+					// [SQLITE_ERROR] SQL error or
+					// missing database (too many SQL variables). Check!
+					if (objectItemCount == maxObjectCount || (variablesCount + insertItem.getValue().size()) >= maxVariables) {
 						DB.updatePS(sql, insertValues);
-						itemCount = 1;
+						objectItemCount = 0;
+						variablesCount = 0;
 						sql = insertStr;
 						insertValues.clear();
 						isFirst = true;
 					} else {
-						itemCount++;
+						objectItemCount++;
+						variablesCount += insertItem.getValue().size();
 						sql += insertItem.getKey();
 						insertValues.putAll(insertItem.getValue());
 						isFirst = false;
