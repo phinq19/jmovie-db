@@ -119,4 +119,13 @@ public class Debug {
 		return null;
 	}
 
+	/**
+	 * TODO
+	 * 
+	 * @param level
+	 */
+	public static void saveLogToFile(final Integer level) {
+
+	}
+
 }
