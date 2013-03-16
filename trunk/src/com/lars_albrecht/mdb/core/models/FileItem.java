@@ -214,7 +214,7 @@ public class FileItem implements IPersistable {
 		}
 
 		if (map.containsKey("createTS")) {
-			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyy-MM-dd HH:mm:ss");
+			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
 				result.setCreateTS(((Long) sdfToDate.parse((String) map.get("createTS")).getTime()).intValue());
 			} catch (final ParseException e) {
