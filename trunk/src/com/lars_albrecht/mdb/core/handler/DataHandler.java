@@ -322,11 +322,6 @@ public class DataHandler {
 						tempFileAttributeList.getKeyValues().add(kv);
 						resultList.add(tempFileAttributeList);
 					}
-					// resultList.add();
-					/*
-					 * if(tempMapKey.size() > 0) resultList.put("key",
-					 * tempMapKey);
-					 */
 				}
 			}
 		} catch (final SQLException e) {
