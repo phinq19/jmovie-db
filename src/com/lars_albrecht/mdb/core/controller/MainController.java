@@ -145,6 +145,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 		for (final String string : Debug.getFormattedTimes()) {
 			Debug.log(Debug.LEVEL_DEBUG, string);
 		}
+		Debug.saveLogToFileForLevel(Debug.LEVEL_ALL);
 	}
 
 	@Override

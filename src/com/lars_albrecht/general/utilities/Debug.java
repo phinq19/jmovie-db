@@ -3,6 +3,9 @@
  */
 package com.lars_albrecht.general.utilities;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -33,26 +36,44 @@ public class Debug {
 	public static ConcurrentHashMap<String, Long>						timerMap	= new ConcurrentHashMap<String, Long>();
 
 	public static void log(final Integer level, final String msg) {
+		ArrayList<String> tempList = null;
+		if (Debug.logList.containsKey(level)) {
+			tempList = Debug.logList.get(level);
+		} else {
+			tempList = new ArrayList<String>();
+		}
+		tempList.add(msg);
+		Debug.logList.put(level, tempList);
 		if (level >= Debug.loglevel) {
-			ArrayList<String> tempList = null;
-			if (Debug.logList.containsKey(level)) {
-				tempList = Debug.logList.get(level);
-			} else {
-				tempList = new ArrayList<String>();
-			}
-			tempList.add(msg);
-			Debug.logList.put(level, tempList);
 			String timeStr = null;
 			TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 			final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.GERMAN);
 			timeStr = df.format(new Date().getTime());
 			final String pre = "->\t" + timeStr + "\tMSG: ";
-			if (Debug.loglevel > Debug.LEVEL_ERROR) {
+			if (Debug.loglevel >= Debug.LEVEL_ERROR) {
 				System.err.println(pre + msg);
 			} else {
 				System.out.println(pre + msg);
 			}
 		}
+	}
+
+	/**
+	 * Returns a list of logs for the current level. All items smaller than the
+	 * current level will be ignored.
+	 * 
+	 * @param level
+	 * @return ArrayList<String>
+	 */
+	private static ArrayList<String> getListForLogLevel(final Integer level) {
+		final ArrayList<String> resultList = new ArrayList<String>();
+		for (int i = 7; i >= level; i--) {
+			if (Debug.logList.get(i) != null) {
+				resultList.addAll(Debug.logList.get(i));
+			}
+		}
+
+		return resultList;
 	}
 
 	public static Boolean inDebugLevel(final Integer level) {
@@ -68,13 +89,13 @@ public class Debug {
 	}
 
 	public static void printLogForCurrentLevel() {
-		for (final String s : Debug.logList.get(Debug.loglevel)) {
+		for (final String s : Debug.getListForLogLevel(Debug.loglevel)) {
 			System.out.println(s);
 		}
 	}
 
 	public static void printLogForLevel(final Integer level) {
-		for (final String s : Debug.logList.get(level)) {
+		for (final String s : Debug.getListForLogLevel(level)) {
 			System.out.println(s);
 		}
 	}
@@ -120,12 +141,27 @@ public class Debug {
 	}
 
 	/**
-	 * TODO
+	 * TODO save loglevel in file
 	 * 
 	 * @param level
 	 */
-	public static void saveLogToFile(final Integer level) {
-
+	public static void saveLogToFileForLevel(final Integer level) {
+		File file = null;
+		FileWriter writer = null;
+		final ArrayList<String> logList = Debug.getListForLogLevel(level);
+		if (logList != null && logList.size() > 0) {
+			file = new File("log_" + level + ".txt");
+			try {
+				writer = new FileWriter(file, true);
+				for (final String s : logList) {
+					writer.write(s);
+					writer.write(System.getProperty("line.separator"));
+				}
+				writer.flush();
+				writer.close();
+			} catch (final IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-
 }
