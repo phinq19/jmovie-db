@@ -614,7 +614,7 @@ public class DataHandler {
 	 * Persist one item at time. Use persist(final ArrayList<?> objects) to
 	 * persist a list of items.
 	 * 
-	 * TODO Make this method unnecessary.
+	 * TODO currently unused. Remove if all tests are well.
 	 * 
 	 * @param object
 	 * @return IPersistable
