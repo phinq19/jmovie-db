@@ -43,11 +43,41 @@ public class MainController implements IFinderListener, ICollectorListener {
 	public void finderAddFinish(final FinderEvent e) {
 		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
 
+		// insert to database
+		try {
+			this.persistFileItems(this.prepareForPersist(e.getFiles()));
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
+		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
+
 		// filter filled database data to reduce runtime
-		this.startCollect(this.startTyper(this.prepareForTyper(e.getFiles())));
+		this.startCollect(this.startTyper(this.getDataHandler().getFileItems()));
 	}
 
-	private ArrayList<FileItem> prepareForTyper(final ArrayList<File> files) {
+	/**
+	 * TODO move this function. TODO remove persist if unused.
+	 * 
+	 * @param fileItemList
+	 * @throws Exception
+	 */
+	private void persistFileItems(final ArrayList<FileItem> fileItemList) throws Exception {
+		this.getDataHandler().persist(fileItemList);
+		// TODO remove if above function works
+		// for (final FileItem fileItem : fileItemList) {
+		// if (this.getDataHandler().getFileItems().indexOf(fileItem) == -1) {
+		// this.getDataHandler().getFileItems().add((FileItem)
+		// this.getDataHandler().persist(fileItem));
+		// }
+		// }
+	}
+
+	/**
+	 * 
+	 * @param files
+	 * @return ArrayList<FileItem>
+	 */
+	private ArrayList<FileItem> prepareForPersist(final ArrayList<File> files) {
 		ArrayList<FileItem> tempList = null;
 		if (files != null && files.size() > 0) {
 			tempList = ObjectHandler.fileListToFileItemList(files);

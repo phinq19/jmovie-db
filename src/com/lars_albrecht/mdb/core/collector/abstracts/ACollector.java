@@ -147,10 +147,21 @@ public abstract class ACollector implements Runnable {
 			this.mainController.getDataHandler().updateUpdateTSForFileItem(fileItems.get(pos).getId());
 			return fileItems.get(pos);
 		} else {
-			@SuppressWarnings("deprecation")
-			final FileItem tempFileItem = (FileItem) this.mainController.getDataHandler().persist(fileItem);
-			fileItems.add(tempFileItem);
-			return tempFileItem;
+			/*
+			 * Should not be called.
+			 */
+			Debug.log(Debug.LEVEL_FATAL,
+					"File item not found in DataHandler-FileItem-List: " + fileItem.getId() + " - " + fileItem.getFullpath());
+			throw new Exception("File item not found in DataHandler-FileItem-List: " + fileItem.getId() + " - " + fileItem.getFullpath());
+
+			/*
+			 * TODO remove if all tests are well.
+			 * 
+			 * @SuppressWarnings("deprecation") final FileItem tempFileItem =
+			 * (FileItem)
+			 * this.mainController.getDataHandler().persist(fileItem);
+			 * fileItems.add(tempFileItem); return tempFileItem;
+			 */
 		}
 
 	}
