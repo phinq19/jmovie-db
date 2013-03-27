@@ -113,7 +113,8 @@ public class TheMovieDBCollector extends ACollector {
 			// e.printStackTrace();
 			/*
 			 * TODO @see "http://docs.themoviedb.apiary.io/" Request Rate
-			 * Limiting
+			 * Limiting OR add the error items to a stack and retry.
+			 * 
 			 * 
 			 * We do enforce a small amount of rate limiting. Please be aware
 			 * that should you exceed these limits, you will receive a 503

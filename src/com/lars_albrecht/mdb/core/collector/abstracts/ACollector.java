@@ -174,7 +174,9 @@ public abstract class ACollector implements Runnable {
 	 * created. In this method here, a method called "prepareAttributes" was
 	 * created to add specific items to a general list.
 	 * 
-	 * TODO Update this method to insert all fileitems at once.
+	 * TODO Update this method to insert all attributes at once and rename
+	 * method to persist attributes. "persistFileItem" can be removed or changed
+	 * to the current usage.
 	 */
 	private void persistFileItemsAndAttributes() {
 		FileItem tempItem = null;

@@ -18,6 +18,10 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author lalbrecht
  * 
+ *         TODO register global exception handler
+ * 
+ * @see "http://stackoverflow.com/questions/1548487/java-global-exception-handler"
+ * 
  */
 public class Debug {
 

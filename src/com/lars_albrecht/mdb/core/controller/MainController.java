@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
-import com.lars_albrecht.general.utilities.MD5Checksum;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.core.collector.event.ICollectorListener;
@@ -44,11 +43,8 @@ public class MainController implements IFinderListener, ICollectorListener {
 		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
 
 		// insert to database
-		try {
-			this.persistFileItems(this.prepareForPersist(e.getFiles()));
-		} catch (final Exception ex) {
-			ex.printStackTrace();
-		}
+		this.persistFileItems(this.prepareForPersist(e.getFiles()));
+
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
 		System.out.println("collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
@@ -61,15 +57,12 @@ public class MainController implements IFinderListener, ICollectorListener {
 	 * @param fileItemList
 	 * @throws Exception
 	 */
-	private void persistFileItems(final ArrayList<FileItem> fileItemList) throws Exception {
-		this.getDataHandler().persist(fileItemList);
-		// TODO remove if above function works
-		// for (final FileItem fileItem : fileItemList) {
-		// if (this.getDataHandler().getFileItems().indexOf(fileItem) == -1) {
-		// this.getDataHandler().getFileItems().add((FileItem)
-		// this.getDataHandler().persist(fileItem));
-		// }
-		// }
+	private void persistFileItems(final ArrayList<FileItem> fileItemList) {
+		try {
+			this.getDataHandler().persist(fileItemList);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -82,13 +75,16 @@ public class MainController implements IFinderListener, ICollectorListener {
 		if (files != null && files.size() > 0) {
 			tempList = ObjectHandler.fileListToFileItemList(files);
 
-			for (final FileItem fileItem : tempList) {
-				try {
-					fileItem.setFilehash(MD5Checksum.getMD5Checksum(fileItem.getFullpath()));
-				} catch (final Exception e) {
-					e.printStackTrace();
-				}
-			}
+			// TODO find better method. Is too slow for many items.
+			// for (final FileItem fileItem : tempList) {
+			// try {
+			//
+			// //
+			// fileItem.setFilehash(MD5Checksum.getMD5Checksum(fileItem.getFullpath()));
+			// } catch (final Exception e) {
+			// e.printStackTrace();
+			// }
+			// }
 		}
 
 		return tempList;
