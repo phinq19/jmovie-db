@@ -5,6 +5,8 @@ package com.lars_albrecht.mdb.core.controller;
 
 import java.util.ArrayList;
 
+import com.lars_albrecht.mdb.core.collector.MediaInfoCollector;
+import com.lars_albrecht.mdb.core.collector.TheMovieDBCollector;
 import com.lars_albrecht.mdb.core.collector.TheTVDBCollector;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
@@ -53,10 +55,8 @@ public class CollectorController implements IController, ICollectorListener {
 	}
 
 	private void initCollector() {
-		// this.collectors.add(new MediaInfoCollector(this.mainController,
-		// this));
-		// this.collectors.add(new TheMovieDBCollector(this.mainController,
-		// this));
+		this.collectors.add(new MediaInfoCollector(this.mainController, this));
+		this.collectors.add(new TheMovieDBCollector(this.mainController, this));
 		this.collectors.add(new TheTVDBCollector(this.mainController, this));
 	}
 
