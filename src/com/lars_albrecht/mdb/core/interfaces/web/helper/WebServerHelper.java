@@ -149,7 +149,7 @@ public class WebServerHelper {
 				resultStr += "<hr />";
 				resultStr += "<div id=\"attributes\">";
 
-				resultStr += "<nav><ul><li><a href=\"#MediaInfo\">MediaInfo</a></li><li><a href=\"#themoviedb\">The Movie DB</a></li></ul></nav>";
+				resultStr += "<nav><ul><li><a href=\"#MediaInfo\">MediaInfo</a></li><li><a href=\"#themoviedb\">The Movie DB</a></li><li><a href=\"#thetvdb\">The TV DB</a></li></ul></nav>";
 
 				resultStr += "<h3>Attributes</h3>";
 				String currentInfoType = null;
@@ -190,9 +190,10 @@ public class WebServerHelper {
 											resultStr += ", ";
 										}
 										if (keyValue.getKey().getSearchable()) {
-											resultStr += "<a href=\"?" + "action=showSearchresults&searchStr="
-													+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + tempList.get(j), "utf-8")
-													+ "\">" + tempList.get(j) + "</a>";
+											resultStr += "<a href=\"?"
+													+ "action=showSearchresults&searchStr="
+													+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + "\"" + tempList.get(j) + "\"",
+															"utf-8") + "\">" + tempList.get(j) + "</a>";
 										} else {
 											resultStr += tempList.get(j);
 										}
@@ -295,11 +296,19 @@ public class WebServerHelper {
 		return resultStr;
 	}
 
+	/**
+	 * Search with "=" for attributes must check if the search string is end
+	 * after " " or if it is surrounded by """.
+	 * 
+	 * @param GETParams
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	public String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) throws UnsupportedEncodingException {
 		String resultStr = "<div id=\"searchresultsView\" class=\"contentPart\">";
 		if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
 			// get DATA for output
-			final String searchStr = URLDecoder.decode(GETParams.get("searchStr"), "utf-8");
+			final String searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8")).replaceAll("[\"]", "");
 			int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 
 			String searchKey = null;
@@ -313,6 +322,7 @@ public class WebServerHelper {
 					searchStr
 				};
 			}
+
 			for (final String searchStrItem : searchStrList) {
 				searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 				if (searchStrItem.contains("=")) {
