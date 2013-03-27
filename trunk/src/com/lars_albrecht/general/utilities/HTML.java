@@ -12,6 +12,9 @@ import com.lars_albrecht.mdb.core.models.FileItem;
 /**
  * @author lalbrecht
  * 
+ *         TODO create more simple functions and let the helper build the full
+ *         code.
+ * 
  */
 public class HTML {
 
@@ -37,14 +40,15 @@ public class HTML {
 					default:
 					case WebServerHelper.SEARCHTYPE_TEXTALL:
 						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()
-								+ "</span> Ergebnisse wurden für \"<span class=\"searchTerm\">" + Arrays.toString(searchTerms)
-								+ "</span>\" gefunden</p>";
+								+ "</span> Ergebnisse wurden für \"<span class=\"searchTerm\">"
+								+ Arrays.toString(searchTerms).replaceAll("([\\[\\]])", "") + "</span>\" gefunden</p>";
 						break;
 					case WebServerHelper.SEARCHTYPE_ATTRIBUTE:
 						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()
 								+ "</span> Ergebnisse wurden für das Attribut \"<span class=\"searchKey\">"
-								+ Arrays.toString(searchTerms).split("=")[0] + "</span>\" mit dem Wert \"<span class=\"searchValue\">"
-								+ Arrays.toString(searchTerms).split("=")[1] + "</span>\" gefunden</p>";
+								+ Arrays.toString(searchTerms).split("=")[0].replaceAll("([\\[\\]])", "")
+								+ "</span>\" mit dem Wert \"<span class=\"searchValue\">"
+								+ Arrays.toString(searchTerms).split("=")[1].replaceAll("([\\[\\]])", "") + "</span>\" gefunden</p>";
 						break;
 					case WebServerHelper.SEARCHTYPE_MIXED:
 						resultStr += "<p><span class=\"searchResultCount\">" + fileItemList.size()

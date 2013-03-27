@@ -122,7 +122,7 @@ public class DataHandler {
 		if (fileItem != null) {
 			String where = "";
 			ResultSet rs = null;
-			where = " WHERE ((name || fullpath || dir|| size|| ext || filehash) LIKE '%" + fileItemValue + "%')";
+			where = " WHERE ((name || fullpath || dir || size || ext ) LIKE '%" + fileItemValue + "%')";
 
 			final String sql = "SELECT * FROM " + fileItem.getDatabaseTable() + where;
 			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
@@ -141,6 +141,21 @@ public class DataHandler {
 			}
 		}
 		return resultList;
+	}
+
+	public void updateUpdateTSForFileItem(final Integer id) {
+		if (id != null && id > 0) {
+			final String sql = "UPDATE fileInformation SET updateTS = (datetime('now','localtime')) WHERE id = ?";
+			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
+			values.put(1, id);
+			try {
+				DB.updatePS(sql, values);
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**

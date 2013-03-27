@@ -4,10 +4,13 @@
 package com.lars_albrecht.mdb.core.controller;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.Helper;
+import com.lars_albrecht.general.utilities.MD5Checksum;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.core.collector.event.ICollectorListener;
@@ -15,6 +18,7 @@ import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.IFinderListener;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.handler.OptionsHandler;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
@@ -38,7 +42,26 @@ public class MainController implements IFinderListener, ICollectorListener {
 	@Override
 	public void finderAddFinish(final FinderEvent e) {
 		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
-		this.startCollect(this.startTyper(ObjectHandler.fileListToFileItemList(e.getFiles())));
+
+		// filter filled database data to reduce runtime
+		this.startCollect(this.startTyper(this.prepareForTyper(e.getFiles())));
+	}
+
+	private ArrayList<FileItem> prepareForTyper(final ArrayList<File> files) {
+		ArrayList<FileItem> tempList = null;
+		if (files != null && files.size() > 0) {
+			tempList = ObjectHandler.fileListToFileItemList(files);
+
+			for (final FileItem fileItem : tempList) {
+				try {
+					fileItem.setFilehash(MD5Checksum.getMD5Checksum(fileItem.getFullpath()));
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		return tempList;
 	}
 
 	@Override
@@ -150,7 +173,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 	@Override
 	public void collectorsEndSingle(final CollectorEvent e) {
+		OptionsHandler.setOption("collectorEndRunLast" + Helper.ucfirst(e.getCollectorName()), new Timestamp(System.currentTimeMillis()));
 		Debug.log(Debug.LEVEL_TRACE, "Collector " + e.getCollectorName() + " ends");
 	}
-
 }

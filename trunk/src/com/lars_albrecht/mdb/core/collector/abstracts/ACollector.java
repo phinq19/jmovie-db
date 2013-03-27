@@ -144,6 +144,7 @@ public abstract class ACollector implements Runnable {
 		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItems();
 		int pos = -1;
 		if ((pos = fileItems.indexOf(fileItem)) > -1) {
+			this.mainController.getDataHandler().updateUpdateTSForFileItem(fileItems.get(pos).getId());
 			return fileItems.get(pos);
 		} else {
 			@SuppressWarnings("deprecation")

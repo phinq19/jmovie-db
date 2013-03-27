@@ -424,6 +424,7 @@ public class DB implements IDatabase {
 				}
 
 				lastInsertedId = DB.getLastInsertedRowId(st);
+				Debug.log(Debug.LEVEL_DEBUG, "LAST INSERTEDROWID: " + lastInsertedId);
 			} catch (final SQLException e) {
 				Debug.log(Debug.LEVEL_ERROR, "ERROR ON SQL: " + expression + " | with (" + values.size() + ")values: " + values);
 				e.printStackTrace();
@@ -450,10 +451,13 @@ public class DB implements IDatabase {
 			sql += "'fullpath' VARCHAR(255), ";
 			sql += "'filehash' VARCHAR(255), ";
 			sql += "'filetype' INTEGER, ";
-			sql += "'createTS' DATE DEFAULT (datetime('now','localtime')) ";
+			sql += "'createTS' DATE DEFAULT (datetime('now','localtime')), ";
+			sql += "'updateTS' DATE DEFAULT (datetime('now','localtime')) ";
 			sql += ");";
 			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_fileinformation_fullpath ON fileInformation (fullpath);";
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_fileinformation_fullpath ON fileInformation (fullpath);";
+			DB.update(sql);
+			sql = "CREATE INDEX IF NOT EXISTS idx_fileinformation_name_fullpath ON fileInformation (name, fullpath);";
 			DB.update(sql);
 
 			// typeInformation_key
@@ -466,7 +470,7 @@ public class DB implements IDatabase {
 			sql += "'searchable' INTEGER ";
 			sql += "); ";
 			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_key ON typeInformation_key (key, infoType, section);";
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_typeinformation_key ON typeInformation_key (key, infoType, section);";
 			DB.update(sql);
 
 			// typeInformation_value
@@ -475,7 +479,7 @@ public class DB implements IDatabase {
 			sql += "'value' TEXT ";
 			sql += "); ";
 			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_value ON typeInformation_value (value);";
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_typeinformation_value ON typeInformation_value (value);";
 			DB.update(sql);
 
 			// typeInformation
@@ -487,7 +491,17 @@ public class DB implements IDatabase {
 			// sql += "'value' INTEGER ";
 			sql += "); ";
 			DB.update(sql);
-			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
+			DB.update(sql);
+
+			// options
+			sql = "CREATE TABLE IF NOT EXISTS 'options' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'name' INTEGER, ";
+			sql += "'value' INTEGER ";
+			sql += "); ";
+			DB.update(sql);
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_options ON options (name);";
 			DB.update(sql);
 
 		} catch (final Exception e) {
