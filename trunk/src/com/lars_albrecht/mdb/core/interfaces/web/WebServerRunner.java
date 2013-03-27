@@ -93,6 +93,7 @@ public class WebServerRunner implements Runnable {
 						final int urlStart = line.startsWith("GET ") ? 5 : 6;
 						final int urlEnd = line.indexOf(" HTTP/1.1");
 						urlStr = line.substring(urlStart, urlEnd);
+						// TODO add to logger and set to trace
 						System.out.println("URL: " + urlStr);
 						if (urlStr.indexOf("?") > -1) {
 							this.getKeyValue = this.getQuery(urlStr);

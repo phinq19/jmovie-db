@@ -301,7 +301,7 @@ public class WebServerHelper {
 	 * after " " or if it is surrounded by """.
 	 * 
 	 * @param GETParams
-	 * @return
+	 * @return String
 	 * @throws UnsupportedEncodingException
 	 */
 	public String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) throws UnsupportedEncodingException {
@@ -415,6 +415,7 @@ public class WebServerHelper {
 			if (GETParams != null && GETParams.size() > 0 && GETParams.containsKey("action") && GETParams.get("action") != null) {
 				final String action = GETParams.get("action");
 				if (action.equalsIgnoreCase("getStatus")) {
+					// TODO add additional infos about the type of collector.
 					if (this.mainController.getfController().getThreadList().size() > 0) {
 						content += "<p>Finder is running</p>";
 					}

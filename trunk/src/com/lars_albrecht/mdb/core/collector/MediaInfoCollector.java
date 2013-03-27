@@ -196,7 +196,6 @@ public class MediaInfoCollector extends ACollector {
 		return resultList;
 	}
 
-	@SuppressWarnings("unused")
 	@Deprecated
 	private ArrayList<Key<String>> prepareDataToSave() {
 		final ArrayList<FileAttributeList> fileAttributeList = new ArrayList<FileAttributeList>();
