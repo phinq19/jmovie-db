@@ -444,7 +444,9 @@ public class DataHandler {
 	 * 
 	 * @param searchKey
 	 * @return Integer
+	 * @deprecated
 	 */
+	@Deprecated
 	public Integer keyPos(final Key<?> searchKey) {
 		for (final Key<?> key : this.getKeys()) {
 			if ((key.getKey() == searchKey.getKey()) && (key.getSection() == searchKey.getSection())

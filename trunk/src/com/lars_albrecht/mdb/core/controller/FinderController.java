@@ -34,9 +34,13 @@ public class FinderController implements IController {
 	 */
 	public void findFiles(final ArrayList<File> files) {
 		// start a new thread for each given dir
-		for (int i = 0; i < files.size(); i++) {
-			this.threadList.add(new Thread(new Finder(this, files.get(i))));
-			this.threadList.get(this.threadList.size() - 1).start();
+		if (files != null && files.size() > 0) {
+			for (int i = 0; i < files.size(); i++) {
+				if (files.get(i).exists() && files.get(i).isDirectory() && files.get(i).canRead()) {
+					this.threadList.add(new Thread(new Finder(this, files.get(i))));
+					this.threadList.get(this.threadList.size() - 1).start();
+				}
+			}
 		}
 	}
 

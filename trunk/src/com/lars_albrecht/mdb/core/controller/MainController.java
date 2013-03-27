@@ -50,7 +50,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 			ex.printStackTrace();
 		}
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
-
+		System.out.println("collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
 		this.startCollect(this.startTyper(this.getDataHandler().getFileItems()));
 	}
