@@ -28,12 +28,12 @@ public abstract class ATyper {
 	 */
 	public final ArrayList<FileItem> fillFileItemsWithType(final ArrayList<FileItem> fileItemList) {
 		final ArrayList<FileItem> tempFileItemList = new ArrayList<FileItem>();
-		String tempFileItem = null;
+		String tempFileItemStr = null;
 		for (final FileItem fileItem : fileItemList) {
 			if (fileItem.getFiletype() == null) {
-				tempFileItem = this.getTypeForFileItem(fileItem);
-				if (tempFileItem != null) {
-					fileItem.setFiletype(tempFileItem);
+				tempFileItemStr = this.getTypeForFileItem(fileItem);
+				if (tempFileItemStr != null) {
+					fileItem.setFiletype(tempFileItemStr);
 				}
 			}
 			tempFileItemList.add(fileItem);
