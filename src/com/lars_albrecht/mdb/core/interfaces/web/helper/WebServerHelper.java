@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.lars_albrecht.general.utilities.HTML;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
+import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
@@ -415,12 +416,22 @@ public class WebServerHelper {
 			if (GETParams != null && GETParams.size() > 0 && GETParams.containsKey("action") && GETParams.get("action") != null) {
 				final String action = GETParams.get("action");
 				if (action.equalsIgnoreCase("getStatus")) {
-					// TODO add additional infos about the type of collector.
 					if (this.mainController.getfController().getThreadList().size() > 0) {
 						content += "<p>Finder is running</p>";
 					}
 					if (this.mainController.getcController().getThreadList().size() > 0) {
-						content += "<p>Collector is running</p>";
+						final String[] collectorNameList = new String[this.mainController.getcController().getThreadList().size()];
+
+						int i = 0;
+						for (final ThreadEx t : this.mainController.getcController().getThreadList()) {
+							if (t.getInfo() != null && t.getInfo().length > 0 && t.getInfo()[0].equals("Collector")) {
+								collectorNameList[i] = t.getName();
+							}
+							i++;
+						}
+
+						content += "<p>Collector is running:" + "<ul>" + Helper.implode(collectorNameList, null, "<li>", "</li>") + "</ul>"
+								+ "</p>";
 					}
 				}
 			}

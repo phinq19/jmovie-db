@@ -538,9 +538,6 @@ public class DataHandler {
 				insertItem = this.generateSQLiteMultiInsertItem((IPersistable) object, isFirst,
 						insertValues.size() > 0 ? insertValues.size() + 1 : 1);
 				if (insertItem != null && insertItem.getKey() != null && !insertItem.getKey().equalsIgnoreCase("")) {
-					// TODO variablesCount tries to fix the error for:
-					// [SQLITE_ERROR] SQL error or
-					// missing database (too many SQL variables). Check!
 					if (objectItemCount == maxObjectCount || (variablesCount + insertItem.getValue().size()) >= maxVariables) {
 						DB.updatePS(sql, insertValues);
 						objectItemCount = 0;
@@ -610,63 +607,6 @@ public class DataHandler {
 			resultEntry = new AbstractMap.SimpleEntry<String, LinkedHashMap<Integer, Object>>(valueStr, resultValues);
 		}
 		return resultEntry;
-	}
-
-	/**
-	 * Persist one item at time. Use persist(final ArrayList<?> objects) to
-	 * persist a list of items.
-	 * 
-	 * TODO currently unused. Remove if all tests are well.
-	 * 
-	 * @param object
-	 * @return IPersistable
-	 * @throws Exception
-	 */
-	@Deprecated
-	public IPersistable persist(final IPersistable object) throws Exception {
-		final HashMap<String, Object> tempObject = object.toHashMap();
-		final String databaseTable = object.getDatabaseTable();
-		Debug.log(Debug.LEVEL_TRACE, "persist one time to table " + databaseTable);
-		int result = -1;
-		if ((tempObject != null) && (tempObject.size() > 0)) {
-			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
-			String sql = "";
-			String valueStr = "";
-			int i = 1;
-
-			for (final Map.Entry<String, Object> entry : tempObject.entrySet()) {
-				Object x = null;
-				if (entry.getValue() == null) {
-					x = "";
-				} else {
-					x = entry.getValue();
-				}
-				values.put(i, x);
-				if (i != 1) {
-					valueStr += ",";
-				}
-				valueStr += "?";
-
-				i++;
-			}
-			// TODO check if h2 db -> if h2 db than use MERGE INTO instead of
-			// INSERT OR IGNORE INTO.
-			// TODO if h2 db, than use TRANSACTION_ID() as id to set instead of
-			// nothing.
-			sql = "INSERT OR IGNORE INTO "
-					+ (DB.useQuotesForFields ? "'" : "")
-					+ ""
-					+ databaseTable
-					+ ""
-					+ (DB.useQuotesForFields ? "'" : "")
-					+ " ("
-					+ Helper.implode(tempObject.keySet(), ",", "" + (DB.useQuotesForFields ? "'" : "") + "", ""
-							+ (DB.useQuotesForFields ? "'" : "") + "") + ") VALUES (" + valueStr + ");";
-
-			result = DB.updatePS(sql, values);
-			object.setId(result);
-		}
-		return object;
 	}
 
 	/**

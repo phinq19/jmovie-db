@@ -5,6 +5,7 @@ package com.lars_albrecht.mdb.core.controller;
 
 import java.util.ArrayList;
 
+import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.collector.MediaInfoCollector;
 import com.lars_albrecht.mdb.core.collector.TheMovieDBCollector;
 import com.lars_albrecht.mdb.core.collector.TheTVDBCollector;
@@ -21,6 +22,7 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  */
 public class CollectorController implements IController, ICollectorListener {
 
+	final ArrayList<ThreadEx>			threadList				= new ArrayList<ThreadEx>();
 	private ArrayList<ACollector>		collectors				= null;
 
 	private CollectorEventMulticaster	collectorMulticaster	= null;
@@ -39,19 +41,21 @@ public class CollectorController implements IController, ICollectorListener {
 	}
 
 	public void collectInfos(final ArrayList<FileItem> fileItems) {
-		Thread tempThread = null;
+		ThreadEx tempThread = null;
 		for (final ACollector collector : this.collectors) {
 			collector.setFileItems(fileItems);
-			tempThread = new Thread(collector);
-			tempThread.setName("Thread " + collector.getInfoType());
-			IController.threadList.add(tempThread);
-			IController.threadList.get(IController.threadList.size() - 1).start();
+			final String[] info = {
+				"Collector"
+			};
+			tempThread = new ThreadEx(collector, collector.getInfoType(), info);
+			this.threadList.add(tempThread);
+			this.threadList.get(this.threadList.size() - 1).start();
 		}
 	}
 
 	@Override
-	public ArrayList<Thread> getThreadList() {
-		return IController.threadList;
+	public ArrayList<ThreadEx> getThreadList() {
+		return this.threadList;
 	}
 
 	private void initCollector() {

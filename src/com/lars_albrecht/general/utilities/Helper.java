@@ -421,7 +421,7 @@ public class Helper {
 	public static String implode(final String[] list, final String delim, final String prefix, final String suffix) {
 		String temp = "";
 		for (int i = 0; i < list.length; i++) {
-			if (i != 0) {
+			if (delim != null && i != 0) {
 				temp += delim;
 			}
 			temp += (prefix != null ? prefix : "") + list[i] + (suffix != null ? suffix : "");
@@ -650,4 +650,18 @@ public class Helper {
 			ImageIO.write(Helper.toBufferedImage(image), type, newFile);
 		}
 	}
+
+	static final String	HEXES	= "0123456789ABCDEF";
+
+	public static String getHex(final byte[] raw) {
+		if (raw == null) {
+			return null;
+		}
+		final StringBuilder hex = new StringBuilder(2 * raw.length);
+		for (final byte b : raw) {
+			hex.append(Helper.HEXES.charAt((b & 0xF0) >> 4)).append(Helper.HEXES.charAt((b & 0x0F)));
+		}
+		return hex.toString();
+	}
+
 }

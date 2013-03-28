@@ -11,7 +11,7 @@ import java.security.MessageDigest;
  * @see "http://www.rgagnon.com/javadetails/java-0416.html"
  * 
  */
-public class MD5Checksum {
+public class ChecksumMD5 {
 
 	public static byte[] createChecksum(final String filename) throws Exception {
 		final InputStream fis = new FileInputStream(filename);
@@ -29,14 +29,10 @@ public class MD5Checksum {
 		return complete.digest();
 	}
 
-	// see this How-to for a faster way to convert
-	// a byte array to a HEX string
 	public static String getMD5Checksum(final String filename) throws Exception {
-		final byte[] b = MD5Checksum.createChecksum(filename);
-		String result = "";
-		for (final byte element : b) {
-			result += Integer.toString((element & 0xff) + 0x100, 16).substring(1);
-		}
+		final byte[] b = ChecksumMD5.createChecksum(filename);
+		final String result = Helper.getHex(b);
 		return result;
 	}
+
 }

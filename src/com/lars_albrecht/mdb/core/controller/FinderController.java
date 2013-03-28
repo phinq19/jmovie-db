@@ -6,6 +6,7 @@ package com.lars_albrecht.mdb.core.controller;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.finder.Finder;
 import com.lars_albrecht.mdb.core.finder.event.FinderEventMulticaster;
@@ -16,7 +17,7 @@ import com.lars_albrecht.mdb.core.finder.event.IFinderListener;
  * 
  */
 public class FinderController implements IController {
-	private final ArrayList<Thread>	threadList			= new ArrayList<Thread>();
+	final ArrayList<ThreadEx>		threadList			= new ArrayList<ThreadEx>();
 	private final ArrayList<File>	foundFiles			= new ArrayList<File>();
 	private FinderEventMulticaster	finderMulticaster	= null;
 
@@ -35,10 +36,15 @@ public class FinderController implements IController {
 	public void findFiles(final ArrayList<File> files) {
 		// start a new thread for each given dir
 		if (files != null && files.size() > 0) {
+			final String[] info = {
+				"Finder"
+			};
+			ThreadEx tempThread = null;
 			for (int i = 0; i < files.size(); i++) {
 				if (files.get(i).exists() && files.get(i).isDirectory() && files.get(i).canRead()) {
-					this.threadList.add(new Thread(new Finder(this, files.get(i))));
-					this.threadList.get(this.threadList.size() - 1).start();
+					tempThread = new ThreadEx(new Finder(this, files.get(i)), files.get(i).getPath(), info);
+					this.threadList.add(tempThread);
+					tempThread.start();
 				}
 			}
 		}
@@ -53,7 +59,7 @@ public class FinderController implements IController {
 	}
 
 	@Override
-	public ArrayList<Thread> getThreadList() {
+	public ArrayList<ThreadEx> getThreadList() {
 		return this.threadList;
 	}
 

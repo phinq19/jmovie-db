@@ -121,7 +121,8 @@ public class TheMovieDBCollector extends ACollector {
 			 * error. 30 requests every 10 seconds per IP Maximum 20
 			 * simultaneous connections
 			 */
-			Debug.log(Debug.LEVEL_ERROR, e.getExceptionType() + " in MovieDBCollector, try to ignore: " + e.getMessage());
+			Debug.log(Debug.LEVEL_ERROR, e.getExceptionType() + " in MovieDBCollector, try to ignore (Response: " + e.getResponse() + "): "
+					+ e.getMessage());
 		}
 		// TODO if more than one result in list, than try to find the right
 		int id = -1;

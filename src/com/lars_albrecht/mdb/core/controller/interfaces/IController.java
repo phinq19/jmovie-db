@@ -5,15 +5,15 @@ package com.lars_albrecht.mdb.core.controller.interfaces;
 
 import java.util.ArrayList;
 
+import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
+
 /**
  * @author lalbrecht
  * 
  */
 public interface IController {
 
-	final ArrayList<Thread>	threadList	= new ArrayList<Thread>();
-
-	public ArrayList<Thread> getThreadList();
+	public ArrayList<ThreadEx> getThreadList();
 
 	public void run(final Object... params);
 
