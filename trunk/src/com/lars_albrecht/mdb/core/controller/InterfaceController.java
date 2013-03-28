@@ -5,6 +5,7 @@ package com.lars_albrecht.mdb.core.controller;
 
 import java.util.ArrayList;
 
+import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
@@ -15,6 +16,7 @@ import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
  */
 public class InterfaceController implements IController {
 
+	final ArrayList<ThreadEx>		threadList		= new ArrayList<ThreadEx>();
 	private ArrayList<AInterface>	interfaces		= null;
 
 	private MainController			mainController	= null;
@@ -26,8 +28,8 @@ public class InterfaceController implements IController {
 	}
 
 	@Override
-	public ArrayList<Thread> getThreadList() {
-		return IController.threadList;
+	public ArrayList<ThreadEx> getThreadList() {
+		return this.threadList;
 	}
 
 	private void initInterfaces() {
@@ -41,8 +43,8 @@ public class InterfaceController implements IController {
 
 	private void runInterfaces() {
 		for (final AInterface interfaze : this.interfaces) {
-			IController.threadList.add(new Thread(interfaze));
-			IController.threadList.get(IController.threadList.size() - 1).start();
+			this.threadList.add(new ThreadEx(interfaze));
+			this.threadList.get(this.threadList.size() - 1).start();
 		}
 	}
 

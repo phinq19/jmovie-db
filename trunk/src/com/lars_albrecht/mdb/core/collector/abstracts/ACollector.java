@@ -91,9 +91,7 @@ public abstract class ACollector implements Runnable {
 		Debug.log(Debug.LEVEL_DEBUG, "persist now (" + this.getInfoType() + ")");
 		this.persistKeys();
 		this.persistValues();
-		// TODO remove persist of file items here! This is a collector, not a
-		// general class !
-		this.persistFileItemsAndAttributes();
+		this.persistAttributes();
 		Debug.log(Debug.LEVEL_DEBUG, "end persist (" + this.getInfoType() + ")");
 	}
 
@@ -103,7 +101,8 @@ public abstract class ACollector implements Runnable {
 	 * @param fileAttributeListList
 	 * @throws Exception
 	 */
-	private void prepareAttributes(final int fileItemId, final ArrayList<FileAttributeList> fileAttributeListList) throws Exception {
+	private void
+			transformToTypeInformation(final int fileItemId, final ArrayList<FileAttributeList> fileAttributeListList) throws Exception {
 		if (fileAttributeListList.size() > 0) {
 			TypeInformation tempTypeInfo = null;
 			final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
@@ -134,18 +133,18 @@ public abstract class ACollector implements Runnable {
 	}
 
 	/**
-	 * Persist a single fileItem.
+	 * Returns an id of a given fileItem.
 	 * 
 	 * @param fileItem
-	 * @return
+	 * @return int
 	 * @throws Exception
 	 */
-	private FileItem persistFileItem(final FileItem fileItem) throws Exception {
+	private int getFileItemId(final FileItem fileItem) throws Exception {
 		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItems();
 		int pos = -1;
 		if ((pos = fileItems.indexOf(fileItem)) > -1) {
 			this.mainController.getDataHandler().updateUpdateTSForFileItem(fileItems.get(pos).getId());
-			return fileItems.get(pos);
+			return fileItems.get(pos).getId();
 		} else {
 			/*
 			 * Should not be called.
@@ -153,39 +152,26 @@ public abstract class ACollector implements Runnable {
 			Debug.log(Debug.LEVEL_FATAL,
 					"File item not found in DataHandler-FileItem-List: " + fileItem.getId() + " - " + fileItem.getFullpath());
 			throw new Exception("File item not found in DataHandler-FileItem-List: " + fileItem.getId() + " - " + fileItem.getFullpath());
-
-			/*
-			 * TODO remove if all tests are well.
-			 * 
-			 * @SuppressWarnings("deprecation") final FileItem tempFileItem =
-			 * (FileItem)
-			 * this.mainController.getDataHandler().persist(fileItem);
-			 * fileItems.add(tempFileItem); return tempFileItem;
-			 */
 		}
 
 	}
 
 	/**
-	 * Persist fileItems and attributes (typeInformation). Take
-	 * this.fileAttributeListToAdd which contains the fileItem and an ArrayList
-	 * of FileAttributeList (ArrayList<FileAttributeList>). To persist the
-	 * typeInformation, a new method called "persistTypeInformation" was
-	 * created. In this method here, a method called "prepareAttributes" was
-	 * created to add specific items to a general list.
+	 * Persist attributes (typeInformation). Take this.fileAttributeListToAdd
+	 * which contains the fileItem and an ArrayList of FileAttributeList
+	 * (ArrayList<FileAttributeList>). To persist the typeInformation, a new
+	 * method called "persistTypeInformation" was created. In this method here,
+	 * a method called "prepareAttributes" was created to add specific items to
+	 * a general list.
 	 * 
-	 * TODO Update this method to insert all attributes at once and rename
-	 * method to persist attributes. "persistFileItem" can be removed or changed
-	 * to the current usage.
 	 */
-	private void persistFileItemsAndAttributes() {
-		FileItem tempItem = null;
+	private void persistAttributes() {
+		int fileItemId = -1;
 		if ((this.fileAttributeListToAdd != null) && (this.fileAttributeListToAdd.size() > 0)) {
 			for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
 				try {
-					if (((tempItem = this.persistFileItem(entry.getKey())) != null) && (tempItem.getId() > -1)) {
-						this.prepareAttributes(tempItem.getId(), entry.getValue());
-						this.mainController.getDataHandler().getFileItems().add(tempItem);
+					if (((fileItemId = this.getFileItemId(entry.getKey())) > -1)) {
+						this.transformToTypeInformation(fileItemId, entry.getValue());
 					}
 				} catch (final Exception e) {
 					e.printStackTrace();

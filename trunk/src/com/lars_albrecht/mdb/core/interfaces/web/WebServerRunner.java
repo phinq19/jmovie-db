@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.net.URLDecoder;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
 
@@ -93,8 +94,7 @@ public class WebServerRunner implements Runnable {
 						final int urlStart = line.startsWith("GET ") ? 5 : 6;
 						final int urlEnd = line.indexOf(" HTTP/1.1");
 						urlStr = line.substring(urlStart, urlEnd);
-						// TODO add to logger and set to trace
-						System.out.println("URL: " + urlStr);
+						Debug.log(Debug.LEVEL_TRACE, "URL: " + urlStr);
 						if (urlStr.indexOf("?") > -1) {
 							this.getKeyValue = this.getQuery(urlStr);
 							urlStr = urlStr.substring(0, urlStr.indexOf("?"));

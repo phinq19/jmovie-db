@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.core.controller.CollectorController;
@@ -195,22 +194,4 @@ public class MediaInfoCollector extends ACollector {
 
 		return resultList;
 	}
-
-	@Deprecated
-	private ArrayList<Key<String>> prepareDataToSave() {
-		final ArrayList<FileAttributeList> fileAttributeList = new ArrayList<FileAttributeList>();
-		final ArrayList<Key<String>> keyList = new ArrayList<Key<String>>();
-		for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
-			fileAttributeList.addAll(entry.getValue());
-		}
-
-		for (final FileAttributeList fileAttrib : fileAttributeList) {
-			final ArrayList<KeyValue<String, Object>> singleList = fileAttrib.getKeyValues();
-			for (final KeyValue<String, Object> keyValue : singleList) {
-				keyList.add(keyValue.getKey());
-			}
-		}
-		return Helper.removeDuplicatedEntries(keyList);
-	}
-
 }

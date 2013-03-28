@@ -43,26 +43,16 @@ public class MainController implements IFinderListener, ICollectorListener {
 		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
 
 		// insert to database
-		this.persistFileItems(this.prepareForPersist(e.getFiles()));
+		try {
+			this.getDataHandler().persist(this.prepareForPersist(e.getFiles()));
+		} catch (final Exception ex) {
+			ex.printStackTrace();
+		}
 
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
 		System.out.println("collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
 		this.startCollect(this.startTyper(this.getDataHandler().getFileItems()));
-	}
-
-	/**
-	 * TODO move this function. TODO remove persist if unused.
-	 * 
-	 * @param fileItemList
-	 * @throws Exception
-	 */
-	private void persistFileItems(final ArrayList<FileItem> fileItemList) {
-		try {
-			this.getDataHandler().persist(fileItemList);
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -74,8 +64,18 @@ public class MainController implements IFinderListener, ICollectorListener {
 		ArrayList<FileItem> tempList = null;
 		if (files != null && files.size() > 0) {
 			tempList = ObjectHandler.fileListToFileItemList(files);
-
 			// TODO find better method. Is too slow for many items.
+			// METHOD 1
+			// for (final FileItem fileItem : tempList) {
+			// try {
+			// Debug.startTimer("Hash " + fileItem.getName());
+			// fileItem.setFilehash(MD5Checksum.getCRC32Checksum(fileItem.getFullpath()));
+			// Debug.stopTimer("Hash " + fileItem.getName());
+			// } catch (final Exception e) {
+			// e.printStackTrace();
+			// }
+			// }
+			// METHOD 2
 			// for (final FileItem fileItem : tempList) {
 			// try {
 			//

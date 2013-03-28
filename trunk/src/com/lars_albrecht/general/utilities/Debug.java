@@ -145,7 +145,6 @@ public class Debug {
 	}
 
 	/**
-	 * TODO save loglevel in file
 	 * 
 	 * @param level
 	 */
