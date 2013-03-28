@@ -52,7 +52,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
 		System.out.println("collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
-		this.startCollect(this.startTyper(this.getDataHandler().getFileItems()));
+		this.startCollect(this.getDataHandler().getFileItems());
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 	private ArrayList<FileItem> prepareForPersist(final ArrayList<File> files) {
 		ArrayList<FileItem> tempList = null;
 		if (files != null && files.size() > 0) {
-			tempList = ObjectHandler.fileListToFileItemList(files);
+			tempList = this.startTyper(ObjectHandler.fileListToFileItemList(files));
 			// TODO find better method. Is too slow for many items.
 			// METHOD 1
 			// for (final FileItem fileItem : tempList) {
