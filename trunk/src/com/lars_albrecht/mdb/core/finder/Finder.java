@@ -4,11 +4,14 @@
 package com.lars_albrecht.mdb.core.finder;
 
 import java.io.File;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.mdb.core.controller.FinderController;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.FinderEventMulticaster;
+import com.lars_albrecht.mdb.core.handler.OptionsHandler;
 import com.lars_albrecht.mdb.filter.VideoFileFilter;
 
 /**
@@ -91,6 +94,8 @@ public class Finder implements Runnable {
 		this.controller.getThreadList().remove(Thread.currentThread());
 		if (this.controller.getThreadList().size() == 0) {
 			this.multicaster.finderAddFinish((new FinderEvent(this, FinderEvent.FINDER_ADDFINISH, this.controller.getFoundFiles())));
+			OptionsHandler.setOption("finderEndRunLast", new Timestamp(System.currentTimeMillis()));
+			Debug.stopTimer("Finder find time");
 		}
 	}
 }

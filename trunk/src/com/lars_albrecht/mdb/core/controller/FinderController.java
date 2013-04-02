@@ -6,6 +6,7 @@ package com.lars_albrecht.mdb.core.controller;
 import java.io.File;
 import java.util.ArrayList;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.finder.Finder;
@@ -35,6 +36,7 @@ public class FinderController implements IController {
 	 */
 	public void findFiles(final ArrayList<File> files) {
 		// start a new thread for each given dir
+		Debug.startTimer("Finder find time");
 		if (files != null && files.size() > 0) {
 			final String[] info = {
 				"Finder"
