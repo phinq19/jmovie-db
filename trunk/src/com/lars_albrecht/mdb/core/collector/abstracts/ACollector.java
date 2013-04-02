@@ -227,14 +227,16 @@ public abstract class ACollector implements Runnable {
 	 */
 	private void prepareFileItems() {
 		final Long lastRun = (Long) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()));
-		for (int i = 0; i < this.fileItems.size(); i++) {
-			if (this.fileItems.size() > 0 && lastRun != null && this.fileItems.get(i).getUpdateTS() != null
-					&& lastRun > this.fileItems.get(i).getUpdateTS()) {
-				Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + this.fileItems.get(i));
-				this.fileItems.remove(i);
-				i--;
-			} else {
-				Debug.log(Debug.LEVEL_TRACE, "Element not collected: " + this.fileItems.get(i));
+		if (lastRun != null) {
+			for (int i = 0; i <= this.fileItems.size(); i++) {
+				if (!this.fileItems.isEmpty() && this.fileItems.get(i).getUpdateTS() != null
+						&& lastRun > this.fileItems.get(i).getUpdateTS()) {
+					Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + this.fileItems.get(i));
+					this.fileItems.remove(i);
+					i--;
+				} else {
+					Debug.log(Debug.LEVEL_TRACE, "Element not collected or list empty");
+				}
 			}
 		}
 	}
