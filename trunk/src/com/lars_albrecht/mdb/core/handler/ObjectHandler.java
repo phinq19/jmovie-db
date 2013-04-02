@@ -87,7 +87,7 @@ public class ObjectHandler {
 		for (final File file : foundFilesList) {
 			try {
 				tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper
-						.getFileExtension(file.getName()), null));
+						.getFileExtension(file.getName()), null, null));
 
 			} catch (final NullPointerException e) {
 				Debug.log(Debug.LEVEL_ERROR, "null pointer " + file + " " + file.getName() + " - " + file.getAbsolutePath());
