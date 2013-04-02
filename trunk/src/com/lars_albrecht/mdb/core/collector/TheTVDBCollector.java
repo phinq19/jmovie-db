@@ -137,7 +137,7 @@ public class TheTVDBCollector extends ACollector {
 		data.put("episode", new String());
 
 		final String strPattern = "[\\.\\-\\_0-9a-zA-ZÄÖÜßäöü\\ ]+";
-		final String episodePattern = "S[0-9]{1,2}E[0-9]{1,2}";
+		final String episodePattern = "(S[0-9]{1,2}E[0-9]{1,2}E[0-9]{1,2})|(S[0-9]{1,2}E[0-9]{1,2})";
 		final String regex = "(^(" + strPattern + ") - (" + strPattern + ") - (" + episodePattern + ")+)|(^(" + strPattern + ") - ("
 				+ episodePattern + ")+)";
 		final Pattern p = Pattern.compile(regex);
@@ -150,9 +150,14 @@ public class TheTVDBCollector extends ACollector {
 				data.replace("episode", m.group(4));
 			}
 
-			if ((m.group(6) != null) && (m.group(7) != null)) {
-				((ArrayList<String>) data.get("titles")).add(m.group(6));
-				data.replace("episode", m.group(7));
+			if ((m.group(8) != null) && (m.group(9) != null)) {
+				((ArrayList<String>) data.get("titles")).add(m.group(8));
+				data.replace("episode", m.group(9));
+			}
+
+			if ((m.group(10) != null) && (m.group(11) != null)) {
+				((ArrayList<String>) data.get("titles")).add(m.group(10));
+				data.replace("episode", m.group(11));
 			}
 		}
 		return data;
@@ -372,6 +377,7 @@ public class TheTVDBCollector extends ACollector {
 
 	/**
 	 * episodeStr is a String like "S10E01" which means: Season 10, Episode 01.
+	 * If more than one episodes are in one file, only the first will count.
 	 * 
 	 * @param episodeStr
 	 * @return int
