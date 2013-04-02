@@ -231,7 +231,8 @@ public abstract class ACollector implements Runnable {
 			System.out.println(i);
 			System.out.println(this.fileItems.get(i));
 			System.out.println(this.fileItems.get(i).getUpdateTS());
-			if (lastRun != null && this.fileItems.get(i).getUpdateTS() != null && lastRun > this.fileItems.get(i).getUpdateTS()) {
+			if (lastRun != null && this.fileItems.size() > 0 && this.fileItems.get(i).getUpdateTS() != null
+					&& lastRun > this.fileItems.get(i).getUpdateTS()) {
 				Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + this.fileItems.get(i));
 				this.fileItems.remove(i);
 				i--;
