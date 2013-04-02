@@ -29,6 +29,7 @@ public class FileItem implements IPersistable {
 	private ArrayList<FileAttributeList>	attributes	= null;
 	private Integer							createTS	= null;
 	private String							filetype	= null;
+	private Integer							updateTS	= null;
 
 	/**
 	 * 
@@ -47,9 +48,10 @@ public class FileItem implements IPersistable {
 	 * @param ext
 	 * @param filetype
 	 * @param createTS
+	 * @param updateTS
 	 */
 	public FileItem(final Integer id, final String name, final String fullpath, final String dir, final Long size, final String ext,
-			final String filetype, final Integer createTS) {
+			final String filetype, final Integer createTS, final Integer updateTS) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -59,6 +61,7 @@ public class FileItem implements IPersistable {
 		this.ext = ext;
 		this.filetype = filetype;
 		this.createTS = createTS;
+		this.updateTS = updateTS;
 	}
 
 	/**
@@ -76,8 +79,10 @@ public class FileItem implements IPersistable {
 	 * @param size
 	 * @param ext
 	 * @param createTS
+	 * @param updateTS
 	 */
-	public FileItem(final String name, final String fullpath, final String dir, final Long size, final String ext, final Integer createTS) {
+	public FileItem(final String name, final String fullpath, final String dir, final Long size, final String ext, final Integer createTS,
+			final Integer updateTS) {
 		super();
 		this.name = name;
 		this.fullpath = fullpath;
@@ -85,6 +90,7 @@ public class FileItem implements IPersistable {
 		this.size = size;
 		this.ext = ext;
 		this.createTS = createTS;
+		this.updateTS = updateTS;
 	}
 
 	/*
@@ -129,6 +135,13 @@ public class FileItem implements IPersistable {
 				return false;
 			}
 		} else if (!this.createTS.equals(other.createTS)) {
+			return false;
+		}
+		if (this.updateTS == null) {
+			if (other.updateTS != null) {
+				return false;
+			}
+		} else if (!this.updateTS.equals(other.updateTS)) {
 			return false;
 		}
 		if (this.dir == null) {
@@ -220,7 +233,15 @@ public class FileItem implements IPersistable {
 			} catch (final ParseException e) {
 				e.printStackTrace();
 			}
+		}
 
+		if (map.containsKey("updateTS")) {
+			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			try {
+				result.setUpdateTS(((Long) sdfToDate.parse((String) map.get("updateTS")).getTime()).intValue());
+			} catch (final ParseException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return result;
@@ -294,6 +315,7 @@ public class FileItem implements IPersistable {
 			// result = prime * result + ((this.attributes == null) ? 0 :
 			// this.attributes.hashCode());
 			result = (prime * result) + ((this.createTS == null) ? 0 : this.createTS.hashCode());
+			result = (prime * result) + ((this.updateTS == null) ? 0 : this.updateTS.hashCode());
 			result = (prime * result) + ((this.dir == null) ? 0 : this.dir.hashCode());
 			result = (prime * result) + ((this.ext == null) ? 0 : this.ext.hashCode());
 			result = (prime * result) + ((this.filehash == null) ? 0 : this.filehash.hashCode());
@@ -367,6 +389,21 @@ public class FileItem implements IPersistable {
 		this.filetype = filetype;
 	}
 
+	/**
+	 * @return the updateTS
+	 */
+	public Integer getUpdateTS() {
+		return this.updateTS;
+	}
+
+	/**
+	 * @param updateTS
+	 *            the updateTS to set
+	 */
+	public void setUpdateTS(final Integer updateTS) {
+		this.updateTS = updateTS;
+	}
+
 	@Override
 	public HashMap<String, Object> toHashMap() {
 		final HashMap<String, Object> tempHashMap = new HashMap<String, Object>();
@@ -385,13 +422,18 @@ public class FileItem implements IPersistable {
 			tempHashMap.put("createTS", this.getCreateTS());
 		}
 
+		if (this.getUpdateTS() != null) {
+			tempHashMap.put("updateTS", this.getCreateTS());
+		}
+
 		return tempHashMap;
 	}
 
 	@Override
 	public String toString() {
 		return "Id: " + this.id + " | " + "Name: " + this.name + " | " + "Fullpath: " + this.fullpath + " | " + "Dir: " + this.dir + " | "
-				+ "Size: " + this.size + " | " + "Ext: " + this.ext + " | " + this.getAttributes();
+				+ "Size: " + this.size + " | " + "Ext: " + this.ext + " | " + "CreatedTS: " + this.createTS + " | " + "UpdatedTS: "
+				+ this.updateTS + " | " + this.getAttributes();
 	}
 
 }

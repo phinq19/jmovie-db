@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.mdb.core.collector.abstracts;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,6 +16,7 @@ import com.lars_albrecht.mdb.core.controller.CollectorController;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
+import com.lars_albrecht.mdb.core.handler.OptionsHandler;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.core.models.Key;
@@ -219,9 +221,31 @@ public abstract class ACollector implements Runnable {
 		this.valuesToAdd = Helper.uniqueList(this.valuesToAdd);
 	}
 
+	/**
+	 * Let only items in fileItems-list that are not collected already. Use the
+	 * updateTS and the options (collectorEndRunLast) for this feature.
+	 */
+	private void prepareFileItems() {
+		final Long lastRun = (Long) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()));
+		for (int i = 0; i < this.fileItems.size(); i++) {
+			System.out.println(i);
+			System.out.println(this.fileItems.get(i));
+			System.out.println(this.fileItems.get(i).getUpdateTS());
+			if (lastRun != null && this.fileItems.get(i).getUpdateTS() != null && lastRun > this.fileItems.get(i).getUpdateTS()) {
+				Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + this.fileItems.get(i));
+				this.fileItems.remove(i);
+				i--;
+			} else {
+				Debug.log(Debug.LEVEL_TRACE, "Element not collected: " + this.fileItems.get(i));
+			}
+		}
+	}
+
 	@Override
 	public final void run() {
+		OptionsHandler.setOption("collectorStartRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
 		Debug.startTimer("Collector collect time: " + this.getInfoType());
+		this.prepareFileItems();
 		this.doCollect();
 		Debug.stopTimer("Collector collect time: " + this.getInfoType());
 		this.keysToAdd = this.getKeysToAdd();
@@ -233,6 +257,7 @@ public abstract class ACollector implements Runnable {
 		Debug.stopTimer("Collector persist time: " + this.getInfoType());
 		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_ALL);
 		this.controller.getThreadList().remove(Thread.currentThread());
+		OptionsHandler.setOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
 		this.collectorMulticaster.collectorsEndSingle((new CollectorEvent(this, CollectorEvent.COLLECTOR_ENDSINGLE_COLLECTOR, this
 				.getInfoType())));
 	}

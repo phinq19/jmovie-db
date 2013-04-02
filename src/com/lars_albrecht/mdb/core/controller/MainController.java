@@ -4,12 +4,10 @@
 package com.lars_albrecht.mdb.core.controller;
 
 import java.io.File;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
-import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.core.collector.event.ICollectorListener;
@@ -17,7 +15,6 @@ import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.IFinderListener;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
-import com.lars_albrecht.mdb.core.handler.OptionsHandler;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
@@ -199,7 +196,9 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 	@Override
 	public void collectorsEndSingle(final CollectorEvent e) {
-		OptionsHandler.setOption("collectorEndRunLast" + Helper.ucfirst(e.getCollectorName()), new Timestamp(System.currentTimeMillis()));
+		// OptionsHandler.setOption("collectorEndRunLast" +
+		// Helper.ucfirst(e.getCollectorName()), new
+		// Timestamp(System.currentTimeMillis()));
 		Debug.log(Debug.LEVEL_TRACE, "Collector " + e.getCollectorName() + " ends");
 	}
 }
