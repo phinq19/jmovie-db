@@ -224,33 +224,36 @@ public abstract class ACollector implements Runnable {
 	/**
 	 * Let only items in fileItems-list that are not collected already. Use the
 	 * updateTS and the options (collectorEndRunLast) for this feature.
+	 * 
+	 * @param fileItems
+	 * @param collectorName
+	 * @return
 	 */
-	private void prepareFileItems() {
-		final Long lastRun = (Long) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()));
+	private ArrayList<FileItem> prepareFileItems(final ArrayList<FileItem> fileItems, final String collectorName) {
+		System.out.println(fileItems);
+		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
+		final Long lastRun = (Long) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
 		if (lastRun != null) {
-			for (int i = 0; i < this.fileItems.size(); i++) {
-				if (!this.fileItems.isEmpty() && this.fileItems.size() > 0 && i < this.fileItems.size()
-						&& this.fileItems.get(i).getUpdateTS() != null && lastRun > this.fileItems.get(i).getUpdateTS()) {
-					Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + this.fileItems.get(i));
-					try {
-						// WTF?
-						this.fileItems.remove(i);
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
-					i--;
+			for (int i = 0; i < fileItems.size(); i++) {
+				if (fileItems.get(i).getUpdateTS() != null && lastRun > fileItems.get(i).getUpdateTS()) {
+					Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + fileItems.get(i));
 				} else {
-					Debug.log(Debug.LEVEL_TRACE, "Element not collected or list empty");
+					Debug.log(Debug.LEVEL_TRACE, "Element NOT collected: " + fileItems.get(i));
+					tempList.add(fileItems.get(i));
 				}
 			}
+		} else {
+			Debug.log(Debug.LEVEL_TRACE, "Collector never runned before: " + Helper.ucfirst(collectorName));
+			tempList.addAll(fileItems);
 		}
+		return tempList;
 	}
 
 	@Override
 	public final void run() {
 		OptionsHandler.setOption("collectorStartRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
 		Debug.startTimer("Collector collect time: " + this.getInfoType());
-		this.prepareFileItems();
+		this.fileItems = this.prepareFileItems(this.fileItems, this.getInfoType());
 		this.doCollect();
 		Debug.stopTimer("Collector collect time: " + this.getInfoType());
 		this.keysToAdd = this.getKeysToAdd();
@@ -260,7 +263,6 @@ public abstract class ACollector implements Runnable {
 		Debug.startTimer("Collector persist time: " + this.getInfoType());
 		this.persist();
 		Debug.stopTimer("Collector persist time: " + this.getInfoType());
-		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_ALL);
 		this.controller.getThreadList().remove(Thread.currentThread());
 		OptionsHandler.setOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
 		this.collectorMulticaster.collectorsEndSingle((new CollectorEvent(this, CollectorEvent.COLLECTOR_ENDSINGLE_COLLECTOR, this

@@ -38,6 +38,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 	@Override
 	public void finderAddFinish(final FinderEvent e) {
 		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
+		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
 
 		// insert to database
 		try {
@@ -45,7 +46,6 @@ public class MainController implements IFinderListener, ICollectorListener {
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
-
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
 		System.out.println("collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
@@ -58,9 +58,16 @@ public class MainController implements IFinderListener, ICollectorListener {
 	 * @return ArrayList<FileItem>
 	 */
 	private ArrayList<FileItem> prepareForPersist(final ArrayList<File> files) {
-		ArrayList<FileItem> tempList = null;
+		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
 		if (files != null && files.size() > 0) {
-			tempList = this.startTyper(ObjectHandler.fileListToFileItemList(files));
+			// TODO temporary. You can not be shure if the file has changed, but
+			// the same title stays.
+			for (final FileItem fileItem : this.startTyper(ObjectHandler.fileListToFileItemList(files))) {
+				if (!this.dataHandler.getFileItems().contains(fileItem)) {
+					tempList.add(fileItem);
+				}
+			}
+
 			// TODO find better method. Is too slow for many items.
 			// METHOD 1
 			// for (final FileItem fileItem : tempList) {

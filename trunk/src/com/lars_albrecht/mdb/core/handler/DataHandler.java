@@ -356,14 +356,54 @@ public class DataHandler {
 		return this.fileItems;
 	}
 
-	public ConcurrentHashMap<String, Integer> getInfoFromDatabase() {
-		final ConcurrentHashMap<String, Integer> resultMap = new ConcurrentHashMap<String, Integer>();
+	public ConcurrentHashMap<String, Object> getInfoFromDatabase() {
+		final ConcurrentHashMap<String, Object> resultMap = new ConcurrentHashMap<String, Object>();
 
 		resultMap.put("fileCount", this.getRowCount(new FileItem()));
 		resultMap.put("keyCount", this.getRowCount(new Key<Object>()));
 		resultMap.put("valueCount", this.getRowCount(new Value<Object>()));
+		resultMap.put("filetypes", this.getFiletypesFromDatabase());
+		resultMap.put("filesWithFiletype", this.getFilesWithFiletypeFromDatabase());
 
 		return resultMap;
+	}
+
+	public ConcurrentHashMap<String, Integer> getFilesWithFiletypeFromDatabase() {
+
+		final ConcurrentHashMap<String, Integer> result = new ConcurrentHashMap<String, Integer>();
+		ResultSet rs = null;
+		final String sql = "SELECT fi.filetype AS filetype, COUNT(fi.filetype) AS countOfFiles FROM " + new FileItem().getDatabaseTable()
+				+ " AS fi GROUP BY filetype";
+
+		try {
+			rs = DB.query(sql);
+			while (rs.next()) {
+				result.put(rs.getString("filetype"), rs.getInt("countOfFiles"));
+			}
+
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public ArrayList<String> getFiletypesFromDatabase() {
+		final ArrayList<String> result = new ArrayList<String>();
+		ResultSet rs = null;
+		final String sql = "SELECT fi.filetype AS filetype FROM " + new FileItem().getDatabaseTable() + " AS fi GROUP BY filetype";
+
+		try {
+			rs = DB.query(sql);
+			while (rs.next()) {
+				result.add(rs.getString("filetype"));
+			}
+
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
 	}
 
 	/**

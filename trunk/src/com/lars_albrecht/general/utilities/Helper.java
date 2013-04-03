@@ -390,6 +390,51 @@ public class Helper {
 
 	/**
 	 * 
+	 * @param map
+	 * @param delim
+	 * @param keyPrefix
+	 * @param keySuffix
+	 * @param valuePrefix
+	 * @param valueSuffix
+	 * @param entryPrefix
+	 * @param entrySuffix
+	 * @param valueFirst
+	 * @return String
+	 */
+	public static String implode(final Map<?, ?> map,
+			final String delim,
+			final String keyPrefix,
+			final String keySuffix,
+			final String valuePrefix,
+			final String valueSuffix,
+			final String entryPrefix,
+			final String entrySuffix,
+			final boolean valueFirst) {
+		String temp = "";
+		final Iterator<?> iterator = map.entrySet().iterator();
+		Map.Entry<?, ?> entry = null;
+		for (int i = 0; i < map.entrySet().size(); i++) {
+			entry = (Entry<?, ?>) iterator.next();
+			if (i != 0) {
+				temp += delim;
+			}
+			if (valueFirst) {
+				temp += (entryPrefix != null ? entryPrefix : "") + (valuePrefix != null ? valuePrefix : "") + entry.getValue()
+						+ (valueSuffix != null ? valueSuffix : "") + (keyPrefix != null ? keyPrefix : "") + entry.getKey()
+						+ (keySuffix != null ? keySuffix : "") + (entrySuffix != null ? entrySuffix : "");
+				;
+
+			} else {
+				temp += (entryPrefix != null ? entryPrefix : "") + (keyPrefix != null ? keyPrefix : "") + entry.getKey()
+						+ (keySuffix != null ? keySuffix : "") + (valuePrefix != null ? valuePrefix : "") + entry.getValue()
+						+ (valueSuffix != null ? valueSuffix : "") + (entrySuffix != null ? entrySuffix : "");
+			}
+		}
+		return temp;
+	}
+
+	/**
+	 * 
 	 * @param collection
 	 * @param delim
 	 * @param prefix

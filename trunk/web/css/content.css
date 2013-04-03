@@ -8,6 +8,8 @@ h2, h3, h4, h5											{margin:0;}
 											        		        box-shadow: 0 5px 5px #333;
                 										}
 
+#titleBox .subTitle										{color:#fff;}
+
 #contentContainer .tableHeader							{height:20px; line-height:20px; text-transform:capitalize; text-align:left; color:#ffffff; background-color:#000000; text-indent:10px; font-size:0.83em}
 #contentContainer table									{width:100%;}
 #contentContainer table tr								{border-bottom:1px solid #000;}
@@ -20,7 +22,6 @@ h2, h3, h4, h5											{margin:0;}
 
 #contentContainer .contentPart							{margin-bottom:20px;}
 
-									
 #detailView .listWrapper								{width:100%; clear:both; display:inline-block;}
 #detailView .listWrapper .key							{float:left; width: 25%; font-weight:bold;}
 #detailView .listWrapper .value							{float:left;}
@@ -41,3 +42,5 @@ h2, h3, h4, h5											{margin:0;}
 #searchresultsView .searchTerm,
 #searchresultsView .searchKey,
 #searchresultsView .searchValue							{font-style:italic; font-weight:bold;}
+
+#infoView .infoListEntry								{text-transform:capitalize;}

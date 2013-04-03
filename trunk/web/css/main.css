@@ -229,9 +229,9 @@ nav a:hover {
     WIDE: Menu
    ============ */
 
-    .title {
-        float: left;
-    }
+	#titleBox {
+		float:left;
+	}
 
     nav {
         float: right;
