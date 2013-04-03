@@ -156,12 +156,14 @@ public class Debug {
 			file = new File("log_" + level + ".txt");
 			try {
 				writer = new FileWriter(file, true);
-				for (final String s : logList) {
-					writer.write(s);
-					writer.write(System.getProperty("line.separator"));
+				if (writer != null && logList != null && logList.size() > 0) {
+					for (final String s : logList) {
+						writer.write(s);
+						writer.write(System.getProperty("line.separator"));
+					}
+					writer.flush();
+					writer.close();
 				}
-				writer.flush();
-				writer.close();
 			} catch (final IOException e) {
 				e.printStackTrace();
 			}

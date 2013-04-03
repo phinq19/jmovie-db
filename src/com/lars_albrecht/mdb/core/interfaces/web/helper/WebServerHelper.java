@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.HTML;
@@ -62,7 +63,8 @@ public class WebServerHelper {
 		String generatedContent = content;
 		String contentMarkerReplacement = "";
 		// System.out.println("Params: " + GETParams);
-		String pageTitle = "MDB";
+		String pageTitle = "JMovieDB - Webinterface";
+		String subTitle = "";
 		if (filename.equalsIgnoreCase("index.html")) {
 			String action = null;
 			if (GETParams.containsKey("action")) {
@@ -75,7 +77,8 @@ public class WebServerHelper {
 				contentMarkerReplacement = "Auf dieser Seite kann man vorhandene Filme suchen und sich verschiedene Informationen anzeigen lassen.";
 			} else if (action.equalsIgnoreCase("showSearchresults")) {
 				contentMarkerReplacement = this.generateSearchresults(GETParams);
-				pageTitle += " | " + this.getTitleForSearchresults(GETParams);
+				subTitle = this.getTitleForSearchresults(GETParams);
+				pageTitle += " | " + subTitle;
 			} else if (action.equalsIgnoreCase("showFileDetails")) {
 				contentMarkerReplacement = "showFileDetails";
 				if (GETParams.containsKey("fileId") && (GETParams.get("fileId") != null)) {
@@ -84,16 +87,19 @@ public class WebServerHelper {
 					if ((fileId != null) && (fileId > 0)) {
 						final FileItem tempFileItem = this.mainController.getDataHandler().findAllInfoForAllByFileId(fileId);
 						contentMarkerReplacement = this.generateDetailView(tempFileItem);
-						pageTitle += " | " + this.getTitleForDetailview(tempFileItem);
+						subTitle = this.getTitleForDetailview(tempFileItem);
+						pageTitle += " | " + subTitle;
 					}
 
 				}
 			} else if (action.equalsIgnoreCase("showInfoControl")) {
 				contentMarkerReplacement = this.generateInfoControlView(GETParams);
-				pageTitle += " | " + this.getTitleForInfoview();
+				subTitle = this.getTitleForInfoview();
+				pageTitle += " | " + subTitle;
 			} else if (action.equalsIgnoreCase("showAttributes")) {
 				contentMarkerReplacement = this.generateAttributesView(GETParams);
-				pageTitle += " | " + this.getTitleForAttributesView();
+				subTitle = this.getTitleForAttributesView();
+				pageTitle += " | " + subTitle;
 			}
 
 			// replace contentmarker with "contentMarkerReplacement" if marker
@@ -123,6 +129,9 @@ public class WebServerHelper {
 			}
 			if (Template.containsMarker(generatedContent, "title")) {
 				generatedContent = Template.replaceMarker(generatedContent, "title", pageTitle);
+			}
+			if (Template.containsMarker(generatedContent, "subTitle")) {
+				generatedContent = Template.replaceMarker(generatedContent, "subTitle", subTitle);
 			}
 		}
 
@@ -229,7 +238,7 @@ public class WebServerHelper {
 		String resultStr = "<div id=\"infoView\" class=\"contentPart\">";
 		this.mainController.getDataHandler();
 		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_ALL);
-		final ConcurrentHashMap<String, Integer> info = this.mainController.getDataHandler().getInfoFromDatabase();
+		final ConcurrentHashMap<String, Object> info = this.mainController.getDataHandler().getInfoFromDatabase();
 		if (info != null) {
 			resultStr += "<h2>Informationen</h2>";
 			resultStr += "<h3 class=\"tableHeader\">Anzahl Einträge</h3>";
@@ -249,6 +258,12 @@ public class WebServerHelper {
 			resultStr += "<tr>";
 			resultStr += "<td>Value Count</td>";
 			resultStr += "<td>" + info.get("valueCount") + "</td>";
+			resultStr += "</tr>";
+			resultStr += "<tr>";
+			resultStr += "<td>Filetypes (count of files)</td>";
+			resultStr += "<td>"
+					+ Helper.implode((Map<?, ?>) info.get("filesWithFiletype"), ", ", null, null, " (", ")",
+							"<span class=\"infoListEntry\">", "</span>", false) + "</td>";
 			resultStr += "</tr>";
 			resultStr += "</table>";
 		} else {
@@ -432,6 +447,10 @@ public class WebServerHelper {
 
 						content += "<p>Collector is running:" + "<ul>" + Helper.implode(collectorNameList, null, "<li>", "</li>") + "</ul>"
 								+ "</p>";
+					}
+
+					if (content.equalsIgnoreCase("")) {
+						content = "<p>No activities</p>";
 					}
 				}
 			}

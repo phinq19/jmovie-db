@@ -24,21 +24,24 @@
 
         <div class="header-container">
             <header class="wrapper clearfix">
-                <h1 class="title">MDB</h1>
-                    <nav>
-	                    <div id="searchForm" class="menuItem">
-							<form method="get" action="">
-								<title for="searchStr">Suche</title>
-								<input type="text" id="searchStr" name="searchStr" value="{searchTerm}" />
-								<input type="hidden" name="action" value="showSearchresults" />
-							</form>
-						</div>
- 						<ul>
- 							<li><a href="index.html">Home</a></li>
- 							<li><a href="?action=showAttributes">Attributes</a></li>
- 							<li><a href="?action=showInfoControl">Info / Control</a></li>
- 						</ul>
-                	</nav>
+            	<div id="titleBox">
+	                <h1 class="title">JMovieDB - Webinterface</h1>
+	                <h2 class="subTitle">{subTitle}</h2>
+                </div>
+                <nav>
+                    <div id="searchForm" class="menuItem">
+						<form method="get" action="">
+							<title for="searchStr">Suche</title>
+							<input type="text" id="searchStr" name="searchStr" value="{searchTerm}" />
+							<input type="hidden" name="action" value="showSearchresults" />
+						</form>
+					</div>
+					<ul>
+						<li><a href="index.html">Home</a></li>
+						<li><a href="?action=showAttributes">Attributes</a></li>
+						<li><a href="?action=showInfoControl">Info / Control</a></li>
+					</ul>
+            	</nav>
             </header>
         </div>
 
