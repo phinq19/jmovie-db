@@ -4,15 +4,19 @@
 package com.lars_albrecht.mdb.core.controller;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.PropertiesExNotInitilizedException;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.core.collector.event.ICollectorListener;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.IFinderListener;
+import com.lars_albrecht.mdb.core.handler.ConfigurationHandler;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.models.FileItem;
@@ -23,13 +27,14 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  */
 public class MainController implements IFinderListener, ICollectorListener {
 
-	private FinderController					fController	= null;
-	private TypeController						tController	= null;
-	private CollectorController					cController	= null;
-	private InterfaceController					iController	= null;
-	private DataHandler							dataHandler	= null;
+	private FinderController					fController		= null;
+	private TypeController						tController		= null;
+	private CollectorController					cController		= null;
+	private InterfaceController					iController		= null;
+	private DataHandler							dataHandler		= null;
+	private ConfigurationHandler				configHandler	= null;
 
-	private ConcurrentHashMap<String, Object>	globalVars	= null;
+	private ConcurrentHashMap<String, Object>	globalVars		= null;
 
 	public MainController() {
 		this.init();
@@ -125,6 +130,13 @@ public class MainController implements IFinderListener, ICollectorListener {
 	}
 
 	/**
+	 * @return the configHandler
+	 */
+	public final ConfigurationHandler getConfigHandler() {
+		return this.configHandler;
+	}
+
+	/**
 	 * @return the fController
 	 */
 	public FinderController getfController() {
@@ -163,8 +175,17 @@ public class MainController implements IFinderListener, ICollectorListener {
 		this.dataHandler = new DataHandler(this);
 		this.globalVars = new ConcurrentHashMap<String, Object>();
 
-		final ArrayList<?> tempList = ObjectHandler.castStringListToFileList(RessourceBundleEx.getInstance().getProperties(
-				"module.finder.path"));
+		try {
+			this.configHandler = new ConfigurationHandler();
+		} catch (final PropertiesExNotInitilizedException e) {
+			e.printStackTrace();
+		} catch (final FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
+		final ArrayList<?> tempList = ObjectHandler.castStringListToFileList(this.configHandler.getConfigOptionModuleFinderPath());
 		this.globalVars.put("searchPathList", tempList);
 
 	}

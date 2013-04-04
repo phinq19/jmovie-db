@@ -32,6 +32,8 @@ import com.lars_albrecht.mdb.database.DB;
  *         TODO To support multiple databases, use a base class and create a
  *         class for each database type?
  * 
+ *         TODO Build singleton
+ * 
  */
 public class DataHandler {
 

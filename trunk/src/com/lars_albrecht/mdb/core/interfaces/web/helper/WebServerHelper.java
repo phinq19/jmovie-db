@@ -5,16 +5,20 @@ package com.lars_albrecht.mdb.core.interfaces.web.helper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.HTML;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
+import com.lars_albrecht.mdb.Main;
 import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
@@ -387,23 +391,20 @@ public class WebServerHelper {
 	public String getFileContent(final String url,
 			final ConcurrentHashMap<String, String> GETParams,
 			final ConcurrentHashMap<String, String> headerKeyValue) {
+		File file = null;
 		if (url != null) {
-			final File file = (new File(new File("").getAbsolutePath() + "/trunk/web/" + url));
-			// System.out.println("APATH: " + file.getAbsolutePath());
+			Debug.log(Debug.LEVEL_INFO, "Try to load file for web interface: " + "web/" + url);
+			final InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("web/" + url);
+			file = new File(url);
 			try {
-				if ((file != null) && file.exists()) {
-					// System.out.println("load file: " +
-					// file.getAbsolutePath());
+				if (inputStream != null) {
 					String content = "";
-					content = Helper.getFileContents(file);
+					content = Helper.getInputStreamContents(inputStream, Charset.forName("UTF-8"));
 					content = this.generateContent(content, file.getName(), GETParams, headerKeyValue);
 
 					return content;
-				} else if ((file != null) && !file.exists()) {
-					// System.out.println("cant load file: " +
-					// file.getAbsolutePath());
 				} else {
-					// System.out.println("cant load file with url");
+					Debug.log(Debug.LEVEL_ERROR, "InputStream == null: " + file);
 				}
 			} catch (final IOException e) {
 				e.printStackTrace();

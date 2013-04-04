@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.core.controller.CollectorController;
 import com.lars_albrecht.mdb.core.controller.MainController;
@@ -65,8 +64,8 @@ public class MediaInfoCollector extends ACollector {
 
 	private String getDataStrForFile(final String filepath) {
 		String line = null;
-		final String command = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.cli");
-		final String templatePath = RessourceBundleEx.getInstance().getProperty("module.collector.mediainfo.path.template");
+		final String command = this.mainController.getConfigHandler().getConfigOptionModuleCollectorMediainfoPathCli();
+		final String templatePath = this.mainController.getConfigHandler().getConfigOptionModuleCollectorMediainfoPathTemplate();
 		if ((command != null) && (templatePath != null) && new File(command).exists() && new File(templatePath).exists()) {
 			final ProcExec pe = new ProcExec();
 

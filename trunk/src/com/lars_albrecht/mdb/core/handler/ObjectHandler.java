@@ -68,9 +68,11 @@ public class ObjectHandler {
 
 	public static ArrayList<File> castStringListToFileList(final ArrayList<String> oList) {
 		final ArrayList<File> resultList = new ArrayList<File>();
-		for (final String oItem : oList) {
-			if (oItem instanceof String) {
-				resultList.add(new File(oItem));
+		if (oList != null) {
+			for (final String oItem : oList) {
+				if (oItem instanceof String) {
+					resultList.add(new File(oItem));
+				}
 			}
 		}
 
