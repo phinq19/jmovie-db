@@ -30,6 +30,7 @@ package com.lars_albrecht.mdb.core.interfaces.web;
 ///A Simple Web Server (WebServer.java)
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.ServerSocket;
 
 import com.lars_albrecht.mdb.core.controller.MainController;
@@ -155,8 +156,22 @@ public class WebServer {
 		try {
 			this.serverSocket.close();
 		} catch (final IOException e) {
-			System.out.println("Could not close socket");
+			System.err.println("Could not close socket");
 		}
+	}
+
+	private boolean startServerSocket(final int socketPort) {
+		try {
+			// create the main server socket
+			this.serverSocket = new ServerSocket(socketPort);
+			return true;
+		} catch (final BindException e) {
+			System.out.println("Socket already in use. Try another one.");
+			return false;
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	/**
@@ -164,19 +179,16 @@ public class WebServer {
 	 */
 	protected void start(final MainController mainController) {
 		this.mainController = mainController;
-		final int socketPort = 8080;
+		int socketPort = 8080;
 
-		System.out.println("WebServerConstructor start() at line ~160");
+		System.out.println("Try to start WebServer. If socketPort is already in use, than try the next port (start @ port 8080)");
+
+		while (!this.startServerSocket(socketPort)) {
+			socketPort++;
+		}
 
 		System.out.println("Webserver starting up on port " + socketPort);
 		System.out.println("(press ctrl-c to exit)");
-		try {
-			// create the main server socket
-			this.serverSocket = new ServerSocket(socketPort);
-		} catch (final Exception e) {
-			System.out.println("Error: " + e);
-			return;
-		}
 
 		System.out.println("Waiting for connection");
 		for (;;) {

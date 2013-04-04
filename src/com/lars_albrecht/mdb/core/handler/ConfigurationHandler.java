@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import com.lars_albrecht.general.utilities.FileFinder;
 import com.lars_albrecht.general.utilities.PropertiesEx;
 import com.lars_albrecht.general.utilities.PropertiesExNotInitilizedException;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
@@ -23,7 +24,8 @@ public class ConfigurationHandler {
 	private String				configOptionModuleCollectorMediainfoPathTemplate	= null;
 
 	public ConfigurationHandler() throws FileNotFoundException, IOException, PropertiesExNotInitilizedException {
-		PropertiesEx.getInstance().init(new File(RessourceBundleEx.getInstance().getProperty("config.ini")));
+		PropertiesEx.getInstance().init(
+				FileFinder.getInstance().findFile(new File(RessourceBundleEx.getInstance().getProperty("config.ini"))));
 
 		if (PropertiesEx.getInstance().isInit()) {
 			this.readConfigFile();

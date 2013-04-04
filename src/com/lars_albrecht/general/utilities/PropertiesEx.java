@@ -25,7 +25,7 @@ public class PropertiesEx {
 
 	/**
 	 * 
-	 * @return PropertiesReader
+	 * @return PropertiesEx
 	 */
 	public static PropertiesEx getInstance() {
 		return PropertiesEx.instance;

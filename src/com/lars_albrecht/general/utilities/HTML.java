@@ -22,6 +22,7 @@ public class HTML {
 	 * Generate HTML Output from FileItem-List. TODO do generic! TODO make
 	 * Arrays.toString unnecessary
 	 * 
+	 * 
 	 * @param fileItemList
 	 * @param searchTerms
 	 * @param searchType

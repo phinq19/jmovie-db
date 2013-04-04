@@ -110,10 +110,15 @@ public class TheMovieDBCollector extends ACollector {
 
 			}
 		} catch (final MovieDbException e) {
+			Debug.log(
+					Debug.LEVEL_ERROR,
+					e.getExceptionType() + " in MovieDBCollector, try to research directly (Response: " + e.getResponse() + "): "
+							+ e.getMessage());
+			return this.findMovie(titles, year);
 			// e.printStackTrace();
 			/*
-			 * TODO @see "http://docs.themoviedb.apiary.io/" Request Rate
-			 * Limiting OR add the error items to a stack and retry.
+			 * Request Rate Limiting OR add the error items to a stack and
+			 * retry.
 			 * 
 			 * 
 			 * We do enforce a small amount of rate limiting. Please be aware
@@ -121,8 +126,6 @@ public class TheMovieDBCollector extends ACollector {
 			 * error. 30 requests every 10 seconds per IP Maximum 20
 			 * simultaneous connections
 			 */
-			Debug.log(Debug.LEVEL_ERROR, e.getExceptionType() + " in MovieDBCollector, try to ignore (Response: " + e.getResponse() + "): "
-					+ e.getMessage());
 		}
 		// TODO if more than one result in list, than try to find the right
 		int id = -1;

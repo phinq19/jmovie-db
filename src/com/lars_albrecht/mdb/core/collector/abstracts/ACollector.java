@@ -5,6 +5,7 @@ package com.lars_albrecht.mdb.core.collector.abstracts;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -230,7 +231,7 @@ public abstract class ACollector implements Runnable {
 	 * @return
 	 */
 	private ArrayList<FileItem> prepareFileItems(final ArrayList<FileItem> fileItems, final String collectorName) {
-		System.out.println(fileItems);
+		Debug.log(Debug.LEVEL_TRACE, Arrays.deepToString(fileItems.toArray()));
 		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
 		final Long lastRun = (Long) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
 		if (lastRun != null) {
