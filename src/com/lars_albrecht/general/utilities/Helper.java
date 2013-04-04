@@ -24,10 +24,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -222,6 +225,23 @@ public class Helper {
 		if (file.exists() && file.isFile() && file.canRead()) {
 			String line = "";
 			final BufferedReader buReader = new BufferedReader(new FileReader(file));
+			line = buReader.readLine();
+
+			while (line != null) {
+				content += line;
+				line = buReader.readLine();
+			}
+			buReader.close();
+		}
+		return content;
+	}
+
+	public static String getInputStreamContents(final InputStream inputStream, final Charset charset) throws IOException {
+		String content = "";
+		if (inputStream != null) {
+			String line = "";
+			final BufferedReader buReader = new BufferedReader(charset == null ? new InputStreamReader(inputStream)
+					: new InputStreamReader(inputStream, charset));
 			line = buReader.readLine();
 
 			while (line != null) {
