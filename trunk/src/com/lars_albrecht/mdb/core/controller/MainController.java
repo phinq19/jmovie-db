@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.FileFinder;
 import com.lars_albrecht.general.utilities.PropertiesExNotInitilizedException;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
@@ -52,7 +53,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 			ex.printStackTrace();
 		}
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
-		System.out.println("collect for: " + this.getDataHandler().getFileItems().size());
+		Debug.log(Debug.LEVEL_INFO, "Collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
 		this.startCollect(this.getDataHandler().getFileItems());
 	}
@@ -158,9 +159,15 @@ public class MainController implements IFinderListener, ICollectorListener {
 	}
 
 	private void init() {
+		Thread.setDefaultUncaughtExceptionHandler(new Debug());
 		RessourceBundleEx.getInstance().setPrefix("mdb");
 		Debug.log(Debug.LEVEL_INFO, RessourceBundleEx.getInstance().getProperty("application.name") + " ("
 				+ RessourceBundleEx.getInstance().getProperty("application.version") + ")");
+
+		FileFinder.getInstance().addToPathList(new File("."), -1);
+		FileFinder.getInstance().addToPathList(new File("web/"), -1);
+		FileFinder.getInstance().addToPathList(new File("trunk/"), -1);
+		FileFinder.getInstance().addToPathList(new File("trunk/web/"), -1);
 
 		this.tController = new TypeController(this);
 
@@ -187,7 +194,6 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 		final ArrayList<?> tempList = ObjectHandler.castStringListToFileList(this.configHandler.getConfigOptionModuleFinderPath());
 		this.globalVars.put("searchPathList", tempList);
-
 	}
 
 	private ArrayList<FileItem> startTyper(final ArrayList<FileItem> fileItemList) {

@@ -1,10 +1,10 @@
 #Fat Jar Configuration File
-#Thu Apr 04 10:09:44 CEST 2013
+#Thu Apr 04 14:27:51 CEST 2013
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
 onejar.checkbox=true
-jarname=jars\\mdb-svn_fat-rev-experimental.jar
+jarname=jars\\mdb-svn_fat-experimental.jar
 manifest.mergeall=true
 manifest.mainclass=com.lars_albrecht.mdb.Main
 manifest.file=<createnew>

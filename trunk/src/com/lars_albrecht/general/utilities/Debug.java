@@ -6,6 +6,7 @@ package com.lars_albrecht.general.utilities;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @see "http://stackoverflow.com/questions/1548487/java-global-exception-handler"
  * 
  */
-public class Debug {
+public class Debug implements UncaughtExceptionHandler {
 
 	final public static Integer											LEVEL_ALL	= 0;
 	final public static Integer											LEVEL_TRACE	= 1;
@@ -168,5 +169,16 @@ public class Debug {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	@Override
+	public void uncaughtException(final Thread thread, final Throwable throwable) {
+		Debug.log(Debug.LEVEL_FATAL, "UncaughtException thrown (" + throwable.getMessage() + " - " + throwable.toString() + ") in Thread "
+				+ thread.getName() + " (" + thread.getId() + ") ");
+		throwable.printStackTrace();
+	}
+
+	public static Debug getUncaughtExceptionHandler() {
+		return new Debug();
 	}
 }
