@@ -1,0 +1,5 @@
+Create nfo files like xbmc to use it for e.g. serviio
+http://wiki.xbmc.org/index.php?title=NFO_files
+
+see here: 
+http://www.serviio.org/component/content/article/10-uncategorised/12-metadata-extraction?highlight=WyJtZXRhZGF0YSJd
