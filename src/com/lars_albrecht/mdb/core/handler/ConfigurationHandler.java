@@ -25,7 +25,7 @@ public class ConfigurationHandler {
 
 	public ConfigurationHandler() throws FileNotFoundException, IOException, PropertiesExNotInitilizedException {
 		PropertiesEx.getInstance().init(
-				FileFinder.getInstance().findFile(new File(RessourceBundleEx.getInstance().getProperty("config.ini"))));
+				FileFinder.getInstance().findFile(new File(RessourceBundleEx.getInstance().getProperty("config.ini")), false));
 
 		if (PropertiesEx.getInstance().isInit()) {
 			this.readConfigFile();

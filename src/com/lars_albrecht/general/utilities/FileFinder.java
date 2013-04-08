@@ -50,12 +50,38 @@ public class FileFinder {
 		return this.pathList;
 	}
 
-	public File findFile(final File fileToFind) throws IOException {
+	public File findFile(final File fileToFind, final boolean recursive) throws IOException {
 		File returnFile = null;
 		if (this.pathList != null) {
 			for (final File path : this.pathList) {
-				if ((returnFile = new File(path.getCanonicalPath() + File.separator + fileToFind.getName())) != null && returnFile.exists()
-						&& returnFile.isFile()) {
+				final File[] files = path.listFiles();
+				if ((returnFile = this.findFileInDir(files, fileToFind, recursive)) != null) {
+					break;
+				}
+			}
+		}
+		return returnFile;
+	}
+
+	/**
+	 * Find file in directory. TODO speed up recursive find.
+	 * 
+	 * @param files
+	 * @param fileToFind
+	 * @param recursive
+	 * @return File
+	 * @throws IOException
+	 */
+	private File findFileInDir(final File[] files, File fileToFind, final boolean recursive) throws IOException {
+		fileToFind = new File(fileToFind.getName());
+		File returnFile = null;
+		for (final File file : files) {
+			if (file.isDirectory() && (returnFile = new File(file.getCanonicalPath() + File.separator + fileToFind.getName())) != null
+					&& returnFile.exists() && returnFile.isFile()) {
+				return returnFile;
+			} else if (file.isDirectory() && file.exists() && recursive) {
+				returnFile = this.findFileInDir(file.listFiles(), fileToFind, recursive);
+				if (returnFile != null) {
 					return returnFile;
 				}
 			}

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
+import com.lars_albrecht.general.utilities.FileFinder;
 import com.lars_albrecht.general.utilities.HTML;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
@@ -393,18 +394,20 @@ public class WebServerHelper {
 			final ConcurrentHashMap<String, String> headerKeyValue) {
 		File file = null;
 		if (url != null) {
-			Debug.log(Debug.LEVEL_INFO, "Try to load file for web interface: " + "web/" + url);
+			Debug.log(Debug.LEVEL_INFO, "Try to load file for web interface: " + url);
 			final InputStream inputStream = Main.class.getClassLoader().getResourceAsStream("web/" + url);
 			file = new File(url);
 			try {
+				String content = "";
 				if (inputStream != null) {
-					String content = "";
 					content = Helper.getInputStreamContents(inputStream, Charset.forName("UTF-8"));
-					content = this.generateContent(content, file.getName(), GETParams, headerKeyValue);
-
+					return content;
+				} else if (file != null && (file = FileFinder.getInstance().findFile(new File(new File(url).getName()), false)) != null
+						&& file.exists() && file.isFile() && file.canRead()) {
+					content = this.generateContent(Helper.getFileContents(file), file.getName(), GETParams, headerKeyValue);
 					return content;
 				} else {
-					Debug.log(Debug.LEVEL_ERROR, "InputStream == null: " + file);
+					Debug.log(Debug.LEVEL_ERROR, "InputStream == null && File == null: " + file);
 				}
 			} catch (final IOException e) {
 				e.printStackTrace();
