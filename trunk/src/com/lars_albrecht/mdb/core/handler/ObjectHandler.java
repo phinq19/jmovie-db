@@ -98,4 +98,25 @@ public class ObjectHandler {
 
 		return tempFileItemList;
 	}
+
+	public static String fileItemListToJSON(final ArrayList<FileItem> fileItemList) {
+		String jsonString = null;
+
+		if (fileItemList != null && fileItemList.size() > 0) {
+			jsonString = "{";
+			// "{\"BigBuckBunny\" : \"BigBuckBunny\"}"
+			int i = 0;
+			for (final FileItem fileItem : fileItemList) {
+				jsonString += "\"" + fileItem.getName() + "\"" + ":" + "\"" + fileItem.getName() + "\"";
+				if (i < fileItemList.size() - 1) {
+					jsonString += ",";
+				}
+				i++;
+			}
+			jsonString += "}";
+
+		}
+
+		return jsonString;
+	}
 }

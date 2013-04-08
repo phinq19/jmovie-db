@@ -104,7 +104,7 @@ public class WebServerRunner implements Runnable {
 
 				String content = null;
 				if (urlStr != null) {
-					if (!urlStr.startsWith("ajax.html")) {
+					if (!urlStr.startsWith("ajax.html") && !urlStr.startsWith("json.html")) {
 						content = new WebServerHelper(this.mainController).getFileContent(urlStr, this.getKeyValue, this.headerKeyValue);
 
 						// Send the response
@@ -134,10 +134,27 @@ public class WebServerRunner implements Runnable {
 						out.println(content != null ? content : "");
 
 					} else if (urlStr.startsWith("ajax.html")) {
-						content = new WebServerHelper(this.mainController).getAjaxContent(urlStr, this.getKeyValue, this.headerKeyValue);
+						content = new WebServerHelper(this.mainController).getAjaxContent(urlStr, this.getKeyValue, this.headerKeyValue,
+								false);
 						if (content != null) {
 							out.println("HTTP/1.0 200 OK");
 							out.println("Content-Type: text/html; charset=utf-8");
+							out.println("Server: MDB");
+							out.println("");
+							out.println(content);
+						} else {
+							out.println("HTTP/1.0 404 Not Found");
+							out.println("Content-Type: text/html; charset=utf-8");
+							out.println("Server: MDB");
+							out.println("");
+							out.println("404");
+						}
+					} else if (urlStr.startsWith("json.html")) {
+						content = new WebServerHelper(this.mainController).getAjaxContent(urlStr, this.getKeyValue, this.headerKeyValue,
+								true);
+						if (content != null) {
+							out.println("HTTP/1.0 200 OK");
+							out.println("Content-Type: application/json; charset=utf-8");
 							out.println("Server: MDB");
 							out.println("");
 							out.println(content);
