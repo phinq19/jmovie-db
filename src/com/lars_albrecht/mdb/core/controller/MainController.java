@@ -164,11 +164,14 @@ public class MainController implements IFinderListener, ICollectorListener {
 		Debug.log(Debug.LEVEL_INFO, RessourceBundleEx.getInstance().getProperty("application.name") + " ("
 				+ RessourceBundleEx.getInstance().getProperty("application.version") + ")");
 
+		// specify folders to search for files
 		FileFinder.getInstance().addToPathList(new File("."), -1);
 		FileFinder.getInstance().addToPathList(new File("web/"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/web/"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/web/css/"), -1);
+		FileFinder.getInstance().addToPathList(new File("trunk/web/css/vader/"), -1);
+		FileFinder.getInstance().addToPathList(new File("trunk/web/css/vader/images/"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/web/js/"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/web/vendor/"), -1);
 

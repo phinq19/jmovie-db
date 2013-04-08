@@ -428,7 +428,8 @@ public class WebServerHelper {
 	 */
 	public String getAjaxContent(final String url,
 			final ConcurrentHashMap<String, String> GETParams,
-			final ConcurrentHashMap<String, String> headerKeyValue) {
+			final ConcurrentHashMap<String, String> headerKeyValue,
+			final boolean isJSON) {
 		String content = null;
 		if (url != null) {
 			content = "";
@@ -455,6 +456,12 @@ public class WebServerHelper {
 
 					if (content.equalsIgnoreCase("")) {
 						content = "<p>No activities</p>";
+					}
+				} else if (action.equalsIgnoreCase("autocomplete") && GETParams.get("term") != null) {
+					content = ObjectHandler.fileItemListToJSON(ObjectHandler.castObjectListToFileItemList(this.mainController
+							.getDataHandler().findAllFileItemForStringInAll(GETParams.get("term"))));
+					if (content == null) {
+						content = "";
 					}
 				}
 			}

@@ -5,7 +5,29 @@ var statusReloadId;
 $(document).ready(function() {
 	/* start status timer */
 	resetInterval(interval);
+	addAutocompleteSearchBox();
 });
+
+function addAutocompleteSearchBox(){
+	if($('#searchStr').length){
+		var cache = {};
+		$('#searchStr').autocomplete({
+			minLength: 2,
+			source: function( request, response ) {
+				var term = request.term;
+				if ( term in cache ) {
+					response( cache[ term ] );
+					return;
+				}
+				$.getJSON("json.html?action=autocomplete", request, function( data, status, xhr ) {
+					cache[term] = data;
+					response(data);
+					console.log(data);
+				});
+			}
+		});
+	}
+}
 
 function resetInterval(inInterval){
 	if(typeof(statusReloadId) != 'undefined'){
