@@ -1,5 +1,5 @@
 #Fat Jar Configuration File
-#Thu Apr 04 08:20:15 CEST 2013
+#Thu Apr 11 09:07:11 CEST 2013
 onejar.license.required=false
 manifest.classpath=
 manifest.removesigners=true
@@ -11,4 +11,4 @@ manifest.file=<createnew>
 jarname.isextern=false
 onejar.expand=
 excludes=
-includes=
+includes=<inc|mdb-svn/trunk>~web/
