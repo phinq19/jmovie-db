@@ -105,7 +105,8 @@ public class WebServerRunner implements Runnable {
 				String content = null;
 				if (urlStr != null) {
 					if (!urlStr.startsWith("ajax.html") && !urlStr.startsWith("json.html")) {
-						content = new WebServerHelper(this.mainController).getFileContent(urlStr, this.getKeyValue, this.headerKeyValue);
+						content = new WebServerHelper(this.mainController).getFileContent(urlStr, "web", this.getKeyValue,
+								this.headerKeyValue);
 
 						// Send the response
 						// Send the headers

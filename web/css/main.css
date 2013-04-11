@@ -185,10 +185,11 @@ nav a:hover {
 
     nav a {
         float: left;
-        width: 27%;
-        margin: 0 1.7%;
+        width: 14.4%;
+        margin: 0 1%;
         padding: 25px 2%;
         margin-bottom: 0;
+        height:40px;
     }
 
     nav li:first-child a {
@@ -235,7 +236,7 @@ nav a:hover {
 
     nav {
         float: right;
-        width: 38%;
+        width: 55%;
     }
 
 /* ============

@@ -76,9 +76,13 @@ public class FileFinder {
 		fileToFind = new File(fileToFind.getName());
 		File returnFile = null;
 		for (final File file : files) {
-			if (file.isDirectory() && (returnFile = new File(file.getCanonicalPath() + File.separator + fileToFind.getName())) != null
-					&& returnFile.exists() && returnFile.isFile()) {
-				return returnFile;
+			Debug.log(Debug.LEVEL_INFO, "Search file " + fileToFind.getName() + " in " + file.getAbsolutePath());
+			if ((file.isDirectory() && (returnFile = new File(file.getCanonicalPath() + File.separator + fileToFind.getName())) != null
+					&& returnFile.exists() && returnFile.isFile())
+					|| (file.isFile() && file.getName().equalsIgnoreCase(fileToFind.getName()) && (returnFile = file) != null)
+					&& returnFile.exists()) {
+				Debug.log(Debug.LEVEL_INFO, "Found File " + fileToFind.getName() + " in " + file.getAbsolutePath());
+				return new File(returnFile.getAbsolutePath());
 			} else if (file.isDirectory() && file.exists() && recursive) {
 				returnFile = this.findFileInDir(file.listFiles(), fileToFind, recursive);
 				if (returnFile != null) {
