@@ -17,9 +17,10 @@ import com.lars_albrecht.general.utilities.Helper;
  */
 public class ProcExec {
 
-	public static int			SYSTEM_UNKNOWN	= -1;
-	public static int			SYSTEM_WIN		= 0;
-	public static int			SYSTEM_UNIX		= 1;
+	public static final int		SYSTEM_UNKNOWN	= -1;
+	public static final int		SYSTEM_WIN		= 0;
+	public static final int		SYSTEM_UNIX		= 1;
+	public static final int		SYSTEM_MACOS	= 2;
 	public InputStreamReader	input			= null;
 
 	private static int			system			= ProcExec.SYSTEM_UNKNOWN;
@@ -27,6 +28,20 @@ public class ProcExec {
 	static boolean isLinuxSystem() {
 		final String osName = System.getProperty("os.name").toLowerCase();
 		return osName.indexOf("linux") >= 0;
+	}
+
+	static boolean isUnixSystem() {
+		if (ProcExec.isLinuxSystem()) {
+			return true;
+		} else {
+			final String osName = System.getProperty("os.name").toLowerCase();
+			return osName.indexOf("nix") >= 0 || osName.indexOf("nux") >= 0 || osName.indexOf("aix") > 0;
+		}
+	}
+
+	static boolean isMacOsSystem() {
+		final String osName = System.getProperty("os.name").toLowerCase();
+		return osName.indexOf("mac") >= 0;
 	}
 
 	static boolean isWindowsSystem() {
@@ -37,7 +52,9 @@ public class ProcExec {
 	public ProcExec() {
 		if (ProcExec.isWindowsSystem()) {
 			ProcExec.system = ProcExec.SYSTEM_WIN;
-		} else if (ProcExec.isLinuxSystem()) {
+		} else if (ProcExec.isMacOsSystem()) {
+			ProcExec.system = ProcExec.SYSTEM_MACOS;
+		} else if (ProcExec.isUnixSystem()) {
 			ProcExec.system = ProcExec.SYSTEM_UNIX;
 		} else {
 			ProcExec.system = ProcExec.SYSTEM_UNKNOWN;
@@ -56,14 +73,25 @@ public class ProcExec {
 
 	public BufferedReader getProcOutput(final String command, final String[] parameters) throws IOException {
 		if (ProcExec.system != ProcExec.SYSTEM_UNKNOWN) {
-			// "cmd /c"
-			final Process process = Runtime.getRuntime().exec(
-					((ProcExec.system == ProcExec.SYSTEM_WIN) ? " " + command : command) + " "
-							+ Helper.implode(parameters, " ", null, null));
+			String osCommand = null;
+			switch (ProcExec.system) {
+				case SYSTEM_WIN:
+					// "cmd /c"
+					osCommand = " " + command + " " + Helper.implode(parameters, " ", null, null);
+					break;
+				case SYSTEM_MACOS:
+					osCommand = "open " + command + " " + Helper.implode(parameters, " ", null, null);
+				case SYSTEM_UNIX:
+					osCommand = command + " " + Helper.implode(parameters, " ", null, null);
+					break;
+				default:
+					return null;
+			}
+
+			final Process process = Runtime.getRuntime().exec(osCommand);
 			this.input = new InputStreamReader(process.getInputStream());
 			return new BufferedReader(this.input);
 		}
 		return null;
 	}
-
 }
