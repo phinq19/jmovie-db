@@ -46,7 +46,7 @@
 
 {attributesList-start}
 	<div class="infoSection">
-		<h4 id="{id}">{title}</h4>
+		<h4 id="{id}">{infotype-title}</h4>
 		{sections}
 	</div>
 {attributesList-end}

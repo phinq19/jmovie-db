@@ -259,7 +259,7 @@ public class WebServerHelper {
 						// create a new one for each infoType
 						currentInfoType = attributeList.getKeyValues().get(0).getKey().getInfoType();
 						attributesList = detailViewTemplate.getSubMarkerContent("attributesList");
-						attributesList = Template.replaceMarker(attributesList, "title", currentInfoType, Boolean.FALSE);
+						attributesList = Template.replaceMarker(attributesList, "infotype-title", currentInfoType, Boolean.FALSE);
 						attributesList = Template.replaceMarker(attributesList, "id", currentInfoType, Boolean.FALSE);
 					}
 
