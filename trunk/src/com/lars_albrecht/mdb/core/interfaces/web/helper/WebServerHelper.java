@@ -54,7 +54,7 @@ public class WebServerHelper {
 			pagename = "browser";
 		} else if (actionname.equalsIgnoreCase("showSettings")) {
 			pagename = "settings";
-		} else if (actionname.equalsIgnoreCase("showAttrtibutes")) {
+		} else if (actionname.equalsIgnoreCase("showAttributes")) {
 			pagename = "attributes";
 		} else if (actionname.equalsIgnoreCase("showInfoControl")) {
 			pagename = "infocontrol";
@@ -77,7 +77,7 @@ public class WebServerHelper {
 			title = "Browser";
 		} else if (actionname.equalsIgnoreCase("showSettings")) {
 			title = "Settings";
-		} else if (actionname.equalsIgnoreCase("showAttrtibutes")) {
+		} else if (actionname.equalsIgnoreCase("showAttributes")) {
 			title = "Attributes";
 		} else if (actionname.equalsIgnoreCase("showInfoControl")) {
 			title = "Info / Control";
