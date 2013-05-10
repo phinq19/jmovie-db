@@ -1,0 +1,59 @@
+<div id="infoView" class="contentPart">
+	{content}
+	{controlView}
+</div>
+
+{information-start}
+	<h2>Informationen</h2>
+	<h3 class="tableHeader">Anzahl Einträge</h3>
+	<table>
+		<tr>
+			<th>Typ</th>
+			<th>Anzahl</th>
+		</tr>
+		<tr>
+			<td>File Count</td>
+			<td>{fileCount}</td>
+		</tr>
+		<tr>
+			<td>Key Count</td>
+			<td>{keyCount}</td>
+		</tr>
+		<tr>
+			<td>Value Count</td>
+			<td>{valueCount}</td>
+		</tr>
+		<tr>
+			<td>Filetypes (count of files)</td>
+			<td>{countOfFiletypes}</td>
+		</tr>
+	</table>
+{information-end}
+
+{controlView-start}
+	<div id="controlView" class="contentPart">
+		{statusArea}
+	
+		<h3>Control</h3>
+		<nav>
+			<ul>
+				<li><a href="{finderHref}" class="{finderClass}">Start Finder</a></li>
+				<li><a href="{collectorHref}" class="{collectorClass}">Start Collectors</a></li>
+			</ul>
+		</nav>
+	</div>
+{controlView-end}
+
+{statusArea-start}
+	<div id="statusArea">
+		{statusMessages}
+	</div>
+{statusArea-end}
+
+{statusMessage-start}
+	<p>{message}</p>
+{statusMessage-end}
+
+{noInformation-start}
+	<p>Ein Fehler ist aufgetreten. Konnte keine Informationen finden/zählen.</p>
+{noInformation-end}

@@ -34,9 +34,10 @@ h2, h3, h4, h5											{margin:0;}
 #detailView #attributes .infoSection .sectionSection	{margin-bottom:10px;}
 
 
-#controlView #statusArea								{color:#fff; background-color:#888; font-family:console; padding:5px; border:1px solid #000; margin-bottom:20px;}
+#controlView #statusArea								{color:#fff; background-color:#888; font-family:console; padding:5px; border:1px solid #000; margin:20px 0;}
 #controlView #statusArea p								{margin:0.5em 0;}
 
+#controlView nav ul a.disabled 							{color:#888888;}
 
 #searchresultsView .searchResultCount					{font-weight:bold;}
 #searchresultsView .searchTerm,
