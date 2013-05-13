@@ -119,4 +119,24 @@ public class ObjectHandler {
 
 		return jsonString;
 	}
+
+	public static String stringListToJSON(final ArrayList<String> stringList) {
+		String jsonString = null;
+
+		if (stringList != null && stringList.size() > 0) {
+			jsonString = "{";
+			int i = 0;
+			for (final String string : stringList) {
+				jsonString += "\"" + string + "\"" + ":" + "\"" + string + "\"";
+				if (i < stringList.size() - 1) {
+					jsonString += ",";
+				}
+				i++;
+			}
+
+			jsonString += "}";
+		}
+
+		return jsonString;
+	}
 }

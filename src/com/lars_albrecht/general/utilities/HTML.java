@@ -29,6 +29,7 @@ public class HTML {
 	 * @param printOutCount
 	 * @return String
 	 */
+	@Deprecated
 	public static String generateListOutput(final ArrayList<FileItem> fileItemList,
 			final String[] searchTerms,
 			final Integer searchType,

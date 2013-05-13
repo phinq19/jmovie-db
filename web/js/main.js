@@ -10,9 +10,19 @@ $(document).ready(function() {
 
 function addAutocompleteSearchBox(){
 	if($('#searchStr').length){
+	
+		function split(val) {
+			return val.split(/,\s*/);
+		}
+		function extractLast(term) {
+			return split(term).pop();
+		}
+	
 		var cache = {};
 		$('#searchStr').autocomplete({
 			minLength: 2,
+			multiple : true,
+			multipleSeparator : ', ',
 			source: function( request, response ) {
 				var term = request.term;
 				if ( term in cache ) {
@@ -22,7 +32,7 @@ function addAutocompleteSearchBox(){
 				$.getJSON("json.html?action=autocomplete", request, function( data, status, xhr ) {
 					cache[term] = data;
 					response(data);
-					console.log(data);
+					//console.log(data);
 				});
 			}
 		});

@@ -125,10 +125,6 @@ public class WebServerHelper {
 				if (action.equalsIgnoreCase("showAttributes") || action.equalsIgnoreCase("showBrowser")
 						|| action.equalsIgnoreCase("showSettings")) {
 					contentMarkerReplacement = new Template(pagename, contentMarkerReplacements).getContent();
-				} else if (action.equalsIgnoreCase("showSearchresults")) {
-					contentMarkerReplacement = this.generateSearchresults(GETParams);
-					// moved -> subTitle =
-					// this.getTitleForSearchresults(GETParams);
 				}
 			}
 
@@ -157,6 +153,7 @@ public class WebServerHelper {
 			if (Template.containsMarker(generatedContent, "lastFiveAdded")) {
 				final ArrayList<FileItem> lastFiveList = ObjectHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
 						.findAll(new FileItem(), 5));
+				@SuppressWarnings("deprecation")
 				final String listOutput = HTML.generateListOutput(lastFiveList, null, null, false);
 				generatedContent = Template.replaceMarker(generatedContent, "lastFiveAdded", listOutput, Boolean.FALSE);
 			}
@@ -169,69 +166,6 @@ public class WebServerHelper {
 		}
 
 		return generatedContent;
-	}
-
-	/**
-	 * Search with "=" for attributes must check if the search string is end
-	 * after " " or if it is surrounded by """.
-	 * 
-	 * @param GETParams
-	 * @return String
-	 * @throws UnsupportedEncodingException
-	 */
-	private String generateSearchresults(final ConcurrentHashMap<String, String> GETParams) throws UnsupportedEncodingException {
-		String resultStr = "<div id=\"searchresultsView\" class=\"contentPart\">";
-		if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
-			// get DATA for output
-			final String searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8")).replaceAll("[\"]", "");
-			int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
-
-			String searchKey = null;
-			String searchValue = null;
-			String[] searchStrList = null;
-			final ArrayList<FileItem> foundList = new ArrayList<FileItem>();
-			if (searchStr.contains(" ")) {
-				searchStrList = searchStr.split(" ");
-			} else {
-				searchStrList = new String[] {
-					searchStr
-				};
-			}
-
-			for (final String searchStrItem : searchStrList) {
-				searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
-				if (searchStrItem.contains("=")) {
-					final String[] searchArr = searchStrItem.split("=");
-					if (searchArr.length == 2) {
-						searchKey = searchArr[0];
-						searchValue = searchArr[1];
-						if (this.mainController.getDataHandler().isKeyInKeyList(searchKey)) {
-							searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
-						}
-
-					}
-				}
-
-				switch (searchType) {
-					default:
-					case SEARCHTYPE_TEXTALL:
-						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAll(searchStrItem))));
-						break;
-					case SEARCHTYPE_ATTRIBUTE:
-						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAttributesByKeyValue(searchKey, searchValue))));
-						break;
-				}
-			}
-			resultStr += HTML.generateListOutput(Helper.uniqueList(foundList), searchStrList,
-					searchStrList.length > 1 ? WebServerHelper.SEARCHTYPE_MIXED : searchType, true);
-		} else {
-			resultStr += "<p>Suchen Sie mit hilfe der Suche</p>";
-		}
-
-		resultStr += "</div>";
-		return resultStr;
 	}
 
 	/**
@@ -317,8 +251,24 @@ public class WebServerHelper {
 						content = "<p>No activities</p>";
 					}
 				} else if (action.equalsIgnoreCase("autocomplete") && GETParams.get("term") != null) {
-					content = ObjectHandler.fileItemListToJSON(ObjectHandler.castObjectListToFileItemList(this.mainController
-							.getDataHandler().findAllFileItemForStringInAll(GETParams.get("term"))));
+					if (GETParams.get("term").contains("=")) {
+						final String searchKey = GETParams.get("term").substring(0, GETParams.get("term").indexOf("="));
+						final String searchValue = GETParams.get("term").substring(GETParams.get("term").indexOf("=") + 1);
+						if(searchValue != null && !searchValue.equalsIgnoreCase(""){
+							final ArrayList<String> keyList = this.mainController.getDataHandler().findAllValuesForKeyWithValuePart(searchKey, searchValue);
+						} else {
+							final ArrayList<String> keyList = this.mainController.getDataHandler().findAllValuesForKey(searchKey);
+						}
+						final ArrayList<String> newKeyList = new ArrayList<String>();
+						for (final String string : keyList) {
+							newKeyList.add(searchKey + "=" + string);
+						}
+						// TODO only show real value, but set with "type="
+						content = ObjectHandler.stringListToJSON(newKeyList);
+					} else {
+						content = ObjectHandler.fileItemListToJSON(ObjectHandler.castObjectListToFileItemList(this.mainController
+								.getDataHandler().findAllFileItemForStringInAll(GETParams.get("term"))));
+					}
 					if (content == null) {
 						content = "";
 					}
@@ -328,5 +278,4 @@ public class WebServerHelper {
 
 		return content;
 	}
-
 }

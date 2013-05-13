@@ -78,6 +78,65 @@ public class DataHandler {
 		return result;
 	}
 
+	public ArrayList<String> findAllValuesForKeyWithValuePart(final String key, final String valuePart) {
+		final ArrayList<String> resultList = new ArrayList<String>();
+
+		if (!key.equalsIgnoreCase("")) {
+			ResultSet rs = null;
+
+			final String sql = "SELECT DISTINCT value.value AS value FROM typeInformation_key AS key "
+					+ "LEFT JOIN typeInformation AS ti ON ti.key_id = key.id "
+					+ "LEFT JOIN typeInformation_value AS value ON value.id = ti.value_id " + "WHERE key.key = ? AND value LIKE %?";
+
+			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
+			values.put(1, key);
+			values.put(2, valuePart);
+
+			try {
+				rs = DB.queryPS(sql, values);
+				for (; rs.next();) {
+					resultList.add(rs.getString("value"));
+				}
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		return resultList;
+	}
+
+	public ArrayList<String> findAllValuesForKey(final String key) {
+		final ArrayList<String> resultList = new ArrayList<String>();
+
+		if (!key.equalsIgnoreCase("")) {
+			ResultSet rs = null;
+
+			final String sql = "SELECT DISTINCT value.value AS value FROM typeInformation_key AS key "
+					+ "LEFT JOIN typeInformation AS ti ON ti.key_id = key.id "
+					+ "LEFT JOIN typeInformation_value AS value ON value.id = ti.value_id " + "WHERE key.key = ?";
+
+			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
+			values.put(1, key);
+
+			try {
+				rs = DB.queryPS(sql, values);
+				for (; rs.next();) {
+					resultList.add(rs.getString("value"));
+				}
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+
+		}
+
+		return resultList;
+	}
+
 	/**
 	 * Finds all items of the given IPersistable object in database and return a
 	 * list of them.
