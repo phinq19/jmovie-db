@@ -1,3 +1,47 @@
-<div id="attributesView" class="contentPart">
-	<p>Diese Anzeige ist aktuell nicht verfügbar.</p>
+<div id="settingsView" class="contentPart">
+	{content}
 </div>
+
+{settingsFields-start}
+	<div id="searchSettings">
+		<form action="?action=showSettings&do=save" method="post">
+		{searchSettings}
+		</form>
+	</div>
+{settingsFields-end}
+
+{searchSettings-start}
+	<h2>Suche</h2>
+	<h3 class="tableHeader">Einstellungen für die Suche</h3>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Einstellung</th>
+		</tr>
+		<tr>
+			<td>Sortieren nach...</td>
+			<td>
+				<select name="sortOption">
+					{sortOptions}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Maximale Anzahl der Suchergebnisse</td>
+			<td>
+				<select name="maxResultsOption">
+					<option value="0">Alle</option>
+					<option value="25">25</option>
+					<option value="50">50</option>
+					<option value="100">100</option>
+					<option value="250">250</option>
+					<option value="500">500</option>
+				</select>
+			</td>
+		</tr>
+	</table>
+{searchSettings-end}
+
+{selectOption-start}
+	<option value="{optionValue}" {selected}>{optionTitle}</option>
+{selectOption-end}

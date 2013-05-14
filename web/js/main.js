@@ -6,7 +6,19 @@ $(document).ready(function() {
 	/* start status timer */
 	resetInterval(interval);
 	addAutocompleteSearchBox();
+	
+	addSettingsActions();
 });
+
+function addSettingsActions(){
+	if($('#searchSettings').length){
+		$('#searchSettings').find('select').each(function(){
+			$(this).change(function(){
+				$(this).parents('form:first').submit();
+			});
+		});
+	}
+}
 
 function addAutocompleteSearchBox(){
 	if($('#searchStr').length){
@@ -32,7 +44,6 @@ function addAutocompleteSearchBox(){
 				$.getJSON("json.html?action=autocomplete", request, function( data, status, xhr ) {
 					cache[term] = data;
 					response(data);
-					//console.log(data);
 				});
 			}
 		});

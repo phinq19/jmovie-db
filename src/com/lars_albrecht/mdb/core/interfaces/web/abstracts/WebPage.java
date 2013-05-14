@@ -3,10 +3,9 @@
  */
 package com.lars_albrecht.mdb.core.interfaces.web.abstracts;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 
 /**
  * @author lalbrecht
@@ -14,13 +13,12 @@ import com.lars_albrecht.mdb.core.controller.MainController;
  */
 public abstract class WebPage {
 
-	private Template							pageTemplate	= null;
-	protected MainController					mainController	= null;
-	protected ConcurrentHashMap<String, String>	GETParams		= null;
+	private Template			pageTemplate	= null;
+	protected MainController	mainController	= null;
+	protected WebServerRequest	request			= null;
 
-	public WebPage(final String actionname, final ConcurrentHashMap<String, String> GETParams, final MainController mainController)
-			throws Exception {
-		this.GETParams = GETParams;
+	public WebPage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
+		this.request = request;
 		this.mainController = mainController;
 
 		if (this.getTemplateName() != null) {

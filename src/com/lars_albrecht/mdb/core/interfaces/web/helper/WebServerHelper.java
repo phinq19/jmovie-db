@@ -21,10 +21,12 @@ import com.lars_albrecht.mdb.Main;
 import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.FileDetailsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.HomePage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.SearchResultsPage;
+import com.lars_albrecht.mdb.core.interfaces.web.pages.SettingsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.ShowInfoControlPage;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
@@ -74,15 +76,12 @@ public class WebServerHelper {
 	 * 
 	 * @param content
 	 * @param filename
-	 * @param GETParams
-	 * @param headerKeyValue
+	 * @param request
 	 * @return String
 	 * @throws UnsupportedEncodingException
 	 */
-	private String generateContent(final String content,
-			final String filename,
-			final ConcurrentHashMap<String, String> GETParams,
-			final ConcurrentHashMap<String, String> headerKeyValue) throws UnsupportedEncodingException {
+	private String
+			generateContent(final String content, final String filename, final WebServerRequest request) throws UnsupportedEncodingException {
 		String generatedContent = content;
 		String contentMarkerReplacement = "";
 		// System.out.println("Params: " + GETParams);
@@ -91,8 +90,8 @@ public class WebServerHelper {
 
 		if (filename.equalsIgnoreCase("index.html") || filename.equalsIgnoreCase("")) {
 			String action = null;
-			if (GETParams.containsKey("action")) {
-				action = GETParams.get("action");
+			if (request.getGetParams().containsKey("action")) {
+				action = request.getGetParams().get("action");
 			} else {
 				action = "index";
 			}
@@ -103,13 +102,15 @@ public class WebServerHelper {
 			try {
 				WebPage page = null;
 				if (action.equalsIgnoreCase("index")) {
-					page = new HomePage(action, GETParams, this.mainController);
+					page = new HomePage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showInfoControl")) {
-					page = new ShowInfoControlPage(action, GETParams, this.mainController);
+					page = new ShowInfoControlPage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showFileDetails")) {
-					page = new FileDetailsPage(action, GETParams, this.mainController);
+					page = new FileDetailsPage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showSearchresults")) {
-					page = new SearchResultsPage(action, GETParams, this.mainController);
+					page = new SearchResultsPage(action, request, this.mainController);
+				} else if (action.equalsIgnoreCase("showSettings")) {
+					page = new SettingsPage(action, request, this.mainController);
 				}
 
 				contentMarkerReplacement = page.getGeneratedContent();
@@ -139,10 +140,10 @@ public class WebServerHelper {
 
 			// replace "free" marker.
 			if (Template.containsMarker(content, "searchTerm")) {
-				if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
+				if (request.getGetParams().containsKey("searchStr") && (request.getGetParams().get("searchStr") != null)) {
 					try {
 						generatedContent = Template.replaceMarker(generatedContent, "searchTerm",
-								URLDecoder.decode(GETParams.get("searchStr"), "utf-8"), Boolean.FALSE);
+								URLDecoder.decode(request.getGetParams().get("searchStr"), "utf-8"), Boolean.FALSE);
 					} catch (final UnsupportedEncodingException e) {
 						generatedContent = e.getMessage();
 					}
@@ -174,14 +175,10 @@ public class WebServerHelper {
 	 * 
 	 * @param url
 	 * @param folder
-	 * @param GETParams
-	 * @param headerKeyValue
+	 * @param request
 	 * @return String
 	 */
-	public String getFileContent(String url,
-			final String folder,
-			final ConcurrentHashMap<String, String> GETParams,
-			final ConcurrentHashMap<String, String> headerKeyValue) {
+	public String getFileContent(String url, final String folder, final WebServerRequest request) {
 		File file = null;
 		if (url != null) {
 			if (url.equalsIgnoreCase("")) {
@@ -197,7 +194,7 @@ public class WebServerHelper {
 					return content;
 				} else if (file != null && (file = FileFinder.getInstance().findFile(new File(new File(url).getName()), false)) != null
 						&& file.exists() && file.isFile() && file.canRead()) {
-					content = this.generateContent(Helper.getFileContents(file), file.getName(), GETParams, headerKeyValue);
+					content = this.generateContent(Helper.getFileContents(file), file.getName(), request);
 					return content;
 				} else {
 					Debug.log(Debug.LEVEL_ERROR, "InputStream == null && File == null: " + file);
@@ -215,19 +212,16 @@ public class WebServerHelper {
 	 * The file must be in /web/
 	 * 
 	 * @param url
-	 * @param GETParams
-	 * @param headerKeyValue
+	 * @param request
 	 * @return String
 	 */
-	public String getAjaxContent(final String url,
-			final ConcurrentHashMap<String, String> GETParams,
-			final ConcurrentHashMap<String, String> headerKeyValue,
-			final boolean isJSON) {
+	public String getAjaxContent(final String url, final WebServerRequest request, final boolean isJSON) {
 		String content = null;
 		if (url != null) {
 			content = "";
-			if (GETParams != null && GETParams.size() > 0 && GETParams.containsKey("action") && GETParams.get("action") != null) {
-				final String action = GETParams.get("action");
+			if (request.getGetParams() != null && request.getGetParams().size() > 0 && request.getGetParams().containsKey("action")
+					&& request.getGetParams().get("action") != null) {
+				final String action = request.getGetParams().get("action");
 				if (action.equalsIgnoreCase("getStatus")) {
 					if (this.mainController.getfController().getThreadList().size() > 0) {
 						content += "<p>Finder is running</p>";
@@ -250,14 +244,17 @@ public class WebServerHelper {
 					if (content.equalsIgnoreCase("")) {
 						content = "<p>No activities</p>";
 					}
-				} else if (action.equalsIgnoreCase("autocomplete") && GETParams.get("term") != null) {
-					if (GETParams.get("term").contains("=")) {
-						final String searchKey = GETParams.get("term").substring(0, GETParams.get("term").indexOf("="));
-						final String searchValue = GETParams.get("term").substring(GETParams.get("term").indexOf("=") + 1);
-						if(searchValue != null && !searchValue.equalsIgnoreCase(""){
-							final ArrayList<String> keyList = this.mainController.getDataHandler().findAllValuesForKeyWithValuePart(searchKey, searchValue);
+				} else if (action.equalsIgnoreCase("autocomplete") && request.getGetParams().get("term") != null) {
+					if (request.getGetParams().get("term").contains("=")) {
+						ArrayList<String> keyList = null;
+						final String searchKey = request.getGetParams().get("term")
+								.substring(0, request.getGetParams().get("term").indexOf("="));
+						final String searchValue = request.getGetParams().get("term")
+								.substring(request.getGetParams().get("term").indexOf("=") + 1);
+						if (searchValue != null && !searchValue.equalsIgnoreCase("")) {
+							keyList = this.mainController.getDataHandler().findAllValuesForKeyWithValuePart(searchKey, searchValue);
 						} else {
-							final ArrayList<String> keyList = this.mainController.getDataHandler().findAllValuesForKey(searchKey);
+							keyList = this.mainController.getDataHandler().findAllValuesForKey(searchKey);
 						}
 						final ArrayList<String> newKeyList = new ArrayList<String>();
 						for (final String string : keyList) {
@@ -267,7 +264,7 @@ public class WebServerHelper {
 						content = ObjectHandler.stringListToJSON(newKeyList);
 					} else {
 						content = ObjectHandler.fileItemListToJSON(ObjectHandler.castObjectListToFileItemList(this.mainController
-								.getDataHandler().findAllFileItemForStringInAll(GETParams.get("term"))));
+								.getDataHandler().findAllFileItemForStringInAll(request.getGetParams().get("term"))));
 					}
 					if (content == null) {
 						content = "";

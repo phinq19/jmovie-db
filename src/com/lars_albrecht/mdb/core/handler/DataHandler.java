@@ -238,10 +238,18 @@ public class DataHandler {
 			ResultSet rs = null;
 			where = " WHERE (tiValue.value LIKE '%" + searchStr + "%')";
 
+			String searchResultOrderOption = (String) OptionsHandler.getOption("searchResultOrder");
+			if (searchResultOrderOption == null) {
+				searchResultOrderOption = "fileInformation.name";
+				OptionsHandler.setOption("searchResultOrder", searchResultOrderOption);
+			}
+
+			final String order = " ORDER BY " + searchResultOrderOption;
+
 			final String sql = "SELECT fi.* FROM '" + fileItem.getDatabaseTable() + "' AS fi LEFT JOIN " + " 	typeInformation as ti "
 					+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
 					+ " 	tiKey.id = ti.key_id " + "LEFT JOIN " + "	typeInformation_value AS tiValue " + "ON "
-					+ "	tiValue.id = ti.value_id " + where;
+					+ "	tiValue.id = ti.value_id " + where + order;
 			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.query(sql);
@@ -279,10 +287,18 @@ public class DataHandler {
 				ResultSet rs = null;
 				where = " WHERE (tiValue.value LIKE '%" + value + "%' AND tiKey.key LIKE '%" + key + "%' )";
 
+				String searchResultOrderOption = (String) OptionsHandler.getOption("searchResultOrder");
+				if (searchResultOrderOption == null) {
+					searchResultOrderOption = "fileInformation.name";
+					OptionsHandler.setOption("searchResultOrder", searchResultOrderOption);
+				}
+
+				final String order = " ORDER BY " + searchResultOrderOption;
+
 				final String sql = "SELECT fi.* FROM '" + fileItem.getDatabaseTable() + "' AS fi LEFT JOIN " + " 	typeInformation as ti "
 						+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
 						+ " 	tiKey.id = ti.key_id " + "LEFT JOIN " + "	typeInformation_value AS tiValue " + "ON "
-						+ "	tiValue.id = ti.value_id " + where;
+						+ "	tiValue.id = ti.value_id " + where + order;
 				Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 				try {
 					rs = DB.query(sql);
