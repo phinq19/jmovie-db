@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.util.zip.CRC32;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public class ChecksumCRC32 {

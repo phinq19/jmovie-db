@@ -9,7 +9,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
- * @author albrela
+ * @author lalbrecht
  * 
  */
 public abstract class ATyper {
