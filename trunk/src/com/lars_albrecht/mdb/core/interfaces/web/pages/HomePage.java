@@ -3,9 +3,8 @@
  */
 package com.lars_albrecht.mdb.core.interfaces.web.pages;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 
 /**
@@ -14,9 +13,8 @@ import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
  */
 public class HomePage extends WebPage {
 
-	public HomePage(final String actionname, final ConcurrentHashMap<String, String> GETParams, final MainController mainController)
-			throws Exception {
-		super(actionname, GETParams, mainController);
+	public HomePage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
+		super(actionname, request, mainController);
 	}
 
 	@Override

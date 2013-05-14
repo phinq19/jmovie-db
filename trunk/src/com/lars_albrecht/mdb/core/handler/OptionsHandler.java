@@ -44,7 +44,7 @@ public class OptionsHandler {
 		values.put(1, optionName);
 		values.put(2, optionValue);
 		try {
-			DB.updatePS("INSERT OR IGNORE INTO options (name, value) VALUES (?, ?)", values);
+			DB.updatePS("REPLACE INTO options (name, value) VALUES (?, ?)", values);
 		} catch (final SQLException e) {
 			e.printStackTrace();
 		} catch (final Exception e) {

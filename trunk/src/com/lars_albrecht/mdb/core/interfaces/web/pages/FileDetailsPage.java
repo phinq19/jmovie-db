@@ -6,11 +6,11 @@ package com.lars_albrecht.mdb.core.interfaces.web.pages;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
@@ -22,12 +22,11 @@ import com.lars_albrecht.mdb.core.models.KeyValue;
  */
 public class FileDetailsPage extends WebPage {
 
-	public FileDetailsPage(final String actionname, final ConcurrentHashMap<String, String> GETParams, final MainController mainController)
-			throws Exception {
-		super(actionname, GETParams, mainController);
+	public FileDetailsPage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
+		super(actionname, request, mainController);
 
-		if (GETParams.containsKey("fileId") && (GETParams.get("fileId") != null)) {
-			final Integer fileId = Integer.parseInt(GETParams.get("fileId"));
+		if (request.getGetParams().containsKey("fileId") && (request.getGetParams().get("fileId") != null)) {
+			final Integer fileId = Integer.parseInt(request.getGetParams().get("fileId"));
 
 			if ((fileId != null) && (fileId > 0)) {
 				final FileItem tempFileItem = this.mainController.getDataHandler().findAllInfoForAllByFileId(fileId);
@@ -196,8 +195,8 @@ public class FileDetailsPage extends WebPage {
 	@Override
 	public String getTitle() {
 		String title;
-		if (this.GETParams.containsKey("fileId") && (this.GETParams.get("fileId") != null)) {
-			final Integer fileId = Integer.parseInt(this.GETParams.get("fileId"));
+		if (this.request.getGetParams().containsKey("fileId") && (this.request.getGetParams().get("fileId") != null)) {
+			final Integer fileId = Integer.parseInt(this.request.getGetParams().get("fileId"));
 			if ((fileId != null) && (fileId > 0)) {
 				final FileItem tempFileItem = this.mainController.getDataHandler().findAllInfoForAllByFileId(fileId);
 				if (tempFileItem != null) {

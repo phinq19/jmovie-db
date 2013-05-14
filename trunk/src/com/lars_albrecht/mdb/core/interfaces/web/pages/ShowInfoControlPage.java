@@ -11,6 +11,7 @@ import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.models.FileItem;
 
@@ -20,9 +21,9 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  */
 public class ShowInfoControlPage extends WebPage {
 
-	public ShowInfoControlPage(final String actionname, final ConcurrentHashMap<String, String> GETParams,
-			final MainController mainController) throws Exception {
-		super(actionname, GETParams, mainController);
+	public ShowInfoControlPage(final String actionname, final WebServerRequest request, final MainController mainController)
+			throws Exception {
+		super(actionname, request, mainController);
 
 		final ConcurrentHashMap<String, Object> info = this.mainController.getDataHandler().getInfoFromDatabase();
 		final Template infoControlViewTemplate = this.getPageTemplate();
@@ -49,7 +50,8 @@ public class ShowInfoControlPage extends WebPage {
 		final ArrayList<String> statusMessages = new ArrayList<String>();
 
 		// isStartFinder
-		if (GETParams.containsKey("do") && (GETParams.get("do") != null) && GETParams.get("do").equalsIgnoreCase("startFinder")) {
+		if (request.getGetParams().containsKey("do") && (request.getGetParams().get("do") != null)
+				&& request.getGetParams().get("do").equalsIgnoreCase("startFinder")) {
 			finderHrefString = "javascript:void(0)";
 			finderClassString = "disabled";
 
@@ -57,7 +59,8 @@ public class ShowInfoControlPage extends WebPage {
 		}
 
 		// isStartCollectors
-		if (GETParams.containsKey("do") && (GETParams.get("do") != null) && GETParams.get("do").equalsIgnoreCase("startCollectors")) {
+		if (request.getGetParams().containsKey("do") && (request.getGetParams().get("do") != null)
+				&& request.getGetParams().get("do").equalsIgnoreCase("startCollectors")) {
 			collectorHrefString = "javascript:void(0)";
 			collectorClassString = "disabled";
 

@@ -13,6 +13,7 @@ import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
 import com.lars_albrecht.mdb.core.models.FileItem;
@@ -27,11 +28,10 @@ public class SearchResultsPage extends WebPage {
 	public final static int	SEARCHTYPE_TEXTALL		= 1;
 	public final static int	SEARCHTYPE_ATTRIBUTE	= 2;
 
-	public SearchResultsPage(final String actionname, final ConcurrentHashMap<String, String> GETParams, final MainController mainController)
-			throws Exception {
-		super(actionname, GETParams, mainController);
+	public SearchResultsPage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
+		super(actionname, request, mainController);
 
-		this.setPageTemplate(this.generateSearchresults(this.getPageTemplate(), GETParams));
+		this.setPageTemplate(this.generateSearchresults(this.getPageTemplate(), request.getGetParams()));
 	}
 
 	/**
@@ -140,8 +140,8 @@ public class SearchResultsPage extends WebPage {
 	@Override
 	public String getTitle() {
 		String searchStr = "";
-		if (this.GETParams.containsKey("searchStr") && (this.GETParams.get("searchStr") != null)) {
-			searchStr = this.GETParams.get("searchStr");
+		if (this.request.getGetParams().containsKey("searchStr") && (this.request.getGetParams().get("searchStr") != null)) {
+			searchStr = this.request.getGetParams().get("searchStr");
 		}
 		return "Suchergebnisse für: " + searchStr;
 	}
