@@ -179,8 +179,8 @@ public class Template {
 	}
 
 	public static String getClearedContent(String content) {
-		content = content.replaceAll("(\\{(.*?)-start\\}(.*?)\\{(.*?)-end\\})", "");
-		content = content.replaceAll("(\\{(.*)\\})", "");
+		content = content.replaceAll("(\\{([a-zA-Z0-9]+?-start)\\})(.*?)(\\{([a-zA-Z0-9]+?-end)\\})", "");
+		content = content.replaceAll("(\\{(.*?)\\})", "");
 
 		return content;
 	}
