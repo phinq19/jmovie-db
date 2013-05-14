@@ -79,6 +79,7 @@ public class FileDetailsPage extends WebPage {
 				String attributesList = "";
 				String sectionList = "";
 				String attributeSectionList = "";
+				String images = "";
 				// for each attribute ...
 				for (final FileAttributeList attributeList : item.getAttributes()) {
 					if ((currentInfoType == null)
@@ -98,7 +99,8 @@ public class FileDetailsPage extends WebPage {
 					}
 
 					// fill sectionlist
-					if ((attributeList.getKeyValues() != null) && (attributeList.getKeyValues().size() > 0)) {
+					if ((!attributeList.getSectionName().equalsIgnoreCase("images")) && (attributeList.getKeyValues() != null)
+							&& (attributeList.getKeyValues().size() > 0)) {
 						sectionList += detailViewTemplate.getSubMarkerContent("attributeListSection");
 						sectionList = Template.replaceMarker(sectionList, "sectionname", attributeList.getSectionName(), Boolean.TRUE);
 						sectionList = Template.replaceMarker(sectionList, "keyTitle", "Key", Boolean.TRUE);
@@ -145,14 +147,34 @@ public class FileDetailsPage extends WebPage {
 						} catch (final UnsupportedEncodingException e) {
 							e.printStackTrace();
 						}
+					} else if (attributeList.getSectionName().equalsIgnoreCase("images")) {
+						String imageContainer = "";
+						String tempImageContainer = null;
+						for (final KeyValue<String, Object> keyValue : attributeList.getKeyValues()) {
+							if (keyValue.getKey().getKey().equalsIgnoreCase("poster_path")) {
+								tempImageContainer = detailViewTemplate.getSubMarkerContent("image");
+								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageSrc", (String) keyValue.getValue()
+										.getValue(), false);
+								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageTitle", keyValue.getKey().getKey(),
+										false);
+
+								imageContainer += tempImageContainer;
+							} else {
+								// TODO create galley for the other pictures
+							}
+						}
+						images = imageContainer;
 					}
 					i++;
 				}
+
 				// add last attribute sections
 				attributeSectionList += Template.replaceMarker(attributesList, "sections", sectionList, Boolean.TRUE);
 
 				// add all attribute sections to attributes
 				attributes = Template.replaceMarker(attributes, "attributesList", attributeSectionList, Boolean.TRUE);
+
+				detailViewTemplate.replaceMarker("images", images, Boolean.FALSE);
 
 				// add all attributes to template
 				detailViewTemplate.replaceMarker("attributes", attributes, Boolean.TRUE);

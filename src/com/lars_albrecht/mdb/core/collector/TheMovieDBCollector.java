@@ -336,6 +336,19 @@ public class TheMovieDBCollector extends ACollector {
 							new Value<Object>(genre.getName())));
 				}
 			}
+
+			// add images
+			final String imageUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w300";
+
+			if (movie.getPosterPath() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
+						new Value<Object>(imageUrl + movie.getPosterPath())));
+			}
+
+			if (movie.getBackdropPath() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
+						new Value<Object>(imageUrl + movie.getBackdropPath())));
+			}
 		}
 
 		return resultList;

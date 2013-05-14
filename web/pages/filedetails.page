@@ -1,12 +1,11 @@
 <div id="detailView" class="contentPart">
-
 	{content}
-
 </div>
 
 {file-start}
-
+	
 	<h2>{title}</h2>
+	{images}
 	<div class="path">{path}</div>
 	
 	{listwrapperSize}
@@ -15,6 +14,10 @@
 	{attributes}
 	
 {file-end}
+
+{image-start}
+	<img src="{imageSrc}" title="{imageTitle}" />
+{image-end}
 
 {nofile-start}
 	<p>{nofileString}</p>
