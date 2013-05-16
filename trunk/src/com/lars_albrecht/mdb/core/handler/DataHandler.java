@@ -244,7 +244,7 @@ public class DataHandler {
 				OptionsHandler.setOption("searchResultOrder", searchResultOrderOption);
 			}
 
-			final String order = " ORDER BY " + searchResultOrderOption;
+			final String order = " ORDER BY '" + searchResultOrderOption + "'";
 
 			final String sql = "SELECT fi.* FROM '" + fileItem.getDatabaseTable() + "' AS fi LEFT JOIN " + " 	typeInformation as ti "
 					+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
@@ -293,7 +293,7 @@ public class DataHandler {
 					OptionsHandler.setOption("searchResultOrder", searchResultOrderOption);
 				}
 
-				final String order = " ORDER BY " + searchResultOrderOption;
+				final String order = " ORDER BY '" + searchResultOrderOption + "'";
 
 				final String sql = "SELECT fi.* FROM '" + fileItem.getDatabaseTable() + "' AS fi LEFT JOIN " + " 	typeInformation as ti "
 						+ "ON " + " 	ti.file_id = fi.id " + " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON "
