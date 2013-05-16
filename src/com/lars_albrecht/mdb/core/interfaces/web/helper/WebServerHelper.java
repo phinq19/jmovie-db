@@ -115,7 +115,7 @@ public class WebServerHelper {
 
 				contentMarkerReplacement = page.getGeneratedContent();
 				subTitle = page.getTitle();
-				pageTitle += " | " + subTitle;
+				pageTitle = subTitle + " | " + pageTitle;
 			} catch (final Exception e) {
 				e.printStackTrace();
 			}

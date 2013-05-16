@@ -47,18 +47,18 @@ public class FileDetailsPage extends WebPage {
 			detailViewTemplate.replaceMarker("content", detailViewTemplate.getSubMarkerContent("file"), Boolean.FALSE);
 
 			detailViewTemplate.replaceMarker("title", item.getName() + " (" + item.getId() + ")", Boolean.TRUE);
-			detailViewTemplate.replaceMarker("path", item.getFullpath().replaceAll("\\\\", "\\\\\\\\"), Boolean.TRUE);
+			detailViewTemplate.replaceMarker("path", item.getFullpath().replaceAll("\\\\", "\\\\\\\\\\\\\\\\"), Boolean.FALSE);
 
 			if (item.getSize() != null) {
 				String listWrapper = null;
 				listWrapper = detailViewTemplate.getSubMarkerContent("listwrapper");
-				listWrapper = Template.replaceMarker(listWrapper, "key", "Dir", Boolean.TRUE);
+				listWrapper = Template.replaceMarker(listWrapper, "key", "Size", Boolean.TRUE);
 				listWrapper = Template.replaceMarker(listWrapper, "value", Helper.getHumanreadableFileSize(item.getSize()), Boolean.TRUE);
 
 				detailViewTemplate.replaceMarker("listwrapperSize", listWrapper, Boolean.TRUE);
 			}
 
-			if (item.getSize() != null) {
+			if (item.getCreateTS() != null) {
 				String listWrapper = null;
 				listWrapper = detailViewTemplate.getSubMarkerContent("listwrapper");
 				listWrapper = Template.replaceMarker(listWrapper, "key", "Added", Boolean.TRUE);
@@ -66,6 +66,15 @@ public class FileDetailsPage extends WebPage {
 						Helper.getFormattedTimestamp(item.getCreateTS().longValue(), null), Boolean.TRUE);
 
 				detailViewTemplate.replaceMarker("listwrapperAdded", listWrapper, Boolean.TRUE);
+			}
+
+			if (item.getFiletype() != null) {
+				String listWrapper = null;
+				listWrapper = detailViewTemplate.getSubMarkerContent("listwrapper");
+				listWrapper = Template.replaceMarker(listWrapper, "key", "Type", Boolean.TRUE);
+				listWrapper = Template.replaceMarker(listWrapper, "value", item.getFiletype(), Boolean.TRUE);
+
+				detailViewTemplate.replaceMarker("listwrapperType", listWrapper, Boolean.TRUE);
 			}
 
 			// if file has attributes
@@ -155,6 +164,7 @@ public class FileDetailsPage extends WebPage {
 								tempImageContainer = detailViewTemplate.getSubMarkerContent("image");
 								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageSrc", (String) keyValue.getValue()
 										.getValue(), false);
+								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageClass", "posterImage", false);
 								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageTitle", keyValue.getKey().getKey(),
 										false);
 

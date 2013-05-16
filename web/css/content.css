@@ -1,5 +1,7 @@
 h2, h3, h4, h5											{margin:0;}
 
+hr														{clear:left; float:left; padding: 10px 0; width:100%;}
+
 .main aside												{margin-bottom:20px; clear:right;}
 
 #contentContainer										{padding:10px; border-top: 20px solid #000000; border-left: 1px solid #000; margin-bottom:20px; 
@@ -22,11 +24,13 @@ h2, h3, h4, h5											{margin:0;}
 
 #contentContainer .contentPart							{margin-bottom:20px;}
 
+#detailView #fileInformation							{float:left;}
+#detailView #path										{font-size:0.8em;}
 #detailView .listWrapper								{width:100%; clear:both; display:inline-block;}
 #detailView .listWrapper .key							{float:left; width: 25%; font-weight:bold;}
 #detailView .listWrapper .value							{float:left;}
+#detailView .posterImage								{width:150px; float:right;}
 
-#detailView .path										{font-size:0.8em;}
 
 #detailView #attributes									{margin-top:20px; display:inline-block; width:100%;}
 #detailView #attributes nav								{margin-bottom:20px;}

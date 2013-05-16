@@ -8,6 +8,8 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
@@ -46,13 +48,34 @@ public class SearchResultsPage extends WebPage {
 			generateSearchresults(final Template searchResultsTemplate, final ConcurrentHashMap<String, String> GETParams) throws UnsupportedEncodingException {
 		if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
 			// get DATA for output
-			final String searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8")).replaceAll("[\"]", "");
+			final String searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
 			int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 
 			String searchKey = null;
 			String searchValue = null;
 			String[] searchStrList = null;
 			ArrayList<FileItem> foundList = new ArrayList<FileItem>();
+
+			// TODO better search word finding:
+			// --> NEW SYSTEM
+			// (([\S])+=".*?(\ ){0,}")|(([\S])+=([\S])+)|([\S])+
+			final String findTextWithAttributeMoreWords = "(([\\S])+=\".*?(\\ ){0,}\")";
+			final String findTextWithAttributeOneWord = "(([\\S])+=([\\S])+)";
+			final String findText = "([\\S])+";
+
+			final String strPattern = findTextWithAttributeMoreWords + "|" + findTextWithAttributeOneWord + "|" + findText;
+
+			final Pattern pattern = Pattern.compile(strPattern);
+			final Matcher matcher = pattern.matcher(searchStr);
+			// Check all occurance
+			while (matcher.find()) {
+
+				System.out.print("Start index: " + matcher.start());
+				System.out.print(" End index: " + matcher.end() + " ");
+				System.out.println(matcher.group());
+			}
+			// <-- NEW SYSTEM
+
 			if (searchStr.contains(" ")) {
 				searchStrList = searchStr.split(" ");
 			} else {
