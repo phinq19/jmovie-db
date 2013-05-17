@@ -5,8 +5,10 @@ package com.lars_albrecht.mdb.core.interfaces.web.pages;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,50 +53,35 @@ public class SearchResultsPage extends WebPage {
 			final String searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
 			int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 
-			String searchKey = null;
-			String searchValue = null;
-			String[] searchStrList = null;
+			final ArrayList<Entry<String, String>> searchStrList = new ArrayList<Entry<String, String>>();
 			ArrayList<FileItem> foundList = new ArrayList<FileItem>();
 
-			// TODO better search word finding:
-			// --> NEW SYSTEM
 			// (([\S])+=".*?(\ ){0,}")|(([\S])+=([\S])+)|([\S])+
 			final String findTextWithAttributeMoreWords = "(([\\S])+=\".*?(\\ ){0,}\")";
 			final String findTextWithAttributeOneWord = "(([\\S])+=([\\S])+)";
+			final String findTextWithQuotes = "(\".*?\")";
 			final String findText = "([\\S])+";
 
-			final String strPattern = findTextWithAttributeMoreWords + "|" + findTextWithAttributeOneWord + "|" + findText;
+			final String strPattern = findTextWithAttributeMoreWords + "|" + findTextWithAttributeOneWord + "|" + findTextWithQuotes + "|"
+					+ findText;
 
 			final Pattern pattern = Pattern.compile(strPattern);
 			final Matcher matcher = pattern.matcher(searchStr);
 			// Check all occurance
 			while (matcher.find()) {
-
-				System.out.print("Start index: " + matcher.start());
-				System.out.print(" End index: " + matcher.end() + " ");
-				System.out.println(matcher.group());
-			}
-			// <-- NEW SYSTEM
-
-			if (searchStr.contains(" ")) {
-				searchStrList = searchStr.split(" ");
-			} else {
-				searchStrList = new String[] {
-					searchStr
-				};
+				// System.out.print("Start index: " + matcher.start());
+				// System.out.print(" End index: " + matcher.end() + " ");
+				// System.out.println(matcher.group());
+				searchStrList.add(this.getRealSearchValues(matcher.group()));
 			}
 
-			for (final String searchStrItem : searchStrList) {
+			// TODO fix search and output from searchkeys/values
+
+			for (final Entry<String, String> searchEntry : searchStrList) {
 				searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
-				if (searchStrItem.contains("=")) {
-					final String[] searchArr = searchStrItem.split("=");
-					if (searchArr.length == 2) {
-						searchKey = searchArr[0];
-						searchValue = searchArr[1];
-						if (this.mainController.getDataHandler().isKeyInKeyList(searchKey)) {
-							searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
-						}
-
+				if (searchEntry.getKey() != null) {
+					if (this.mainController.getDataHandler().isKeyInKeyList(searchEntry.getKey())) {
+						searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
 					}
 				}
 
@@ -102,11 +89,11 @@ public class SearchResultsPage extends WebPage {
 					default:
 					case SEARCHTYPE_TEXTALL:
 						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAll(searchStrItem))));
+								.findAllFileItemForStringInAll(searchEntry.getValue()))));
 						break;
 					case SEARCHTYPE_ATTRIBUTE:
 						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAttributesByKeyValue(searchKey, searchValue))));
+								.findAllFileItemForStringInAttributesByKeyValue(searchEntry.getKey(), searchEntry.getValue()))));
 						break;
 				}
 			}
@@ -141,10 +128,10 @@ public class SearchResultsPage extends WebPage {
 						break;
 					case SEARCHTYPE_ATTRIBUTE:
 						searchTextContainer = searchResultsTemplate.getSubMarkerContent("resultTextAttribute");
-						searchTextContainer = Template.replaceMarker(searchTextContainer, "searchKey", Arrays.toString(searchStrList)
-								.split("=")[0].replaceAll("([\\[\\]])", ""), false);
-						searchTextContainer = Template.replaceMarker(searchTextContainer, "searchValue", Arrays.toString(searchStrList)
-								.split("=")[1].replaceAll("([\\[\\]])", ""), false);
+						searchTextContainer = Template.replaceMarker(searchTextContainer, "searchKey",
+								Arrays.toString(searchStrList.toArray()).split("=")[0].replaceAll("([\\[\\]])", ""), false);
+						searchTextContainer = Template.replaceMarker(searchTextContainer, "searchValue",
+								Arrays.toString(searchStrList.toArray()).split("=")[1].replaceAll("([\\[\\]])", ""), false);
 						break;
 				}
 				searchResultContainer = Template.replaceMarker(searchResultContainer, "resultText", searchTextContainer, false);
@@ -159,6 +146,34 @@ public class SearchResultsPage extends WebPage {
 
 		return searchResultsTemplate;
 	}
+
+	// TODO PUT TO OWN CLASS START
+
+	private Entry<String, String> getRealSearchValues(final String input) {
+		Entry<String, String> output = null;
+		String key = null;
+		String value = null;
+
+		String[] keyValue = null;
+		if (input.contains("=")) {
+			keyValue = input.split("=");
+
+			keyValue[1] = keyValue[1].replaceAll("\"", "");
+
+			key = keyValue[0];
+			value = keyValue[1];
+		} else if (input.contains("\"")) {
+			value = input.replaceAll("\"", "");
+		} else {
+			value = input;
+		}
+
+		output = new SimpleEntry<String, String>(key, value);
+
+		return output;
+	}
+
+	// TODO PUT TO OWN CLASS END
 
 	@Override
 	public String getTitle() {
