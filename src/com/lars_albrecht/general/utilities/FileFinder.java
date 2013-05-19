@@ -76,7 +76,7 @@ public class FileFinder {
 		fileToFind = new File(fileToFind.getName());
 		File returnFile = null;
 		for (final File file : files) {
-			Debug.log(Debug.LEVEL_INFO, "Search file " + fileToFind.getName() + " in " + file.getAbsolutePath());
+			Debug.log(Debug.LEVEL_DEBUG, "Search file " + fileToFind.getName() + " in " + file.getAbsolutePath());
 			if ((file.isDirectory() && (returnFile = new File(file.getCanonicalPath() + File.separator + fileToFind.getName())) != null
 					&& returnFile.exists() && returnFile.isFile())
 					|| (file.isFile() && file.getName().equalsIgnoreCase(fileToFind.getName()) && (returnFile = file) != null)

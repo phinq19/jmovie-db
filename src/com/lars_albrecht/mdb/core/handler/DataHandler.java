@@ -64,7 +64,7 @@ public class DataHandler {
 		ResultSet rs = null;
 		if (!this.fileItems.contains(new FileItem(fullpath))) {
 			final String sql = "SELECT fi.id FROM fileInformation AS fi WHERE fi.fullpath = " + fullpath + " LIMIT 1";
-
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.query(sql);
 				if (rs.next()) {
@@ -86,12 +86,12 @@ public class DataHandler {
 
 			final String sql = "SELECT DISTINCT value.value AS value FROM typeInformation_key AS key "
 					+ "LEFT JOIN typeInformation AS ti ON ti.key_id = key.id "
-					+ "LEFT JOIN typeInformation_value AS value ON value.id = ti.value_id " + "WHERE key.key = ? AND value LIKE %?";
+					+ "LEFT JOIN typeInformation_value AS value ON value.id = ti.value_id " + "WHERE key.key = ? AND value LIKE ?";
 
 			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
 			values.put(1, key);
-			values.put(2, valuePart);
-
+			values.put(2, valuePart + "%");
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.queryPS(sql, values);
 				for (; rs.next();) {
@@ -120,7 +120,7 @@ public class DataHandler {
 
 			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
 			values.put(1, key);
-
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.queryPS(sql, values);
 				for (; rs.next();) {
@@ -159,6 +159,7 @@ public class DataHandler {
 				limitStr = " LIMIT " + limit;
 			}
 			final String sql = "SELECT * FROM " + object.getDatabaseTable() + where + limitStr;
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();

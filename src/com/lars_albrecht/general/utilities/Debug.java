@@ -159,8 +159,10 @@ public class Debug implements UncaughtExceptionHandler {
 				writer = new FileWriter(file, true);
 				if (writer != null && logList != null && logList.size() > 0) {
 					for (final String s : logList) {
-						writer.write(s);
-						writer.write(System.getProperty("line.separator"));
+						if (s != null) {
+							writer.write(s);
+							writer.write(System.getProperty("line.separator"));
+						}
 					}
 					writer.flush();
 					writer.close();
