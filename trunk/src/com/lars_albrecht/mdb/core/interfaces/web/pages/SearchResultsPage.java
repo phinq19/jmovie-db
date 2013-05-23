@@ -50,7 +50,21 @@ public class SearchResultsPage extends WebPage {
 			generateSearchresults(final Template searchResultsTemplate, final ConcurrentHashMap<String, String> GETParams) throws UnsupportedEncodingException {
 		if (GETParams.containsKey("searchStr") && (GETParams.get("searchStr") != null)) {
 			// get DATA for output
-			final String searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
+			String searchStr = null;
+			try {
+				/*
+				 * java.lang.IllegalArgumentException: URLDecoder: Incomplete
+				 * trailing escape (%) pattern -> 22.05.2013 17:00:09 MSG:
+				 * UncaughtException thrown (URLDecoder: Incomplete trailing
+				 * escape (%) pattern - java.lang.IllegalArgumentException:
+				 * URLDecoder: Incomplete trailing escape (%) pattern) in Thread
+				 * Thread-14729 (15501) at
+				 * java.net.URLDecoder.decode(URLDecoder.java:187)
+				 */
+				searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
+			} catch (final Exception e) {
+
+			}
 			int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 
 			final ArrayList<Entry<String, String>> searchStrList = new ArrayList<Entry<String, String>>();

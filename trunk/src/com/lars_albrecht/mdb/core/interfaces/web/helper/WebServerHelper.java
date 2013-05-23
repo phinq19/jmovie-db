@@ -112,7 +112,7 @@ public class WebServerHelper {
 				} else if (action.equalsIgnoreCase("showSettings")) {
 					page = new SettingsPage(action, request, this.mainController);
 				}
-
+				// TODO java.lang.NullPointerException
 				contentMarkerReplacement = page.getGeneratedContent();
 				subTitle = page.getTitle();
 				pageTitle = subTitle + " | " + pageTitle;

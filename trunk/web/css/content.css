@@ -12,6 +12,7 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 
 #titleBox .subTitle										{color:#fff;}
 
+#contentContainer										{display:inline-block;}
 #contentContainer .tableHeader							{height:20px; line-height:20px; text-transform:capitalize; text-align:left; color:#ffffff; background-color:#000000; text-indent:10px; font-size:0.83em}
 #contentContainer table									{width:100%;}
 #contentContainer table tr								{border-bottom:1px solid #000;}
