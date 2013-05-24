@@ -16,10 +16,12 @@ public abstract class WebPage {
 	private Template			pageTemplate	= null;
 	protected MainController	mainController	= null;
 	protected WebServerRequest	request			= null;
+	protected String			actionname		= null;
 
 	public WebPage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
 		this.request = request;
 		this.mainController = mainController;
+		this.actionname = actionname;
 
 		if (this.getTemplateName() != null) {
 			this.pageTemplate = new Template(this.getTemplateName());
