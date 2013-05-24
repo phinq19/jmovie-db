@@ -23,6 +23,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
+import com.lars_albrecht.mdb.core.interfaces.web.pages.DefaultErrorPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.FileDetailsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.HomePage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.SearchResultsPage;
@@ -111,8 +112,11 @@ public class WebServerHelper {
 					page = new SearchResultsPage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showSettings")) {
 					page = new SettingsPage(action, request, this.mainController);
+				} else {
+					page = new DefaultErrorPage("404", request, this.mainController);
 				}
-				// TODO java.lang.NullPointerException
+				// TODO java.lang.NullPointerException (has now new error page
+				// to prevent this?)
 				contentMarkerReplacement = page.getGeneratedContent();
 				subTitle = page.getTitle();
 				pageTitle = subTitle + " | " + pageTitle;
