@@ -44,7 +44,7 @@ public class TheMovieDBCollector extends ACollector {
 
 	public TheMovieDBCollector(final MainController mainController, final IController controller) {
 		super(mainController, controller);
-
+		this.addType("movie");
 		this.fileAttributeListToAdd = new ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>();
 		this.keysToAdd = new ArrayList<Key<String>>();
 		this.valuesToAdd = new ArrayList<Value<?>>();
@@ -53,12 +53,9 @@ public class TheMovieDBCollector extends ACollector {
 	@Override
 	public void doCollect() {
 		this.fileAttributeListToAdd.clear();
-		for (final FileItem item : this.fileItems) {
+		for (final FileItem item : this.getFileItems()) {
 			// collect all data for all found items in the list
-			if (item.getFiletype().equalsIgnoreCase("movie")) {
-				this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
-			}
-
+			this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
 		}
 	}
 
@@ -199,6 +196,7 @@ public class TheMovieDBCollector extends ACollector {
 				if ((titles != null) && (titles.length > 0)) {
 					resultList = this.getMovieInfo(titles, year);
 				}
+
 			}
 		}
 

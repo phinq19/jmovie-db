@@ -23,6 +23,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
+import com.lars_albrecht.mdb.core.interfaces.web.pages.BrowsePage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.DefaultErrorPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.FileDetailsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.HomePage;
@@ -102,6 +103,7 @@ public class WebServerHelper {
 
 			try {
 				WebPage page = null;
+				// TODO do dynamically
 				if (action.equalsIgnoreCase("index")) {
 					page = new HomePage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showInfoControl")) {
@@ -112,11 +114,13 @@ public class WebServerHelper {
 					page = new SearchResultsPage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showSettings")) {
 					page = new SettingsPage(action, request, this.mainController);
+				} else if (action.equalsIgnoreCase("showBrowser")) {
+					page = new BrowsePage(action, request, this.mainController);
 				} else {
 					page = new DefaultErrorPage("404", request, this.mainController);
 				}
 				// TODO java.lang.NullPointerException (has now new error page
-				// to prevent this?)
+				// to prevent this. Does it work?)
 				contentMarkerReplacement = page.getGeneratedContent();
 				subTitle = page.getTitle();
 				pageTitle = subTitle + " | " + pageTitle;
@@ -124,11 +128,10 @@ public class WebServerHelper {
 				e.printStackTrace();
 			}
 
-			// current fallback
+			// current fallback TODO remove this
 			if (contentMarkerReplacement.equals("")) {
 				final String pagename = this.getPagenameForActionname(action);
-				if (action.equalsIgnoreCase("showAttributes") || action.equalsIgnoreCase("showBrowser")
-						|| action.equalsIgnoreCase("showSettings")) {
+				if (action.equalsIgnoreCase("showAttributes") || action.equalsIgnoreCase("showSettings")) {
 					contentMarkerReplacement = new Template(pagename, contentMarkerReplacements).getContent();
 				}
 			}
@@ -267,8 +270,8 @@ public class WebServerHelper {
 						// TODO only show real value, but set with "type="
 						content = ObjectHandler.stringListToJSON(newKeyList);
 					} else {
-						content = ObjectHandler.fileItemListToJSON(ObjectHandler.castObjectListToFileItemList(this.mainController
-								.getDataHandler().findAllFileItemForStringInAll(request.getGetParams().get("term"))));
+						content = ObjectHandler.fileItemListToJSON(this.mainController.getDataHandler().findAllFileItemForStringInAll(
+								request.getGetParams().get("term")));
 					}
 					if (content == null) {
 						content = "";

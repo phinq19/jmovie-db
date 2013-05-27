@@ -24,6 +24,7 @@ import com.lars_albrecht.mdb.core.models.Key;
 import com.lars_albrecht.mdb.core.models.KeyValue;
 import com.lars_albrecht.mdb.core.models.TypeInformation;
 import com.lars_albrecht.mdb.core.models.Value;
+import com.lars_albrecht.mdb.database.DB;
 
 /**
  * @author lalbrecht
@@ -33,12 +34,13 @@ public abstract class ACollector implements Runnable {
 
 	protected MainController											mainController			= null;
 	protected IController												controller				= null;
-	protected ArrayList<FileItem>										fileItems				= null;
+	private ArrayList<FileItem>											fileItems				= null;
 	private ArrayList<Key<String>>										keysToAdd				= null;
 	private ArrayList<Value<?>>											valuesToAdd				= null;
 	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>	fileAttributeListToAdd	= null;
 	private ArrayList<TypeInformation>									typeInformationToAdd	= null;
 	private CollectorEventMulticaster									collectorMulticaster	= null;
+	private ArrayList<String>											collectorTypes			= null;
 
 	/**
 	 * Default constructor.
@@ -52,9 +54,34 @@ public abstract class ACollector implements Runnable {
 		this.keysToAdd = new ArrayList<Key<String>>();
 		this.valuesToAdd = new ArrayList<Value<?>>();
 		this.typeInformationToAdd = new ArrayList<TypeInformation>();
+		this.collectorTypes = new ArrayList<String>();
+
 		if (controller instanceof CollectorController) {
 			this.collectorMulticaster = ((CollectorController) controller).getCollectorMulticaster();
 		}
+	}
+
+	public ArrayList<String> getCollectorTypes() {
+		return this.collectorTypes;
+	}
+
+	protected void addType(final String type) {
+		if (type != null) {
+			this.collectorTypes.add(type);
+		} else {
+			throw new NullPointerException("Type was null");
+		}
+	}
+
+	protected ArrayList<FileItem> getFileItems() {
+		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
+		for (final FileItem fileItem : this.fileItems) {
+			if (this.collectorTypes.contains(fileItem.getFiletype())) {
+				resultList.add(fileItem);
+			}
+		}
+
+		return resultList;
 	}
 
 	/**
@@ -96,6 +123,23 @@ public abstract class ACollector implements Runnable {
 		this.persistValues();
 		this.persistAttributes();
 		Debug.log(Debug.LEVEL_DEBUG, "end persist (" + this.getInfoType() + ")");
+	}
+
+	// TODO rename this method and move eventuelly to DataHandler!
+	protected void setNoInformationFoundFlag(final FileItem fileItem) {
+		final String sql = "INSERT OR IGNORE INTO collectorInformation " + "(collectorName, file_id, key, value) " + "VALUES(?, ?, ?, ?)";
+		final ConcurrentHashMap<Integer, Object> insertValues = new ConcurrentHashMap<Integer, Object>();
+		insertValues.put(1, this.getInfoType());
+		insertValues.put(2, fileItem.getId());
+		insertValues.put(3, "noinformation");
+		insertValues.put(4, Boolean.TRUE);
+
+		try {
+			DB.updatePS(sql, insertValues);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -172,12 +216,16 @@ public abstract class ACollector implements Runnable {
 		int fileItemId = -1;
 		if ((this.fileAttributeListToAdd != null) && (this.fileAttributeListToAdd.size() > 0)) {
 			for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
-				try {
-					if (((fileItemId = this.getFileItemId(entry.getKey())) > -1)) {
-						this.transformToTypeInformation(fileItemId, entry.getValue());
+				if (entry.getValue() != null && entry.getValue().size() > 0) {
+					try {
+						if (((fileItemId = this.getFileItemId(entry.getKey())) > -1)) {
+							this.transformToTypeInformation(fileItemId, entry.getValue());
+						}
+					} catch (final Exception e) {
+						e.printStackTrace();
 					}
-				} catch (final Exception e) {
-					e.printStackTrace();
+				} else {
+					this.setNoInformationFoundFlag(entry.getKey());
 				}
 			}
 		}

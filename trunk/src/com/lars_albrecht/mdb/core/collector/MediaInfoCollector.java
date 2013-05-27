@@ -47,6 +47,8 @@ public class MediaInfoCollector extends ACollector {
 
 	public MediaInfoCollector(final MainController mainController, final CollectorController controller) {
 		super(mainController, controller);
+		this.addType("movie");
+		this.addType("serie");
 		this.fileAttributeListToAdd = new ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>();
 		this.keysToAdd = new ArrayList<Key<String>>();
 		this.valuesToAdd = new ArrayList<Value<?>>();
@@ -55,10 +57,9 @@ public class MediaInfoCollector extends ACollector {
 	@Override
 	public void doCollect() {
 		this.fileAttributeListToAdd.clear();
-		for (final FileItem item : this.fileItems) {
+		for (final FileItem item : this.getFileItems()) {
 			// collect all data for all found items in the list
 			this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
-
 		}
 	}
 
