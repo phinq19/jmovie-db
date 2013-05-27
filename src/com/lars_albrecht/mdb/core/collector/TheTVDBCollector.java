@@ -40,7 +40,7 @@ public class TheTVDBCollector extends ACollector {
 
 	public TheTVDBCollector(final MainController mainController, final IController controller) {
 		super(mainController, controller);
-
+		this.addType("serie");
 		this.fileAttributeListToAdd = new ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>();
 		this.keysToAdd = new ArrayList<Key<String>>();
 		this.valuesToAdd = new ArrayList<Value<?>>();
@@ -49,12 +49,9 @@ public class TheTVDBCollector extends ACollector {
 	@Override
 	public void doCollect() {
 		this.fileAttributeListToAdd.clear();
-		for (final FileItem item : this.fileItems) {
+		for (final FileItem item : this.getFileItems()) {
 			// collect all data for all found items in the list
-			if (item.getFiletype().equalsIgnoreCase("serie")) {
-				this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
-			}
-
+			this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
 		}
 	}
 

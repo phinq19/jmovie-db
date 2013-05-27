@@ -74,7 +74,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 				}
 			}
 
-			// TODO find better method. Is too slow for many items.
+			// TODO find better method. Is too slow for many (big) items.
 			// METHOD 1
 			// for (final FileItem fileItem : tempList) {
 			// try {

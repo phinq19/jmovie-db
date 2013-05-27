@@ -33,7 +33,7 @@
 {resultListItem-start}
 				<tr>
 					<td>
-						<a href="{url}">{title}</a>
+						<a href="?action=showFileDetails&fileId={fileid}">{title}</a>
 					</td>
 				</tr>
 {resultListItem-end}

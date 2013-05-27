@@ -460,6 +460,18 @@ public class DB implements IDatabase {
 			sql = "CREATE INDEX IF NOT EXISTS idx_fileinformation_name_fullpath ON fileInformation (name, fullpath);";
 			DB.update(sql);
 
+			// collectorInformation
+			sql = "CREATE TABLE IF NOT EXISTS 'collectorInformation' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'collectorName' VARCHAR(255), ";
+			sql += "'file_id' INTEGER, ";
+			sql += "'key' VARCHAR(255), ";
+			sql += "'value' VARCHAR(255) ";
+			sql += ");";
+			DB.update(sql);
+			sql = "CREATE INDEX IF NOT EXISTS idx_collectorinformation_collectorname_file_id ON collectorInformation (collectorName, file_id);";
+			DB.update(sql);
+
 			// typeInformation_key
 			sql = "CREATE TABLE IF NOT EXISTS 'typeInformation_key' ( ";
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";

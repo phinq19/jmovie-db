@@ -42,11 +42,11 @@ public class CollectorController implements IController, ICollectorListener {
 
 	public void collectInfos(final ArrayList<FileItem> fileItems) {
 		ThreadEx tempThread = null;
+		final String[] info = {
+			"Collector"
+		};
 		for (final ACollector collector : this.collectors) {
 			collector.setFileItems(fileItems);
-			final String[] info = {
-				"Collector"
-			};
 			tempThread = new ThreadEx(collector, collector.getInfoType(), info);
 			this.threadList.add(tempThread);
 			this.threadList.get(this.threadList.size() - 1).start();

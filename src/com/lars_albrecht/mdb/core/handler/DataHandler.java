@@ -177,10 +177,10 @@ public class DataHandler {
 		return resultList;
 	}
 
-	public ArrayList<Object> findAllByFileItemValue(final String fileItemValue) {
+	public ArrayList<FileItem> findAllByFileItemValue(final String fileItemValue) {
 		final FileItem fileItem = new FileItem();
 		HashMap<String, Object> tempMap = null;
-		final ArrayList<Object> resultList = new ArrayList<Object>();
+		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
 		if (fileItem != null) {
 			String where = "";
 			ResultSet rs = null;
@@ -196,7 +196,7 @@ public class DataHandler {
 					for (int i = 1; i <= rsmd.getColumnCount(); i++) {
 						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
 					}
-					resultList.add(fileItem.fromHashMap(tempMap));
+					resultList.add((FileItem) fileItem.fromHashMap(tempMap));
 				}
 			} catch (final SQLException e) {
 				e.printStackTrace();
@@ -228,8 +228,8 @@ public class DataHandler {
 	 *            String
 	 * @return ArrayList<FileItem>
 	 */
-	public ArrayList<Object> findAllFileItemForStringInAll(final String searchStr) {
-		ArrayList<Object> tempList = null;
+	public ArrayList<FileItem> findAllFileItemForStringInAll(final String searchStr) {
+		ArrayList<FileItem> tempList = null;
 		tempList = this.findAllByFileItemValue(searchStr);
 
 		final FileItem fileItem = new FileItem();
@@ -260,7 +260,7 @@ public class DataHandler {
 					for (int i = 1; i <= rsmd.getColumnCount(); i++) {
 						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
 					}
-					tempList.add(fileItem.fromHashMap(tempMap));
+					tempList.add((FileItem) fileItem.fromHashMap(tempMap));
 				}
 			} catch (final SQLException e) {
 				e.printStackTrace();
@@ -277,8 +277,8 @@ public class DataHandler {
 	 * @param value
 	 * @return ArrayList<Object>
 	 */
-	public ArrayList<Object> findAllFileItemForStringInAttributesByKeyValue(final String key, final String value) {
-		final ArrayList<Object> tempList = new ArrayList<Object>();
+	public ArrayList<FileItem> findAllFileItemForStringInAttributesByKeyValue(final String key, final String value) {
+		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
 
 		if (key != null && value != null) {
 			final FileItem fileItem = new FileItem();
@@ -309,14 +309,14 @@ public class DataHandler {
 						for (int i = 1; i <= rsmd.getColumnCount(); i++) {
 							tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
 						}
-						tempList.add(fileItem.fromHashMap(tempMap));
+						resultList.add((FileItem) fileItem.fromHashMap(tempMap));
 					}
 				} catch (final SQLException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		return tempList;
+		return resultList;
 	}
 
 	/**
@@ -356,6 +356,12 @@ public class DataHandler {
 			}
 		}
 		return resultItem;
+	}
+
+	public ArrayList<FileItem> findAllWithNoInfosForType(final String type) {
+		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
+
+		return resultList;
 	}
 
 	@SuppressWarnings({
@@ -680,6 +686,48 @@ public class DataHandler {
 			}
 
 		}
+	}
+
+	public ConcurrentHashMap<String, ArrayList<FileItem>> getAllFileItemsWithNoCollectorinfo() {
+		final ConcurrentHashMap<String, ArrayList<FileItem>> resultList = new ConcurrentHashMap<String, ArrayList<FileItem>>();
+		final FileItem fileItem = new FileItem();
+		HashMap<String, Object> tempMap = null;
+		if (fileItem != null) {
+			// TODO move to helper function "getSearchresultOrder" or something
+			// like that
+			String searchResultOrderOption = (String) OptionsHandler.getOption("searchResultOrder");
+			if (searchResultOrderOption == null) {
+				searchResultOrderOption = "fileInformation.name";
+				OptionsHandler.setOption("searchResultOrder", searchResultOrderOption);
+			}
+
+			final String order = " ORDER BY '" + searchResultOrderOption + "'";
+
+			String where = "";
+			ResultSet rs = null;
+			where = " WHERE key = 'noinformation'";
+			final String sql = "SELECT ci.collectorName AS collectorName, fi.* FROM " + fileItem.getDatabaseTable()
+					+ " AS fi INNER JOIN collectorInformation AS ci ON fi.id = ci.file_id " + where + order;
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
+			try {
+				rs = DB.query(sql);
+				final ResultSetMetaData rsmd = rs.getMetaData();
+				for (; rs.next();) {
+					tempMap = new HashMap<String, Object>();
+					for (int i = 2; i <= rsmd.getColumnCount(); i++) {
+						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
+					}
+					if (!resultList.containsKey(rs.getString("collectorName"))) {
+						resultList.put(rs.getString("collectorName"), new ArrayList<FileItem>());
+					}
+					resultList.get(rs.getString("collectorName")).add((FileItem) fileItem.fromHashMap(tempMap));
+				}
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return resultList;
 	}
 
 	/**

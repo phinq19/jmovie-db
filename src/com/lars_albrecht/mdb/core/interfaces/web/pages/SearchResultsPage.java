@@ -16,7 +16,6 @@ import java.util.regex.Pattern;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
-import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
@@ -28,7 +27,11 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  */
 public class SearchResultsPage extends WebPage {
 
+	/**
+	 * Currently unused
+	 */
 	public final static int	SEARCHTYPE_MIXED		= 0;
+
 	public final static int	SEARCHTYPE_TEXTALL		= 1;
 	public final static int	SEARCHTYPE_ATTRIBUTE	= 2;
 
@@ -60,98 +63,108 @@ public class SearchResultsPage extends WebPage {
 				 * URLDecoder: Incomplete trailing escape (%) pattern) in Thread
 				 * Thread-14729 (15501) at
 				 * java.net.URLDecoder.decode(URLDecoder.java:187)
+				 * 
+				 * TODO propably fixed TODO move searchcode to extra
+				 * class/method
 				 */
 				searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
-			} catch (final Exception e) {
 
-			}
-			int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
+				int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 
-			final ArrayList<Entry<String, String>> searchStrList = new ArrayList<Entry<String, String>>();
-			ArrayList<FileItem> foundList = new ArrayList<FileItem>();
+				final ArrayList<Entry<String, String>> searchStrList = new ArrayList<Entry<String, String>>();
+				ArrayList<FileItem> foundList = new ArrayList<FileItem>();
 
-			// (([\S])+=".*?(\ ){0,}")|(([\S])+=([\S])+)|([\S])+
-			final String findTextWithAttributeMoreWords = "(([\\S])+=\".*?(\\ ){0,}\")";
-			final String findTextWithAttributeOneWord = "(([\\S])+=([\\S])+)";
-			final String findTextWithQuotes = "(\".*?\")";
-			final String findText = "([\\S])+";
+				// (([\S])+=".*?(\ ){0,}")|(([\S])+=([\S])+)|([\S])+
+				// finds attribute="value value"
+				final String findTextWithAttributeMoreWords = "(([\\S])+=\".*?(\\ ){0,}\")";
 
-			final String strPattern = findTextWithAttributeMoreWords + "|" + findTextWithAttributeOneWord + "|" + findTextWithQuotes + "|"
-					+ findText;
+				// finds attribute=value
+				final String findTextWithAttributeOneWord = "(([\\S])+=([\\S])+)";
 
-			final Pattern pattern = Pattern.compile(strPattern);
-			final Matcher matcher = pattern.matcher(searchStr);
-			// Check all occurance
-			while (matcher.find()) {
-				// System.out.print("Start index: " + matcher.start());
-				// System.out.print(" End index: " + matcher.end() + " ");
-				// System.out.println(matcher.group());
-				searchStrList.add(this.getRealSearchValues(matcher.group()));
-			}
+				// finds "value value"
+				final String findTextWithQuotes = "(\".*?\")";
 
-			// TODO fix search and output from searchkeys/values
+				// finds value
+				final String findText = "([\\S])+";
 
-			for (final Entry<String, String> searchEntry : searchStrList) {
-				searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
-				if (searchEntry.getKey() != null) {
-					if (this.mainController.getDataHandler().isKeyInKeyList(searchEntry.getKey())) {
-						searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
+				// concat all pattern to one with "or"
+				final String strPattern = findTextWithAttributeMoreWords + "|" + findTextWithAttributeOneWord + "|" + findTextWithQuotes
+						+ "|" + findText;
+
+				final Pattern pattern = Pattern.compile(strPattern);
+				final Matcher matcher = pattern.matcher(searchStr);
+				// Find all values and add them to searchStrList
+				while (matcher.find()) {
+					searchStrList.add(this.getRealSearchValues(matcher.group()));
+				}
+
+				// TODO fix search and output from searchkeys/values
+
+				for (final Entry<String, String> searchEntry : searchStrList) {
+					searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
+					if (searchEntry.getKey() != null) {
+						if (this.mainController.getDataHandler().isKeyInKeyList(searchEntry.getKey())) {
+							searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
+						}
+					}
+
+					switch (searchType) {
+						default:
+						case SEARCHTYPE_TEXTALL:
+							foundList.addAll(Helper.uniqueList(this.mainController.getDataHandler().findAllFileItemForStringInAll(
+									searchEntry.getValue())));
+							break;
+						case SEARCHTYPE_ATTRIBUTE:
+							foundList.addAll(Helper.uniqueList(this.mainController.getDataHandler()
+									.findAllFileItemForStringInAttributesByKeyValue(searchEntry.getKey(), searchEntry.getValue())));
+							break;
 					}
 				}
 
-				switch (searchType) {
-					default:
-					case SEARCHTYPE_TEXTALL:
-						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAll(searchEntry.getValue()))));
-						break;
-					case SEARCHTYPE_ATTRIBUTE:
-						foundList.addAll(ObjectHandler.castObjectListToFileItemList(Helper.uniqueList(this.mainController.getDataHandler()
-								.findAllFileItemForStringInAttributesByKeyValue(searchEntry.getKey(), searchEntry.getValue()))));
-						break;
-				}
-			}
+				foundList = Helper.uniqueList(foundList);
 
-			foundList = Helper.uniqueList(foundList);
+				if (foundList.size() > 0) {
+					String searchResultContainer = searchResultsTemplate.getSubMarkerContent("results");
+					String searchResultItemContainer = "";
+					String searchResultItemContainerTemp = "";
 
-			if (foundList.size() > 0) {
-				String searchResultContainer = searchResultsTemplate.getSubMarkerContent("results");
-				String searchResultItemContainer = "";
-				String searchResultItemContainerTemp = "";
+					for (final FileItem fileItem : foundList) {
+						searchResultItemContainerTemp = searchResultsTemplate.getSubMarkerContent("resultListItem");
+						searchResultItemContainerTemp = Template.replaceMarker(searchResultItemContainerTemp, "fileid", fileItem.getId()
+								.toString(), false);
+						searchResultItemContainerTemp = Template.replaceMarker(searchResultItemContainerTemp, "title", fileItem.getName(),
+								false);
 
-				for (final FileItem fileItem : foundList) {
-					searchResultItemContainerTemp = searchResultsTemplate.getSubMarkerContent("resultListItem");
-					searchResultItemContainerTemp = Template.replaceMarker(searchResultItemContainerTemp, "url",
-							"?action=showFileDetails&fileId=" + fileItem.getId(), false);
-					searchResultItemContainerTemp = Template.replaceMarker(searchResultItemContainerTemp, "title", fileItem.getName(),
+						searchResultItemContainer += searchResultItemContainerTemp;
+					}
+
+					searchResultContainer = Template.replaceMarker(searchResultContainer, "resultListItems", searchResultItemContainer,
 							false);
+					searchResultContainer = Template.replaceMarker(searchResultContainer, "searchResultCount",
+							Integer.toString(foundList.size()), false);
 
-					searchResultItemContainer += searchResultItemContainerTemp;
+					String searchTextContainer = null;
+					switch (searchType) {
+						default:
+						case SEARCHTYPE_TEXTALL:
+							searchTextContainer = searchResultsTemplate.getSubMarkerContent("resultTextTextAll");
+							searchTextContainer = Template.replaceMarker(searchTextContainer, "searchTerm", searchStr, false);
+							break;
+						case SEARCHTYPE_ATTRIBUTE:
+							searchTextContainer = searchResultsTemplate.getSubMarkerContent("resultTextAttribute");
+							searchTextContainer = Template.replaceMarker(searchTextContainer, "searchKey",
+									Arrays.toString(searchStrList.toArray()).split("=")[0].replaceAll("([\\[\\]])", ""), false);
+							searchTextContainer = Template.replaceMarker(searchTextContainer, "searchValue",
+									Arrays.toString(searchStrList.toArray()).split("=")[1].replaceAll("([\\[\\]])", ""), false);
+							break;
+					}
+					searchResultContainer = Template.replaceMarker(searchResultContainer, "resultText", searchTextContainer, false);
+					searchResultsTemplate.replaceMarker("content", searchResultContainer, false);
+				} else {
+					// no results
+					searchResultsTemplate.replaceMarker("content", searchResultsTemplate.getSubMarkerContent("noResults"), false);
 				}
-
-				searchResultContainer = Template.replaceMarker(searchResultContainer, "resultListItems", searchResultItemContainer, false);
-				searchResultContainer = Template.replaceMarker(searchResultContainer, "searchResultCount",
-						Integer.toString(foundList.size()), false);
-
-				String searchTextContainer = null;
-				switch (searchType) {
-					default:
-					case SEARCHTYPE_TEXTALL:
-						searchTextContainer = searchResultsTemplate.getSubMarkerContent("resultTextTextAll");
-						searchTextContainer = Template.replaceMarker(searchTextContainer, "searchTerm", searchStr, false);
-						break;
-					case SEARCHTYPE_ATTRIBUTE:
-						searchTextContainer = searchResultsTemplate.getSubMarkerContent("resultTextAttribute");
-						searchTextContainer = Template.replaceMarker(searchTextContainer, "searchKey",
-								Arrays.toString(searchStrList.toArray()).split("=")[0].replaceAll("([\\[\\]])", ""), false);
-						searchTextContainer = Template.replaceMarker(searchTextContainer, "searchValue",
-								Arrays.toString(searchStrList.toArray()).split("=")[1].replaceAll("([\\[\\]])", ""), false);
-						break;
-				}
-				searchResultContainer = Template.replaceMarker(searchResultContainer, "resultText", searchTextContainer, false);
-				searchResultsTemplate.replaceMarker("content", searchResultContainer, false);
-			} else {
-				// no results
+			} catch (final IllegalArgumentException e) {
 				searchResultsTemplate.replaceMarker("content", searchResultsTemplate.getSubMarkerContent("noResults"), false);
 			}
 		} else {
