@@ -65,7 +65,7 @@ public class SearchResultsPage extends WebPage {
 				 * java.net.URLDecoder.decode(URLDecoder.java:187)
 				 * 
 				 * TODO propably fixed TODO move searchcode to extra
-				 * class/method
+				 * class/method to reuse this for other interfaces
 				 */
 				searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
 

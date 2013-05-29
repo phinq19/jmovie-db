@@ -128,7 +128,26 @@ public class TheMovieDBCollector extends ACollector {
 		int id = -1;
 		if ((tempList != null) && (tempList.size() > 0)) {
 			if (tempList.size() > 1) {
-				id = tempList.get(0).getId();
+
+				// TODO use a fuzzy search for this:
+				// http://stackoverflow.com/questions/327513/fuzzy-string-search-in-java
+				for (final MovieDb movieDb : tempList) {
+					// TODO put in function
+					final String tempTitle = Helper.implode(titles, " ", null, null);
+
+					if (movieDb.getTitle().equalsIgnoreCase(tempTitle)) {
+						id = movieDb.getId();
+					}
+
+					if (id > -1) {
+						break;
+					}
+				}
+				// TODO if the excact name is not the real name, try with more
+				// information
+				if (id == -1) {
+					id = tempList.get(0).getId();
+				}
 			} else {
 				id = tempList.get(0).getId();
 			}
@@ -153,31 +172,78 @@ public class TheMovieDBCollector extends ACollector {
 		data.put("titles", new ArrayList<String>());
 		data.put("year", -1);
 
-		final String strPattern = "[\\.\\-\\_0-9a-zA-ZÄÖÜßäöü\\ ]+";
-		final String yearPattern = "[0-9]{4}";
-		final String regex = "(^(" + strPattern + ") - (" + strPattern + ") - (" + yearPattern + ")+)|(^(" + strPattern + ") - ("
-				+ strPattern + "))|(^(" + strPattern + ") - (" + yearPattern + ")+)";
+		final String separator = " - ";
+		final String strPattern = "([\\.\\_0-9a-zA-ZÄÖÜßäöü\\ ]+)";
+		final String yearPattern = "([0-9]{4})+";
+		final String endYearPattern = "([\\ \\.]){1}";
+		final String fullYearPattern = "(" + yearPattern + endYearPattern + ")";
+
+		final String titleSubtitleYearPattern = strPattern + separator + strPattern + separator + fullYearPattern;
+		final String titleYearPattern = strPattern + separator + fullYearPattern;
+		final String titleSubtitlePattern = strPattern + separator + strPattern;
+		final String titlePattern = strPattern;
+
+		final String regex = "^((" + titleSubtitleYearPattern + ")|(" + titleYearPattern + ")|(" + titleSubtitlePattern + ")|("
+				+ titlePattern + "))" + "(.*$)";
+
+		Debug.log(Debug.LEVEL_DEBUG, regex);
 		final Pattern p = Pattern.compile(regex);
 		final Matcher m = p.matcher(filename);
 
+		// 0 = all default
+		// 1 = all-2
+		// 2 = pattern 1 full
+		// 3 = pattern 1 title
+		// 4 = pattern 1 subtitle
+		// 5 = pattern 1 year + next of year
+		// 6 = pattern 1 year
+		// 7 = pattern 1 next of year
+		// 8 = pattern 2 full
+		// 9 = pattern 2 title
+		// 10 = pattern 2 year + next of year
+		// 11 = pattern 2 year
+		// 12 = pattern 2 next of year
+		// 13 = pattern 3 full
+		// 14 = pattern 3 title
+		// 15 = pattern 3 subtitle
+		// 16 = pattern 4 full
+		// 17 = pattern 4 title
+		// 18 = all other
+
 		while (m.find()) {
-			if ((m.group(2) != null) && (m.group(3) != null) && (m.group(4) != null)) {
-				((ArrayList<String>) data.get("titles")).add(m.group(2));
+
+			if (true) {
+				Debug.log(Debug.LEVEL_DEBUG, "Groups: " + m.groupCount());
+				for (int i = 0; i <= m.groupCount(); i++) {
+					Debug.log(Debug.LEVEL_DEBUG, "Group: " + i + ": " + m.group(i));
+				}
+			}
+
+			// titleSubtitleYearPattern -> GROUP 2 - GROUP 7
+			if (m.group(2) != null && m.group(3) != null && m.group(4) != null && m.group(6) != null) {
 				((ArrayList<String>) data.get("titles")).add(m.group(3));
-				data.replace("year", Integer.parseInt(m.group(4)));
+				((ArrayList<String>) data.get("titles")).add(m.group(4));
+				data.replace("year", Integer.parseInt(m.group(6)));
 			}
 
-			if ((m.group(5) != null) && (m.group(6) != null)) {
-				((ArrayList<String>) data.get("titles")).add(m.group(5));
-				((ArrayList<String>) data.get("titles")).add(m.group(6));
-			}
-
-			if ((m.group(8) != null) && (m.group(9) != null) && (m.group(10) != null)) {
-				((ArrayList<String>) data.get("titles")).add(m.group(8));
+			// titleYearPattern -> GROUP 8 - GROUP 12
+			if (m.group(8) != null && m.group(9) != null && m.group(11) != null) {
 				((ArrayList<String>) data.get("titles")).add(m.group(9));
-				data.replace("year", Integer.parseInt(m.group(10)));
+				data.replace("year", Integer.parseInt(m.group(11)));
+			}
+
+			// titleSubtitlePattern -> GROUP 13 - GROUP 15
+			if (m.group(13) != null && m.group(14) != null && m.group(15) != null) {
+				((ArrayList<String>) data.get("titles")).add(m.group(14));
+				((ArrayList<String>) data.get("titles")).add(m.group(15));
+			}
+
+			// titlePattern -> GROUP 16 - GROUP 17
+			if (m.group(16) != null && m.group(17) != null) {
+				((ArrayList<String>) data.get("titles")).add(m.group(17));
 			}
 		}
+
 		return data;
 	}
 

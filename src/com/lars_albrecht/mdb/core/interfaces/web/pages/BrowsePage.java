@@ -42,20 +42,22 @@ public class BrowsePage extends WebPage {
 			String noInfoItemList = "";
 			String tempNoInfoItemList = null;
 
-			tempNoInfoItemList = browseTemplate.getSubMarkerContent("noinformationItem");
+			int noItemCounter = 0;
 			for (final Entry<String, ArrayList<FileItem>> entry : noInfoList.entrySet()) {
 				// TODO create method replaceAllMarker to replace a bunch of
 				// marker
 				for (final FileItem fileItem : entry.getValue()) {
+					tempNoInfoItemList = browseTemplate.getSubMarkerContent("noinformationItem");
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemId", fileItem.getId().toString(), true);
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemTitle", fileItem.getName(), false);
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoCollectorname", entry.getKey(), false);
 					noInfoItemList += tempNoInfoItemList;
+					noItemCounter++;
 				}
 			}
 
 			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationItems", noInfoItemList, false);
-			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationcounter", Integer.toString(noInfoList.size()), false);
+			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationcounter", Integer.toString(noItemCounter), false);
 
 			browseTemplateWithNoInfoContainer.replaceMarker("noinfocontainer", noInfoContainer, false);
 		}
