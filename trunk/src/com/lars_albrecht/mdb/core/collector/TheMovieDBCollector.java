@@ -55,7 +55,13 @@ public class TheMovieDBCollector extends ACollector {
 		this.fileAttributeListToAdd.clear();
 		for (final FileItem item : this.getFileItems()) {
 			// collect all data for all found items in the list
-			this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
+			if (item != null) {
+				final ArrayList<FileAttributeList> tempFileAttributes = this.getFileAttributeListsForItem(item);
+				// TODO check: check if null or return empty list?
+				if (tempFileAttributes != null) {
+					this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
+				}
+			}
 		}
 	}
 
