@@ -729,4 +729,21 @@ public class Helper {
 		return hex.toString();
 	}
 
+	/**
+	 * @see "http://stackoverflow.com/questions/2282728/java-replacelast"
+	 * 
+	 * @param string
+	 * @param toReplace
+	 * @param replacement
+	 * @return String
+	 */
+	public static String replaceLast(final String string, final String toReplace, final String replacement) {
+		final int pos = string.lastIndexOf(toReplace);
+		if (pos > -1) {
+			return string.substring(0, pos) + replacement + string.substring(pos + toReplace.length(), string.length());
+		} else {
+			return string;
+		}
+	}
+
 }

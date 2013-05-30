@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.FileFinder;
-import com.lars_albrecht.general.utilities.HTML;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.Main;
@@ -27,10 +26,10 @@ import com.lars_albrecht.mdb.core.interfaces.web.pages.BrowsePage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.DefaultErrorPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.FileDetailsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.HomePage;
+import com.lars_albrecht.mdb.core.interfaces.web.pages.LastFivePartial;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.SearchResultsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.SettingsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.ShowInfoControlPage;
-import com.lars_albrecht.mdb.core.models.FileItem;
 
 /**
  * @author lalbrecht TODO Do better (Each "page" is an own Object/class and all
@@ -159,11 +158,17 @@ public class WebServerHelper {
 				}
 			}
 			if (Template.containsMarker(generatedContent, "lastFiveAdded")) {
-				final ArrayList<FileItem> lastFiveList = ObjectHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
-						.findAll(new FileItem(), 5));
-				@SuppressWarnings("deprecation")
-				final String listOutput = HTML.generateListOutput(lastFiveList, null, null, false);
-				generatedContent = Template.replaceMarker(generatedContent, "lastFiveAdded", listOutput, Boolean.FALSE);
+				try {
+					final LastFivePartial lastFive = new LastFivePartial(null, null, this.mainController);
+					generatedContent = Template.replaceMarker(generatedContent, "lastFiveAdded", lastFive.getGeneratedContent(), false);
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
+				// @SuppressWarnings("deprecation")
+				// final String listOutput =
+				// HTML.generateListOutput(lastFiveList, null, null, false);
+				// generatedContent = Template.replaceMarker(generatedContent,
+				// "lastFiveAdded", listOutput, Boolean.FALSE);
 			}
 			if (Template.containsMarker(generatedContent, "title")) {
 				generatedContent = Template.replaceMarker(generatedContent, "title", pageTitle, Boolean.FALSE);

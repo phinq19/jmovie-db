@@ -26,7 +26,7 @@ public class Main {
 	}
 
 	private void init() {
-		Debug.loglevel = Debug.LEVEL_INFO;
+		Debug.loglevel = Debug.LEVEL_DEBUG;
 		this.initDB();
 	}
 

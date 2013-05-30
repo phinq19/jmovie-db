@@ -42,7 +42,7 @@ public class Debug implements UncaughtExceptionHandler {
 
 	public static void log(final Integer level, final String msg) {
 		ArrayList<String> tempList = null;
-		if (Debug.logList.containsKey(level)) {
+		if (Debug.logList.containsKey(level) && Debug.logList.get(level) != null) {
 			tempList = Debug.logList.get(level);
 		} else {
 			tempList = new ArrayList<String>();

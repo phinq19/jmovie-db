@@ -36,12 +36,14 @@ public class FileFinder {
 			if (this.pathList == null) {
 				this.pathList = new ArrayList<File>();
 			}
-			switch (position) {
-				case -1:
-					this.pathList.add(path);
-					break;
-				default:
-					this.pathList.add(position, path);
+			if (!this.pathList.contains(path)) {
+				switch (position) {
+					case -1:
+						this.pathList.add(path);
+						break;
+					default:
+						this.pathList.add(position, path);
+				}
 			}
 		}
 	}

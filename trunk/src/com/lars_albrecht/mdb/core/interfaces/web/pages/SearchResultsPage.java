@@ -127,15 +127,18 @@ public class SearchResultsPage extends WebPage {
 					String searchResultContainer = searchResultsTemplate.getSubMarkerContent("results");
 					String searchResultItemContainer = "";
 					String searchResultItemContainerTemp = "";
-
+					int oddEven = 0;
 					for (final FileItem fileItem : foundList) {
 						searchResultItemContainerTemp = searchResultsTemplate.getSubMarkerContent("resultListItem");
 						searchResultItemContainerTemp = Template.replaceMarker(searchResultItemContainerTemp, "fileid", fileItem.getId()
 								.toString(), false);
 						searchResultItemContainerTemp = Template.replaceMarker(searchResultItemContainerTemp, "title", fileItem.getName(),
 								false);
+						searchResultItemContainerTemp = Template.replaceMarker(searchResultItemContainerTemp, "oddeven",
+								((oddEven % 2) == 0 ? "even" : "odd"), false);
 
 						searchResultItemContainer += searchResultItemContainerTemp;
+						oddEven++;
 					}
 
 					searchResultContainer = Template.replaceMarker(searchResultContainer, "resultListItems", searchResultItemContainer,
