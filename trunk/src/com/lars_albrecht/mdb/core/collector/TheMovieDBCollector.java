@@ -172,6 +172,10 @@ public class TheMovieDBCollector extends ACollector {
 		data.put("titles", new ArrayList<String>());
 		data.put("year", -1);
 
+		// remove file extension from filename
+		final String fileExtension = Helper.getFileExtension(filename);
+		filename = Helper.replaceLast(filename, fileExtension, "");
+
 		final String separator = " - ";
 		final String strPattern = "([\\.\\_0-9a-zA-ZÄÖÜßäöü\\ ]+)";
 		final String yearPattern = "([0-9]{4})+";
@@ -188,11 +192,6 @@ public class TheMovieDBCollector extends ACollector {
 
 		Debug.log(Debug.LEVEL_DEBUG, regex);
 		final Pattern p = Pattern.compile(regex);
-
-		// remove file extension from filename
-		final String fileExtension = Helper.getFileExtension(filename);
-		filename = Helper.replaceLast(filename, fileExtension, "");
-
 		final Matcher m = p.matcher(filename);
 
 		// 0 = all default
