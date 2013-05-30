@@ -31,7 +31,7 @@
 {resultTextAttribute-end}
 
 {resultListItem-start}
-				<tr>
+				<tr class="{oddeven}">
 					<td>
 						<a href="?action=showFileDetails&fileId={fileid}">{title}</a>
 					</td>

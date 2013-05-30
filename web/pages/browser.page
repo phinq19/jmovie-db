@@ -18,7 +18,7 @@
 {noinformation-end}
 
 {noinformationItem-start}
-<tr>
+<tr class="{oddeven}">
 	<td>{noInfoItemId}</td>
 	<td>{noInfoItemTitle}</td>
 	<td>{noInfoCollectorname}</td>

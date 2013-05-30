@@ -143,9 +143,10 @@ public class DataHandler {
 	 * 
 	 * @param object
 	 * @param limit
+	 * @param order
 	 * @return ArrayList<Object>
 	 */
-	public ArrayList<Object> findAll(final IPersistable object, final Integer limit) {
+	public ArrayList<Object> findAll(final IPersistable object, final Integer limit, final String order) {
 		HashMap<String, Object> tempMap = null;
 		final ArrayList<Object> resultList = new ArrayList<Object>();
 		if (object != null) {
@@ -158,7 +159,8 @@ public class DataHandler {
 			if ((limit != null) && (limit > 0)) {
 				limitStr = " LIMIT " + limit;
 			}
-			final String sql = "SELECT * FROM " + object.getDatabaseTable() + where + limitStr;
+
+			final String sql = "SELECT * FROM " + object.getDatabaseTable() + where + (order != null ? order : "") + limitStr;
 			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
 			try {
 				rs = DB.query(sql);
@@ -588,7 +590,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadFileItems() {
-		this.fileItems = ObjectHandler.castObjectListToFileItemList(this.findAll(new FileItem(), null));
+		this.fileItems = ObjectHandler.castObjectListToFileItemList(this.findAll(new FileItem(), null, null));
 		return this;
 	}
 
@@ -598,7 +600,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadKeys() {
-		this.keys = ObjectHandler.castObjectListToKeyList(this.findAll(new Key<String>(), null));
+		this.keys = ObjectHandler.castObjectListToKeyList(this.findAll(new Key<String>(), null, null));
 		return this;
 	}
 
@@ -608,7 +610,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadTypeInformation() {
-		this.typeInformation = ObjectHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), null));
+		this.typeInformation = ObjectHandler.castObjectListToTypeInformationList(this.findAll(new TypeInformation(), null, null));
 		return this;
 	}
 
@@ -618,8 +620,7 @@ public class DataHandler {
 	 * @return
 	 */
 	private DataHandler loadValues() {
-		this.values = ObjectHandler.castObjectListToValueList(this.findAll(new Value<Object>(), null));
-
+		this.values = ObjectHandler.castObjectListToValueList(this.findAll(new Value<Object>(), null, null));
 		return this;
 	}
 

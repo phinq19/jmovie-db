@@ -51,6 +51,8 @@ public class BrowsePage extends WebPage {
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemId", fileItem.getId().toString(), true);
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemTitle", fileItem.getName(), false);
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoCollectorname", entry.getKey(), false);
+					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "oddeven", ((noItemCounter % 2) == 0 ? "even" : "odd"),
+							false);
 					noInfoItemList += tempNoInfoItemList;
 					noItemCounter++;
 				}

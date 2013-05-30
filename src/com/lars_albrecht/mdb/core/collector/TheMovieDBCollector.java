@@ -167,7 +167,7 @@ public class TheMovieDBCollector extends ACollector {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> getDataForFilename(final String filename) {
+	private Map<String, Object> getDataForFilename(String filename) {
 		final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
 		data.put("titles", new ArrayList<String>());
 		data.put("year", -1);
@@ -188,6 +188,11 @@ public class TheMovieDBCollector extends ACollector {
 
 		Debug.log(Debug.LEVEL_DEBUG, regex);
 		final Pattern p = Pattern.compile(regex);
+
+		// remove file extension from filename
+		final String fileExtension = Helper.getFileExtension(filename);
+		filename = Helper.replaceLast(filename, fileExtension, "");
+
 		final Matcher m = p.matcher(filename);
 
 		// 0 = all default
@@ -256,7 +261,7 @@ public class TheMovieDBCollector extends ACollector {
 
 			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(item.getName());
 			if ((data != null) && data.containsKey("titles") && data.containsKey("year")) {
-				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[data.size()]);
+				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[((ArrayList<String>) data.get("titles")).size()]);
 				year = (Integer) data.get("year");
 
 				if ((titles != null) && (titles.length > 0)) {

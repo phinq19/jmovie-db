@@ -1,3 +1,9 @@
+a														{color:#000000;}
+a:visited												{color:#303030;}
+a:hover													{color:#505050;}
+
+table tr:nth-child(2n+1)								{background-color:#eeeeee;}
+
 h2, h3, h4, h5											{margin:0;}
 
 hr														{clear:left; float:left; padding: 10px 0; width:100%;}
@@ -8,6 +14,7 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 															-webkit-box-shadow: 0 5px 5px #333;
 											        		   -moz-box-shadow: 0 5px 5px #333;
 											        		        box-shadow: 0 5px 5px #333;
+											        		float:left; width:100%;
                 										}
 
 #titleBox .subTitle										{color:#fff;}
@@ -15,9 +22,8 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 #contentContainer .tableHeader							{height:20px; line-height:20px; text-transform:capitalize; text-align:left; color:#ffffff; background-color:#000000; text-indent:10px; font-size:0.83em}
 #contentContainer table									{width:100%;}
 #contentContainer table tr								{border-bottom:1px solid #000;}
-#contentContainer table tr.odd							{background-color:#eee;}
 #contentContainer table tr th							{background: none repeat scroll 0 0 #888888; color:#fff; text-align:left; padding-left: 10px; width:50%;}
-#contentContainer table tr td							{padding-left: 10px; width:50%; vertical-align:top;}
+#contentContainer table tr td							{padding: 0 10px; width:50%; vertical-align:top;}
 #contentContainer nav									{float:none; width:auto;}
 #contentContainer nav ul li								{display:inline-block; white-space:nowrap;}
 #contentContainer nav a									{padding:5px 10px;; font-size:12px; float:none; width:auto;}
@@ -49,3 +55,6 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 #searchresultsView .searchValue							{font-style:italic; font-weight:bold;}
 
 #infoView .infoListEntry								{text-transform:capitalize;}
+
+
+.lastfivePartial ul 									{padding-left:0;}

@@ -51,7 +51,9 @@ public class Template {
 	 */
 	private String getFileContent(final String url, final String folder) {
 		FileFinder.getInstance().addToPathList(new File("web/pages"), -1);
+		FileFinder.getInstance().addToPathList(new File("web/pages/partials"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/web/pages"), -1);
+		FileFinder.getInstance().addToPathList(new File("trunk/web/pages/partials"), -1);
 		File file = null;
 		if (url != null) {
 			Debug.log(Debug.LEVEL_INFO, "Try to load file for template: " + url);
@@ -79,7 +81,13 @@ public class Template {
 
 	public final void loadTemplateFile(final String templateName) {
 		if (templateName != null && !templateName.equalsIgnoreCase("")) {
-			this.content = this.getFileContent(templateName + ".page", "web/pages");
+			if (templateName.equalsIgnoreCase("lastfive")) {
+				System.out.println("LAST FIVE SEARCH");
+			}
+			this.content = this.getFileContent(templateName + ".page", "web");
+			if (this.content == null) {
+				this.content = this.getFileContent(templateName + ".partial", "web");
+			}
 			if (this.content != null) {
 				Debug.log(Debug.LEVEL_INFO, "loaded template file: " + templateName);
 			} else {
