@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
@@ -128,15 +129,21 @@ public class TheTVDBCollector extends ACollector {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> getDataForFilename(final String filename) {
+	private Map<String, Object> getDataForFilename(String filename) {
 		final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
 		data.put("titles", new ArrayList<String>());
 		data.put("episode", new String());
+
+		// remove file extension from filename
+		final String fileExtension = Helper.getFileExtension(filename);
+		filename = Helper.replaceLast(filename, fileExtension, "");
 
 		final String strPattern = "[\\.\\-\\_0-9a-zA-ZÄÖÜßäöü\\ ]+";
 		final String episodePattern = "(S[0-9]{1,2}E[0-9]{1,2}E[0-9]{1,2})|(S[0-9]{1,2}E[0-9]{1,2})";
 		final String regex = "(^(" + strPattern + ") - (" + strPattern + ") - (" + episodePattern + ")+)|(^(" + strPattern + ") - ("
 				+ episodePattern + ")+)";
+
+		Debug.log(Debug.LEVEL_DEBUG, regex);
 		final Pattern p = Pattern.compile(regex);
 		final Matcher m = p.matcher(filename);
 
