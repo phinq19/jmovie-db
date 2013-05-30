@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
@@ -118,8 +117,6 @@ public class WebServerHelper {
 				} else {
 					page = new DefaultErrorPage("404", request, this.mainController);
 				}
-				// TODO java.lang.NullPointerException (has now new error page
-				// to prevent this. Does it work?)
 				contentMarkerReplacement = page.getGeneratedContent();
 				subTitle = page.getTitle();
 				pageTitle = subTitle + " | " + pageTitle;
@@ -147,12 +144,8 @@ public class WebServerHelper {
 			// replace "free" marker.
 			if (Template.containsMarker(content, "searchTerm")) {
 				if (request.getGetParams().containsKey("searchStr") && (request.getGetParams().get("searchStr") != null)) {
-					try {
-						generatedContent = Template.replaceMarker(generatedContent, "searchTerm",
-								URLDecoder.decode(request.getGetParams().get("searchStr"), "utf-8"), Boolean.FALSE);
-					} catch (final UnsupportedEncodingException e) {
-						generatedContent = e.getMessage();
-					}
+					generatedContent = Template.replaceMarker(generatedContent, "searchTerm", request.getGetParams().get("searchStr")
+							.replaceAll("\"", "&quot;"), Boolean.FALSE);
 				} else {
 					generatedContent = Template.replaceMarker(generatedContent, "searchTerm", "", Boolean.FALSE);
 				}
@@ -270,9 +263,13 @@ public class WebServerHelper {
 						}
 						final ArrayList<String> newKeyList = new ArrayList<String>();
 						for (final String string : keyList) {
-							newKeyList.add(searchKey + "=" + string);
+							if (string != null) {
+								newKeyList.add(searchKey + "=" + string);
+								System.out.println(searchKey + " - " + string);
+							}
 						}
-						// TODO only show real value, but set with "type="
+						// TODO only show real value, but set with (example)
+						// "type="
 						content = ObjectHandler.stringListToJSON(newKeyList);
 					} else {
 						content = ObjectHandler.fileItemListToJSON(this.mainController.getDataHandler().findAllFileItemForStringInAll(

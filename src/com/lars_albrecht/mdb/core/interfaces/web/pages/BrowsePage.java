@@ -27,9 +27,25 @@ public class BrowsePage extends WebPage {
 	private Template generateBrowseView() {
 		Template browseTemplate = this.getPageTemplate();
 
+		browseTemplate = this.fillBrowseContainer(browseTemplate);
+		browseTemplate = this.fillDuplicateContainer(browseTemplate);
 		browseTemplate = this.fillNoInfoContainer(browseTemplate);
 
 		return browseTemplate;
+	}
+
+	private Template fillBrowseContainer(final Template browseTemplate) {
+		final Template browseTemplateWithBrowseContainer = browseTemplate;
+		browseTemplateWithBrowseContainer.replaceMarker("browsercontainer",
+				browseTemplateWithBrowseContainer.getSubMarkerContent("browser"), false);
+		return browseTemplateWithBrowseContainer;
+	}
+
+	private Template fillDuplicateContainer(final Template browseTemplate) {
+		final Template browseTemplateWithDuplicateContainer = browseTemplate;
+		browseTemplateWithDuplicateContainer.replaceMarker("duplicatecontainer",
+				browseTemplateWithDuplicateContainer.getSubMarkerContent("duplicate"), false);
+		return browseTemplateWithDuplicateContainer;
 	}
 
 	private Template fillNoInfoContainer(final Template browseTemplate) {
@@ -39,6 +55,9 @@ public class BrowsePage extends WebPage {
 		if (noInfoList.size() > 0) {
 			String noInfoContainer = browseTemplate.getSubMarkerContent("noinformation");
 
+			String noInfoTables = "";
+			String noInfoTable = "";
+
 			String noInfoItemList = "";
 			String tempNoInfoItemList = null;
 
@@ -46,19 +65,23 @@ public class BrowsePage extends WebPage {
 			for (final Entry<String, ArrayList<FileItem>> entry : noInfoList.entrySet()) {
 				// TODO create method replaceAllMarker to replace a bunch of
 				// marker
+				noInfoTable = browseTemplate.getSubMarkerContent("noinformationTable");
+				noInfoTable = Template.replaceMarker(noInfoTable, "collectorName", entry.getKey(), false);
+
 				for (final FileItem fileItem : entry.getValue()) {
 					tempNoInfoItemList = browseTemplate.getSubMarkerContent("noinformationItem");
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemId", fileItem.getId().toString(), true);
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemTitle", fileItem.getName(), false);
-					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoCollectorname", entry.getKey(), false);
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "oddeven", ((noItemCounter % 2) == 0 ? "even" : "odd"),
 							false);
 					noInfoItemList += tempNoInfoItemList;
 					noItemCounter++;
 				}
+				noInfoTable = Template.replaceMarker(noInfoTable, "noinformationItems", noInfoItemList, false);
+				noInfoTables += noInfoTable;
 			}
 
-			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationItems", noInfoItemList, false);
+			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationTables", noInfoTables, false);
 			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationcounter", Integer.toString(noItemCounter), false);
 
 			browseTemplateWithNoInfoContainer.replaceMarker("noinfocontainer", noInfoContainer, false);

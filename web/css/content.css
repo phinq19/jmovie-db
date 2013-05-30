@@ -1,10 +1,20 @@
+header 													{background:transparent none no-repeat center center; background-attachment: fixed; 
+															-webkit-background-size: cover; 
+															-moz-background-size: cover; 
+															-o-background-size: cover; 
+															background-size: cover; 
+														}
+
 a														{color:#000000;}
 a:visited												{color:#303030;}
 a:hover													{color:#505050;}
 
 table tr:nth-child(2n+1)								{background-color:#eeeeee;}
+table tr:hover											{background-color:#cccccc;}
 
 h2, h3, h4, h5											{margin:0;}
+
+h2, h3													{margin:15px 0;}
 
 hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 
@@ -14,10 +24,9 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 															-webkit-box-shadow: 0 5px 5px #333;
 											        		   -moz-box-shadow: 0 5px 5px #333;
 											        		        box-shadow: 0 5px 5px #333;
-											        		float:left; width:100%;
                 										}
 
-#titleBox .subTitle										{color:#fff;}
+#titleBox .subTitle										{color:#fff; width:100%;}
 
 #contentContainer .tableHeader							{height:20px; line-height:20px; text-transform:capitalize; text-align:left; color:#ffffff; background-color:#000000; text-indent:10px; font-size:0.83em}
 #contentContainer table									{width:100%;}
@@ -56,5 +65,5 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 
 #infoView .infoListEntry								{text-transform:capitalize;}
 
-
+.noInformationCounter 									{font-weight:bold;}
 .lastfivePartial ul 									{padding-left:0;}

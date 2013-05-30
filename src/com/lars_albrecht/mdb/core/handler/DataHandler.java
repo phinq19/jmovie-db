@@ -714,7 +714,6 @@ public class DataHandler {
 				rs = DB.query(sql);
 				final ResultSetMetaData rsmd = rs.getMetaData();
 				for (; rs.next();) {
-					// TODO FIX THE SAME ITEMS LIST
 					tempMap = new HashMap<String, Object>();
 					for (int i = 2; i <= rsmd.getColumnCount(); i++) {
 						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));

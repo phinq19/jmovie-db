@@ -4,7 +4,6 @@
 package com.lars_albrecht.mdb.core.interfaces.web.pages;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,7 +66,7 @@ public class SearchResultsPage extends WebPage {
 				 * TODO propably fixed TODO move searchcode to extra
 				 * class/method to reuse this for other interfaces
 				 */
-				searchStr = (URLDecoder.decode(GETParams.get("searchStr"), "utf-8"));
+				searchStr = GETParams.get("searchStr");
 
 				int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
 
