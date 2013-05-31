@@ -1,13 +1,37 @@
 <div id="browseView" class="contentPart">
-	{browsercontainer}
-	{noinfocontainer}
-	{duplicatecontainer}
+	<div id="browser">{browsercontainer}</div>
+	<div id="noInformation">{noinfocontainer}</div>
+	<div id="duplicatecontainer">{duplicatecontainer}</div>
 </div>
 
 {browser-start}
 <h2>Durchsuchen</h2>
-<p>Aktuell ist es nicht möglich die Liste durchzugucken. Benutzen Sie bitte die Suche.</p>
+
+<ul class="keyList">
+	{keyListItems}
+</ul>
+
+{fileListItems}
 {browser-end}
+
+{browserFileListItemSingle-start}
+<table class="{class}">
+	<tr>
+		<th>{title}</th>
+	</tr>
+	{fileListItemSingles}
+</table>
+{browserFileListItemSingle-end}
+
+{browserFileListItem-start}
+	<tr>
+		<td><a href="?action=showFileDetails&fileId={itemId}">{name}</a></td>
+	</tr>
+{browserFileListItem-end}
+
+{browserKeyListItem-start}
+	<li><a href="javascript:void(0)">{key}</a></li>
+{browserKeyListItem-end}
 
 
 {duplicate-start}

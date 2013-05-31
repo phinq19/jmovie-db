@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.FileFinder;
@@ -21,6 +20,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
+import com.lars_albrecht.mdb.core.interfaces.web.pages.AttributesTagsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.BrowsePage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.DefaultErrorPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.FileDetailsPage;
@@ -48,29 +48,6 @@ public class WebServerHelper {
 		this.mainController = mainController;
 	}
 
-	private String getPagenameForActionname(final String actionname) {
-		String pagename = null;
-		if (actionname.equalsIgnoreCase("") || actionname.equalsIgnoreCase("index")) {
-			pagename = "home";
-		} else if (actionname.equalsIgnoreCase("showBrowser")) {
-			pagename = "browser";
-		} else if (actionname.equalsIgnoreCase("showSettings")) {
-			pagename = "settings";
-		} else if (actionname.equalsIgnoreCase("showAttributes")) {
-			pagename = "attributes";
-		} else if (actionname.equalsIgnoreCase("showInfoControl")) {
-			pagename = "infocontrol";
-		} else if (actionname.equalsIgnoreCase("showSearchresults")) {
-			pagename = "searchresults";
-		} else if (actionname.equalsIgnoreCase("showFileDetails")) {
-			pagename = "filedetails";
-		} else {
-			pagename = "404";
-		}
-
-		return pagename;
-	}
-
 	/**
 	 * Generate content for the given content, filename and parameters.
 	 * 
@@ -84,7 +61,6 @@ public class WebServerHelper {
 			generateContent(final String content, final String filename, final WebServerRequest request) throws UnsupportedEncodingException {
 		String generatedContent = content;
 		String contentMarkerReplacement = "";
-		// System.out.println("Params: " + GETParams);
 		String pageTitle = "JMovieDB - Webinterface";
 		String subTitle = "";
 
@@ -95,9 +71,6 @@ public class WebServerHelper {
 			} else {
 				action = "index";
 			}
-
-			// currently unused
-			final ConcurrentHashMap<String, String> contentMarkerReplacements = null;
 
 			try {
 				WebPage page = null;
@@ -114,6 +87,8 @@ public class WebServerHelper {
 					page = new SettingsPage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showBrowser")) {
 					page = new BrowsePage(action, request, this.mainController);
+				} else if (action.equalsIgnoreCase("showAttributesTags")) {
+					page = new AttributesTagsPage(action, request, this.mainController);
 				} else {
 					page = new DefaultErrorPage("404", request, this.mainController);
 				}
@@ -122,14 +97,6 @@ public class WebServerHelper {
 				pageTitle = subTitle + " | " + pageTitle;
 			} catch (final Exception e) {
 				e.printStackTrace();
-			}
-
-			// current fallback TODO remove this
-			if (contentMarkerReplacement.equals("")) {
-				final String pagename = this.getPagenameForActionname(action);
-				if (action.equalsIgnoreCase("showAttributes") || action.equalsIgnoreCase("showSettings")) {
-					contentMarkerReplacement = new Template(pagename, contentMarkerReplacements).getContent();
-				}
 			}
 
 			// replace contentmarker with "contentMarkerReplacement" if marker
@@ -229,7 +196,7 @@ public class WebServerHelper {
 				final String action = request.getGetParams().get("action");
 				if (action.equalsIgnoreCase("getStatus")) {
 					if (this.mainController.getfController().getThreadList().size() > 0) {
-						content += "<p>Finder is running</p>";
+						content += "<p>Finder läuft</p>";
 					}
 					if (this.mainController.getcController().getThreadList().size() > 0) {
 						final String[] collectorNameList = new String[this.mainController.getcController().getThreadList().size()];
@@ -242,12 +209,12 @@ public class WebServerHelper {
 							i++;
 						}
 
-						content += "<p>Collector is running:" + "<ul>" + Helper.implode(collectorNameList, null, "<li>", "</li>") + "</ul>"
+						content += "<p>Collector läuft:" + "<ul>" + Helper.implode(collectorNameList, null, "<li>", "</li>") + "</ul>"
 								+ "</p>";
 					}
 
 					if (content.equalsIgnoreCase("")) {
-						content = "<p>No activities</p>";
+						content = "<p>Keine Aktivitäten</p>";
 					}
 				} else if (action.equalsIgnoreCase("autocomplete") && request.getGetParams().get("term") != null) {
 					if (request.getGetParams().get("term").contains("=")) {

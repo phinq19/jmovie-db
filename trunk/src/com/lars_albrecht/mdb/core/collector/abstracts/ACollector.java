@@ -281,7 +281,8 @@ public abstract class ACollector implements Runnable {
 	private ArrayList<FileItem> prepareFileItems(final ArrayList<FileItem> fileItems, final String collectorName) {
 		Debug.log(Debug.LEVEL_TRACE, Arrays.deepToString(fileItems.toArray()));
 		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
-		final Long lastRun = (Long) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
+		final String lastRunObj = (String) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
+		final Long lastRun = (lastRunObj == null ? null : Long.parseLong(lastRunObj));
 		if (lastRun != null) {
 			for (int i = 0; i < fileItems.size(); i++) {
 				if (fileItems.get(i).getUpdateTS() != null && lastRun > fileItems.get(i).getUpdateTS()) {

@@ -63,7 +63,7 @@ public class DB implements IDatabase {
 	 * @return PreparedStatement
 	 * @throws Exception
 	 */
-	private static PreparedStatement
+	public static PreparedStatement
 			addDynamicValue(final PreparedStatement pst, final int index, final Object objectToSet) throws Exception {
 		if (objectToSet.getClass() == Integer.class) {
 			pst.setInt(index, ((Integer) objectToSet).intValue());
@@ -86,7 +86,7 @@ public class DB implements IDatabase {
 		} else if (objectToSet.getClass() == BigDecimal.class) {
 			pst.setBigDecimal(index, ((BigDecimal) objectToSet));
 		} else if (objectToSet.getClass() == Double.class) {
-			pst.setDouble(index, ((Double) objectToSet).shortValue());
+			pst.setDouble(index, ((Double) objectToSet).doubleValue());
 		} else if (objectToSet.getClass() == Time.class) {
 			pst.setTime(index, ((Time) objectToSet));
 		} else if (objectToSet.getClass() == Date.class) {
@@ -316,6 +316,8 @@ public class DB implements IDatabase {
 		PreparedStatement st = null;
 		ResultSet rs = null;
 		st = DB.getConnection().prepareStatement(expression);
+		Debug.log(Debug.LEVEL_DEBUG, "SQL: " + expression);
+		Debug.log(Debug.LEVEL_DEBUG, "SQL VALUES: " + values);
 		for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
 			st = DB.addDynamicValue(st, entry.getKey(), entry.getValue()); //
 			// TODO check why it will not save lists with this -> see logs with
@@ -412,6 +414,7 @@ public class DB implements IDatabase {
 		if (expression != null && values != null && values.size() > 0) {
 			PreparedStatement st = null;
 			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + expression);
+			Debug.log(Debug.LEVEL_DEBUG, "SQL VALUES: " + values);
 			try {
 				st = DB.getConnection().prepareStatement(expression); // statements
 				for (final Map.Entry<Integer, Object> entry : values.entrySet()) {
@@ -457,7 +460,7 @@ public class DB implements IDatabase {
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_fileinformation_fullpath ON fileInformation (fullpath);";
 			DB.update(sql);
-			sql = "CREATE INDEX IF NOT EXISTS idx_fileinformation_name_fullpath ON fileInformation (name, fullpath);";
+			sql = "CREATE INDEX IF NOT EXISTS idx_fileinformation_id_name_fullpath ON fileInformation (id, name, fullpath);";
 			DB.update(sql);
 
 			// collectorInformation
@@ -506,11 +509,34 @@ public class DB implements IDatabase {
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
 			DB.update(sql);
 
+			// tags
+			sql = "CREATE TABLE IF NOT EXISTS 'tags' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'name' VARCHAR(255) ";
+			sql += "); ";
+			DB.update(sql);
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_tags_name ON tags (name);";
+			DB.update(sql);
+
+			// fileTags
+			sql = "CREATE TABLE IF NOT EXISTS 'fileTags' ( ";
+			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
+			sql += "'file_id' INTEGER, ";
+			sql += "'tag_id' INTEGER, ";
+			sql += "'isuser' INTEGER ";
+			// sql += "'value' INTEGER ";
+			sql += "); ";
+			DB.update(sql);
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_filetags_filekey ON fileTags (file_id, tag_id, isuser);";
+			DB.update(sql);
+			sql = "CREATE INDEX IF NOT EXISTS idx_filetags_id_fileid_tagid ON fileTags (id, file_id, tag_id);";
+			DB.update(sql);
+
 			// options
 			sql = "CREATE TABLE IF NOT EXISTS 'options' ( ";
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
-			sql += "'name' INTEGER, ";
-			sql += "'value' INTEGER ";
+			sql += "'name' VARCHAR(255), ";
+			sql += "'value' VARCHAR(255) ";
 			sql += "); ";
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_options ON options (name);";

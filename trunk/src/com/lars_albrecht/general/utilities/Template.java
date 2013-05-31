@@ -81,9 +81,6 @@ public class Template {
 
 	public final void loadTemplateFile(final String templateName) {
 		if (templateName != null && !templateName.equalsIgnoreCase("")) {
-			if (templateName.equalsIgnoreCase("lastfive")) {
-				System.out.println("LAST FIVE SEARCH");
-			}
 			this.content = this.getFileContent(templateName + ".page", "web");
 			if (this.content == null) {
 				this.content = this.getFileContent(templateName + ".partial", "web");
