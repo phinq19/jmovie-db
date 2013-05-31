@@ -12,9 +12,11 @@ a:hover													{color:#505050;}
 table tr:nth-child(2n+1)								{background-color:#eeeeee;}
 table tr:hover											{background-color:#cccccc;}
 
-h2, h3, h4, h5											{margin:0;}
+h1, h2, h3, h4, h5										{text-shadow:#333333 3px 3px 5px;}
+h2, h3, h4, h5											{margin:0; clear:both;}
 
-h2, h3													{margin:15px 0;}
+h2														{margin:15px 0;}
+h3														{margin-top:15px;}
 
 hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 
@@ -35,7 +37,9 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 #contentContainer table tr td							{padding: 0 10px; width:50%; vertical-align:top;}
 #contentContainer nav									{float:none; width:auto;}
 #contentContainer nav ul li								{display:inline-block; white-space:nowrap;}
-#contentContainer nav a									{padding:5px 10px;; font-size:12px; float:none; width:auto;}
+#contentContainer nav a									{padding:5px 10px; font-size:12px; float:none; width:auto; border-top:2px solid #000000;}
+/** TODO SET TO ACTIVE IF ACTIVE **/
+#contentContainer nav a.active							{border-top:2px solid #ffffff;}
 
 #contentContainer .contentPart							{margin-bottom:20px;}
 
@@ -65,5 +69,13 @@ hr														{clear:left; float:left; padding: 10px 0; width:100%;}
 
 #infoView .infoListEntry								{text-transform:capitalize;}
 
-.noInformationCounter 									{font-weight:bold;}
 .lastfivePartial ul 									{padding-left:0;}
+
+#browseView	ul.keyList									{display:inline-block; padding:0; list-style:none;}
+#browseView	ul.keyList li								{float:left; background-color:#000000; color:#ffffff; margin:0 5px; padding:0 5px; border-top:2px solid #000000;}
+#browseView	ul.keyList li.active						{border-top:2px solid #888888; font-weight:bold;}
+#browseView	ul.keyList li a								{color:#ffffff; text-decoration:none;}
+#browseView	ul.keyList li:hover							{cursor:pointer;}
+#browseView	ul.keyList li:hover a						{text-decoration:underline;}
+#browseView .noInformationCounter 						{font-weight:bold;}
+#browseView .browseFileTable							{display:none;}

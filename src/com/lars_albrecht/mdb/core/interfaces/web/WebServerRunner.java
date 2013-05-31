@@ -72,16 +72,17 @@ public class WebServerRunner implements Runnable {
 
 				String content = null;
 				if (urlStr != null) {
+					// TODO try to remove this if
 					if (!urlStr.startsWith("ajax.html") && !urlStr.startsWith("json.html")) {
 
 						content = new WebServerHelper(this.mainController).getFileContent(urlStr, "web", request);
 
 						// Send the response
 						// Send the headers
-						if ((content == null) || urlStr.endsWith(".ico")) {
-							out.println("HTTP/1.0 404 Not Found");
+						if ((content == null)) {
+							out.println("HTTP/1.1 404 Not Found");
 						} else {
-							out.println("HTTP/1.0 200 OK");
+							out.println("HTTP/1.1 200 OK");
 						}
 
 						if (urlStr != null) {
@@ -90,17 +91,19 @@ public class WebServerRunner implements Runnable {
 							} else if (urlStr.endsWith(".css")) {
 								out.println("Content-Type: text/css; charset=utf-8");
 							} else if (urlStr.endsWith(".ico")) {
-								out.println("image/x-icon; charset=utf-8");
+								out.println("Content-Type: image/x-icon");
 							} else {
 								out.println("Content-Type: text/html; charset=utf-8");
 							}
 						}
 
-						// out.println("Content-Type: text/html");
+						content = (content != null ? content : "");
+						out.println("Accept-Ranges: bytes");
+						out.println("Content-Length:" + content.getBytes().length);
 						out.println("Server: MDB");
 						// this blank line signals the end of the headers
 						out.println("");
-						out.println(content != null ? content : "");
+						out.println(content);
 
 					} else if (urlStr.startsWith("ajax.html")) {
 						content = new WebServerHelper(this.mainController).getAjaxContent(urlStr, request, false);

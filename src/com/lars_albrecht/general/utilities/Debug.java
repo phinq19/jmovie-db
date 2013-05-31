@@ -10,7 +10,9 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
@@ -47,18 +49,24 @@ public class Debug implements UncaughtExceptionHandler {
 		} else {
 			tempList = new ArrayList<String>();
 		}
-		tempList.add(msg);
+
+		// @see
+		// "http://www.java-examples.com/get-synchronized-list-java-arraylist-example"
+		final List<String> list = Collections.synchronizedList(tempList);
+		final String caller = (Thread.currentThread().getStackTrace().length >= 2 ? Thread.currentThread().getStackTrace()[2]
+				.getMethodName() : "none");
+		list.add(msg);
 		Debug.logList.put(level, tempList);
 		if (level >= Debug.loglevel) {
 			String timeStr = null;
 			TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 			final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, Locale.GERMAN);
 			timeStr = df.format(new Date().getTime());
-			final String pre = "->\t" + timeStr + "\tMSG: ";
+			final String pre = "->\t" + timeStr + " | ";
 			if (Debug.loglevel >= Debug.LEVEL_ERROR) {
-				System.err.println(pre + msg);
+				System.err.println(pre + caller + "\tMSG: " + msg);
 			} else {
-				System.out.println(pre + msg);
+				System.out.println(pre + caller + "\tMSG: " + msg);
 			}
 		}
 	}

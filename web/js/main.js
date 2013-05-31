@@ -7,8 +7,27 @@ $(document).ready(function() {
 	resetInterval(interval);
 	addAutocompleteSearchBox();
 	
+	
+	addBrowseJS();
 	addSettingsActions();
 });
+
+function addBrowseJS(){
+	$('.keyList').each(function(){
+		var tabs = $(this).find('li');
+		var tables = $(this).nextAll('table');
+		tables.filter(':first').show();
+		tabs.filter(':first').addClass('active');
+	
+		$(this).find('li').click(function(){
+		    var key = $(this).find('a').html();
+		    tabs.removeClass('active');
+		    $(this).addClass('active');
+		    tables.hide();
+		    tables.filter('.key_' + key).show();
+		});
+	});
+}
 
 function addSettingsActions(){
 	if($('#searchSettings').length){

@@ -423,6 +423,16 @@ public class TheMovieDBCollector extends ACollector {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
 						new Value<Object>(imageUrl + movie.getBackdropPath())));
 			}
+
+			// add votes
+			if (movie.getVoteAverage() > 0) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_average", infoType, "votes", false, false),
+						new Value<Object>(movie.getVoteAverage())));
+			}
+			if (movie.getVoteCount() > 0) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_count", infoType, "votes", false, false),
+						new Value<Object>(movie.getVoteCount())));
+			}
 		}
 
 		return resultList;
