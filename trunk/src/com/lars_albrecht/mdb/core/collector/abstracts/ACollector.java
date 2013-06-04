@@ -73,15 +73,8 @@ public abstract class ACollector implements Runnable {
 		}
 	}
 
-	protected ArrayList<FileItem> getFileItems() {
-		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
-		for (final FileItem fileItem : this.fileItems) {
-			if (this.collectorTypes.contains(fileItem.getFiletype())) {
-				resultList.add(fileItem);
-			}
-		}
-
-		return resultList;
+	final protected ArrayList<FileItem> getFileItems() {
+		return this.fileItems;
 	}
 
 	/**
@@ -139,7 +132,6 @@ public abstract class ACollector implements Runnable {
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -218,6 +210,8 @@ public abstract class ACollector implements Runnable {
 			for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
 				if (entry.getValue() != null && entry.getValue().size() > 0) {
 					try {
+						// TODO search for mistakes -> found e.g. series in
+						// movies.
 						if (((fileItemId = this.getFileItemId(entry.getKey())) > -1)) {
 							this.transformToTypeInformation(fileItemId, entry.getValue());
 						}
@@ -229,6 +223,7 @@ public abstract class ACollector implements Runnable {
 				}
 			}
 		}
+		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_NOINFOFILEITEMS);
 		this.persistTypeInformation();
 	}
 
@@ -276,26 +271,41 @@ public abstract class ACollector implements Runnable {
 	 * 
 	 * @param fileItems
 	 * @param collectorName
-	 * @return
+	 * @return ArrayList<FileItem>
 	 */
 	private ArrayList<FileItem> prepareFileItems(final ArrayList<FileItem> fileItems, final String collectorName) {
 		Debug.log(Debug.LEVEL_TRACE, Arrays.deepToString(fileItems.toArray()));
 		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
-		final String lastRunObj = (String) OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
-		final Long lastRun = (lastRunObj == null ? null : Long.parseLong(lastRunObj));
-		if (lastRun != null) {
-			for (int i = 0; i < fileItems.size(); i++) {
-				if (fileItems.get(i).getUpdateTS() != null && lastRun > fileItems.get(i).getUpdateTS()) {
-					Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + fileItems.get(i));
-				} else {
-					Debug.log(Debug.LEVEL_TRACE, "Element NOT collected: " + fileItems.get(i));
+		final Object lastRunObj = OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
+		final Long lastRun = (lastRunObj == null ? null : (lastRunObj instanceof String ? Long.parseLong((String) lastRunObj)
+				: (Long) lastRunObj));
+		for (int i = 0; i < fileItems.size(); i++) {
+			// item for this collector?
+			if (fileItems.get(i) != null && this.getCollectorTypes().contains(fileItems.get(i).getFiletype())) {
+				// runned before?
+				if (lastRun == null) {
+					if (i == 0) {
+						// log only once
+						Debug.log(Debug.LEVEL_TRACE, "Collector never runned before: " + Helper.ucfirst(collectorName));
+					}
 					tempList.add(fileItems.get(i));
+				} else {
+					boolean noInfo = false;
+					if (this.mainController.getDataHandler().getNoInfoFileItems().get(this.getInfoType()) != null) {
+						noInfo = this.mainController.getDataHandler().getNoInfoFileItems().get(this.getInfoType())
+								.contains(fileItems.get(i));
+					}
+
+					if (!noInfo && fileItems.get(i).getUpdateTS() != null && lastRun > fileItems.get(i).getUpdateTS()) {
+						Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + fileItems.get(i));
+					} else {
+						Debug.log(Debug.LEVEL_TRACE, "Element NOT collected: " + fileItems.get(i));
+						tempList.add(fileItems.get(i));
+					}
 				}
 			}
-		} else {
-			Debug.log(Debug.LEVEL_TRACE, "Collector never runned before: " + Helper.ucfirst(collectorName));
-			tempList.addAll(fileItems);
 		}
+		this.mainController.getDataHandler().clearNoInfoFileItems();
 		return tempList;
 	}
 
@@ -304,6 +314,7 @@ public abstract class ACollector implements Runnable {
 		OptionsHandler.setOption("collectorStartRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
 		Debug.startTimer("Collector collect time: " + this.getInfoType());
 		this.fileItems = this.prepareFileItems(this.fileItems, this.getInfoType());
+		Debug.log(Debug.LEVEL_INFO, "Really collect for: " + this.fileItems.size() + " in " + this.getInfoType());
 		this.doCollect();
 		Debug.stopTimer("Collector collect time: " + this.getInfoType());
 		this.keysToAdd = this.getKeysToAdd();

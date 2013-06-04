@@ -37,16 +37,18 @@ import com.lars_albrecht.mdb.database.DB;
  */
 public class DataHandler {
 
-	private ArrayList<Key<?>>			keys				= null;
-	private ArrayList<Value<?>>			values				= null;
-	private ArrayList<FileItem>			fileItems			= null;
-	private ArrayList<TypeInformation>	typeInformation		= null;
+	private ArrayList<Key<?>>								keys					= null;
+	private ArrayList<Value<?>>								values					= null;
+	private ArrayList<FileItem>								fileItems				= null;
+	private ArrayList<TypeInformation>						typeInformation			= null;
+	private ConcurrentHashMap<String, ArrayList<FileItem>>	noInfoFileItems			= null;
 
-	public static final int				RELOAD_ALL			= 0;
-	public static final int				RELOAD_KEYS			= 1;
-	public static final int				RELOAD_VALUES		= 2;
-	public static final int				RELOAD_TYPEINFO		= 3;
-	public static final int				RELOAD_FILEITEMS	= 4;
+	public static final int									RELOAD_ALL				= 0;
+	public static final int									RELOAD_KEYS				= 1;
+	public static final int									RELOAD_VALUES			= 2;
+	public static final int									RELOAD_TYPEINFO			= 3;
+	public static final int									RELOAD_FILEITEMS		= 4;
+	public static final int									RELOAD_NOINFOFILEITEMS	= 5;
 
 	public DataHandler(final MainController mainController) {
 		this.reloadData(DataHandler.RELOAD_ALL);
@@ -442,6 +444,26 @@ public class DataHandler {
 		return this.fileItems;
 	}
 
+	/**
+	 * @return the noInfoFileItems
+	 */
+	public ConcurrentHashMap<String, ArrayList<FileItem>> getNoInfoFileItems() {
+		if (this.noInfoFileItems == null) {
+			this.loadNoInfoFileItems();
+		}
+		return this.noInfoFileItems;
+	}
+
+	public void clearNoInfoFileItems() {
+		final String sql = "DELETE FROM collectorInformation WHERE key = 'noinformation'";
+
+		try {
+			DB.update(sql);
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public ConcurrentHashMap<String, Object> getInfoFromDatabase() {
 		final ConcurrentHashMap<String, Object> resultMap = new ConcurrentHashMap<String, Object>();
 
@@ -594,6 +616,11 @@ public class DataHandler {
 		return this;
 	}
 
+	private DataHandler loadNoInfoFileItems() {
+		this.noInfoFileItems = this.getAllFileItemsWithNoCollectorinfo();
+		return this;
+	}
+
 	/**
 	 * Reload the keys.
 	 * 
@@ -689,7 +716,7 @@ public class DataHandler {
 		}
 	}
 
-	public ConcurrentHashMap<String, ArrayList<FileItem>> getAllFileItemsWithNoCollectorinfo() {
+	private ConcurrentHashMap<String, ArrayList<FileItem>> getAllFileItemsWithNoCollectorinfo() {
 		final ConcurrentHashMap<String, ArrayList<FileItem>> resultList = new ConcurrentHashMap<String, ArrayList<FileItem>>();
 		final FileItem fileItem = new FileItem();
 		HashMap<String, Object> tempMap = null;
@@ -784,10 +811,31 @@ public class DataHandler {
 	 */
 	public void reloadData(final int reloadType) {
 		Debug.startTimer("DataHandler reloadData time");
-		this.loadKeys();
-		this.loadValues();
-		this.loadTypeInformation();
-		this.loadFileItems();
+		switch (reloadType) {
+			default:
+			case DataHandler.RELOAD_ALL:
+				this.loadKeys();
+				this.loadValues();
+				this.loadTypeInformation();
+				this.loadFileItems();
+				this.loadNoInfoFileItems();
+				break;
+			case DataHandler.RELOAD_FILEITEMS:
+				this.loadFileItems();
+				break;
+			case DataHandler.RELOAD_KEYS:
+				this.loadKeys();
+				break;
+			case DataHandler.RELOAD_VALUES:
+				this.loadValues();
+				break;
+			case DataHandler.RELOAD_TYPEINFO:
+				this.loadTypeInformation();
+				break;
+			case DataHandler.RELOAD_NOINFOFILEITEMS:
+				this.loadNoInfoFileItems();
+				break;
+		}
 		Debug.stopTimer("DataHandler reloadData time");
 	}
 

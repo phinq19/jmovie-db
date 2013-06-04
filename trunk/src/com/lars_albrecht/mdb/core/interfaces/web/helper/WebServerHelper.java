@@ -20,6 +20,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
+import com.lars_albrecht.mdb.core.interfaces.web.pages.AllPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.AttributesTagsPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.BrowsePage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.DefaultErrorPage;
@@ -89,6 +90,8 @@ public class WebServerHelper {
 					page = new BrowsePage(action, request, this.mainController);
 				} else if (action.equalsIgnoreCase("showAttributesTags")) {
 					page = new AttributesTagsPage(action, request, this.mainController);
+				} else if (action.equalsIgnoreCase("showAll")) {
+					page = new AllPage(action, request, this.mainController);
 				} else {
 					page = new DefaultErrorPage("404", request, this.mainController);
 				}

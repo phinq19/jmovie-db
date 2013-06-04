@@ -53,7 +53,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 			ex.printStackTrace();
 		}
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
-		Debug.log(Debug.LEVEL_INFO, "Collect for: " + this.getDataHandler().getFileItems().size());
+		Debug.log(Debug.LEVEL_INFO, "Probably collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
 		this.startCollect(this.getDataHandler().getFileItems());
 	}
@@ -240,6 +240,6 @@ public class MainController implements IFinderListener, ICollectorListener {
 		// OptionsHandler.setOption("collectorEndRunLast" +
 		// Helper.ucfirst(e.getCollectorName()), new
 		// Timestamp(System.currentTimeMillis()));
-		Debug.log(Debug.LEVEL_TRACE, "Collector " + e.getCollectorName() + " ends");
+		Debug.log(Debug.LEVEL_INFO, "Collector " + e.getCollectorName() + " ends");
 	}
 }
