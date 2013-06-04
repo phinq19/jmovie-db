@@ -229,7 +229,7 @@ public class FileItem implements IPersistable {
 		if (map.containsKey("createTS")) {
 			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
-				result.setCreateTS(((Long) sdfToDate.parse((String) map.get("createTS")).getTime()).intValue());
+				result.setCreateTS(((Long) (sdfToDate.parse((String) map.get("createTS")).getTime() / 1000)).intValue());
 			} catch (final ParseException e) {
 				e.printStackTrace();
 			}
@@ -238,7 +238,7 @@ public class FileItem implements IPersistable {
 		if (map.containsKey("updateTS")) {
 			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
-				result.setUpdateTS(((Long) sdfToDate.parse((String) map.get("updateTS")).getTime()).intValue());
+				result.setUpdateTS(((Long) (sdfToDate.parse((String) map.get("updateTS")).getTime() / 1000)).intValue());
 			} catch (final ParseException e) {
 				e.printStackTrace();
 			}

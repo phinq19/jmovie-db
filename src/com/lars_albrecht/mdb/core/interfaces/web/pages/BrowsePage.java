@@ -112,8 +112,7 @@ public class BrowsePage extends WebPage {
 
 	private Template fillNoInfoContainer(final Template browseTemplate) {
 		final Template browseTemplateWithNoInfoContainer = browseTemplate;
-		final ConcurrentHashMap<String, ArrayList<FileItem>> noInfoList = this.mainController.getDataHandler()
-				.getAllFileItemsWithNoCollectorinfo();
+		final ConcurrentHashMap<String, ArrayList<FileItem>> noInfoList = this.mainController.getDataHandler().getNoInfoFileItems();
 		if (noInfoList.size() > 0) {
 			String noInfoContainer = browseTemplate.getSubMarkerContent("noinformation");
 
@@ -129,7 +128,7 @@ public class BrowsePage extends WebPage {
 				// marker
 				noInfoTable = browseTemplate.getSubMarkerContent("noinformationTable");
 				noInfoTable = Template.replaceMarker(noInfoTable, "collectorName", entry.getKey(), false);
-
+				noInfoItemList = "";
 				for (final FileItem fileItem : entry.getValue()) {
 					tempNoInfoItemList = browseTemplate.getSubMarkerContent("noinformationItem");
 					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemId", fileItem.getId().toString(), true);

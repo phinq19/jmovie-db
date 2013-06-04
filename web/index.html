@@ -32,17 +32,11 @@
 	                <h2 class="subTitle">{subTitle}</h2>
                 </div>
                 <nav>
-                    <div id="searchForm" class="menuItem">
-						<form method="get" action="">
-							<title for="searchStr">Suche</title>
-							<input type="text" id="searchStr" name="searchStr" value="{searchTerm}" />
-							<input type="hidden" name="action" value="showSearchresults" />
-						</form>
-					</div>
 					<ul>
 						<li><a href="index.html">Home</a></li>
+						<li><a href="?action=showAll">All</a></li>
 						<li><a href="?action=showBrowser">Browse</a></li>
-						<li><a href="?action=showAttributesTags">Attributes / Tags</a></li>
+						<li><a href="?action=showAttributesTags">Additional</a></li>
 						<li><a href="?action=showInfoControl">Info / Control</a></li>
 						<li><a href="?action=showSettings">Settings</a></li>
 					</ul>
@@ -52,6 +46,14 @@
 
         <div class="main-container">
             <div class="main wrapper clearfix">
+                <div id="searchForm" class="menuItem">
+					<form method="get" action="">
+						<title for="searchStr">Suche</title>
+						<input type="text" id="searchStr" name="searchStr" value="{searchTerm}" />
+						<input type="hidden" name="action" value="showSearchresults" />
+					</form>
+				</div>
+            
                 <article>
                 	<div id="contentContainer">
 						{content}

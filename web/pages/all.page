@@ -1,0 +1,24 @@
+<div id="allView" class="contentPart">
+	{content}
+</div>
+
+{allFileList-start}
+<table>
+	<tr>
+		<th>Titel</th>
+		<th>Typ</th>
+		<th>Hinzugefügt am</th>
+		<th>Updated am</th>
+	</tr>
+	{fileListItems}
+</table>
+{allFileList-end}
+
+{allFileListItem-start}
+	<tr>
+		<td><a href="?action=showFileDetails&fileId={itemId}">{name}</a></td>
+		<td>{type}</td>
+		<td>{added}</td>
+		<td>{updated}</td>
+	</tr>
+{allFileListItem-end}

@@ -134,12 +134,13 @@ public class TheMovieDBCollector extends ACollector {
 		int id = -1;
 		if ((tempList != null) && (tempList.size() > 0)) {
 			if (tempList.size() > 1) {
-
+				// TODO reduce duplicate code
 				// TODO use a fuzzy search for this:
 				// http://stackoverflow.com/questions/327513/fuzzy-string-search-in-java
+				// search for all titles
 				for (final MovieDb movieDb : tempList) {
 					// TODO put in function
-					final String tempTitle = Helper.implode(titles, " ", null, null);
+					final String tempTitle = Helper.implode(titles, " - ", null, null);
 
 					if (movieDb.getTitle().equalsIgnoreCase(tempTitle)) {
 						id = movieDb.getId();
@@ -149,6 +150,24 @@ public class TheMovieDBCollector extends ACollector {
 						break;
 					}
 				}
+
+				if (id == -1) {
+					// search for first title only
+					for (final MovieDb movieDb : tempList) {
+						// TODO put in function
+						final String tempTitle = titles[0];
+
+						if (movieDb.getTitle().equalsIgnoreCase(tempTitle)) {
+							id = movieDb.getId();
+						}
+
+						if (id > -1) {
+							break;
+						}
+					}
+				}
+				// TODO search for year only when name is near found
+
 				// TODO if the excact name is not the real name, try with more
 				// information
 				if (id == -1) {
@@ -183,7 +202,7 @@ public class TheMovieDBCollector extends ACollector {
 		filename = Helper.replaceLast(filename, fileExtension, "");
 
 		final String separator = " - ";
-		final String strPattern = "([\\.\\_0-9a-zA-ZÄÖÜßäöü\\ ]+)";
+		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+)";
 		final String yearPattern = "([0-9]{4})+";
 		final String endYearPattern = "([\\ \\.]){1}";
 		final String fullYearPattern = "(" + yearPattern + endYearPattern + ")";
