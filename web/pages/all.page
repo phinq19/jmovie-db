@@ -4,12 +4,14 @@
 
 {allFileList-start}
 <table>
-	<tr>
-		<th>Titel</th>
-		<th>Typ</th>
-		<th>Hinzugefügt am</th>
-		<th>Updated am</th>
-	</tr>
+	<thead>
+		<tr>
+			<th data-sort="string">Titel</th>
+			<th data-sort="string">Typ</th>
+			<th data-sort="date">Hinzugefügt am</th>
+			<th data-sort="date">Updated am</th>
+		</tr>
+	</thead>
 	{fileListItems}
 </table>
 {allFileList-end}
