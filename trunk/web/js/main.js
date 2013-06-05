@@ -2,7 +2,7 @@ var interval = 1000;
 var statusReloadErrorCounter = 0;
 var statusReloadId;
 
-$(document).ready(function() {
+$(document).ready(function(){
 	/* start status timer */
 	resetInterval(interval);
 	addAutocompleteSearchBox();
@@ -10,7 +10,43 @@ $(document).ready(function() {
 	
 	addBrowseJS();
 	addSettingsActions();
+	addAllJS();
 });
+
+function addAllJS(){
+	/* sortable table with http://joequery.github.io/Stupid-Table-Plugin/ */
+	var date_from_string = function(str){
+	    var resultValue;
+	    var pattern = '([0-9]{2})\.([0-9]{2})\.([0-9]{4})\ ([0-9]{2}):([0-9]{2}):([0-9]{2})';
+	    if(str.match(pattern)){
+	        var re = new RegExp(pattern);
+	        var DateParts = re.exec(str).slice(1);
+	        resultValue = new Date(DateParts[2], DateParts[1], DateParts[0], DateParts[3], DateParts[4], DateParts[5]);
+	    } else {
+	        resultValue = -1;
+	    }
+	    return resultValue;
+	};
+	
+	var sortedTable = $("#allView table").stupidtable({
+	    'date':function(a,b){
+	        /* Get these into date objects for comparison. */
+	        aDate = date_from_string(a);
+	        bDate = date_from_string(b);
+	        return aDate - bDate;
+	    }
+	});
+	
+	sortedTable.bind('aftertablesort', function (event, data) {
+	    /* data.column - the index of the column sorted after a click
+	    // data.direction - the sorting direction (either asc or desc) */
+	
+	    var th = $(this).find("th");
+	    th.find(".arrow").remove();
+	    var arrow = data.direction === "asc" ? "↑" : "↓";
+	    th.eq(data.column).append('<span class="arrow">' + arrow +'</span>');
+	});
+}
 
 function addBrowseJS(){
 	$('.keyList').each(function(){
