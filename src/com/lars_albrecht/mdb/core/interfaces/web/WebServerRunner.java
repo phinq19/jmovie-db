@@ -172,51 +172,54 @@ public class WebServerRunner implements Runnable {
 		// stop reading once a blank line is hit. This
 		// blank line signals the end of the client HTTP
 		// headers.
-		line = in.readLine();
-		if ((line != null) && !line.equals("")) {
-			notNull = true;
-		}
+		if (clientSocket.isBound() && !clientSocket.isClosed() && clientSocket.isConnected()) {
+			line = in.readLine();
+			if ((line != null) && !line.equals("")) {
+				notNull = true;
+			}
 
-		// TODO CREATE HEADER OBJECT AND PARSE FULL REQUEST
-		while ((notNull || (((line = in.readLine()) != null) && (!line.equals(""))))) {
-			notNull = false;
-			// if (keyValue.length > 1) {
-			// this.headerKeyValue.put(keyValue[0].trim(), keyValue[1].trim());
-			// }
-			if (line.startsWith("GET ") || line.startsWith("POST ")) {
+			// TODO CREATE HEADER OBJECT AND PARSE FULL REQUEST
+			while ((notNull || (((line = in.readLine()) != null) && (!line.equals(""))))) {
+				notNull = false;
+				// if (keyValue.length > 1) {
+				// this.headerKeyValue.put(keyValue[0].trim(),
+				// keyValue[1].trim());
+				// }
+				if (line.startsWith("GET ") || line.startsWith("POST ")) {
 
-				final int urlStart = line.startsWith("GET ") ? 5 : 6;
-				final int urlEnd = line.indexOf(" HTTP/1.1");
-				urlStr = line.substring(urlStart, urlEnd);
+					final int urlStart = line.startsWith("GET ") ? 5 : 6;
+					final int urlEnd = line.indexOf(" HTTP/1.1");
+					urlStr = line.substring(urlStart, urlEnd);
 
-				request.setMethod(line.substring(0, urlStart - 2));
-				request.setFullUrl(urlStr);
-				Debug.log(Debug.LEVEL_TRACE, "URL: (" + line.substring(0, urlStart - 2) + ")" + urlStr);
-				if (urlStr.indexOf("?") > -1) {
-					request.setGetParams(this.getQuery(urlStr));
-					urlStr = urlStr.substring(0, urlStr.indexOf("?"));
-				}
-				request.setUrl(urlStr);
-			} else {
-				final String[] asParam = this.getHeaderParam(line);
-				if (asParam != null) {
-					request.getGetParams().put(asParam[0], asParam[1]);
-					Debug.log(Debug.LEVEL_TRACE, "ELSE " + line);
+					request.setMethod(line.substring(0, urlStart - 2));
+					request.setFullUrl(urlStr);
+					Debug.log(Debug.LEVEL_TRACE, "URL: (" + line.substring(0, urlStart - 2) + ")" + urlStr);
+					if (urlStr.indexOf("?") > -1) {
+						request.setGetParams(this.getQuery(urlStr));
+						urlStr = urlStr.substring(0, urlStr.indexOf("?"));
+					}
+					request.setUrl(urlStr);
+				} else {
+					final String[] asParam = this.getHeaderParam(line);
+					if (asParam != null) {
+						request.getGetParams().put(asParam[0], asParam[1]);
+						Debug.log(Debug.LEVEL_TRACE, "ELSE " + line);
+					}
 				}
 			}
-		}
 
-		String content = "";
-		int value = 0;
-		while (in.ready() && ((value = in.read()) != -1)) {
-			// converts int to character
-			final char c = (char) value;
+			String content = "";
+			int value = 0;
+			while (in.ready() && ((value = in.read()) != -1)) {
+				// converts int to character
+				final char c = (char) value;
 
-			// prints character
-			content += c;
+				// prints character
+				content += c;
+			}
+			request.setContent(content);
+			request.setPostParams(this.getQuery("?" + content));
 		}
-		request.setContent(content);
-		request.setPostParams(this.getQuery("?" + content));
 
 		return request;
 	}
