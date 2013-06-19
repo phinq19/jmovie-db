@@ -98,6 +98,10 @@ public class FileItem implements IPersistable {
 	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
+	/**
+	 * equals if: obj == this | id != null on both and equals | fullpath and all
+	 * other are the same
+	 */
 	@Override
 	public boolean equals(final Object obj) {
 		if (this == obj) {
@@ -189,6 +193,56 @@ public class FileItem implements IPersistable {
 		return true;
 	}
 
+	/**
+	 * Checks if a file is the same (ignore id, fullpath, created and other
+	 * runtime vars.)
+	 * 
+	 * @param obj
+	 * @return
+	 */
+	public boolean simpleEquals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof FileItem)) {
+			return false;
+		}
+		final FileItem other = (FileItem) obj;
+		if (this.ext == null) {
+			if (other.ext != null) {
+				return false;
+			}
+		} else if (!this.ext.equals(other.ext)) {
+			return false;
+		}
+		if (this.filehash == null) {
+			if (other.filehash != null) {
+				return false;
+			}
+		} else if (!this.filehash.equals(other.filehash)) {
+			return false;
+		}
+		if (this.name == null) {
+			if (other.name != null) {
+				return false;
+			}
+		} else if (!this.name.equals(other.name)) {
+			return false;
+		}
+		if (this.size == null) {
+			if (other.size != null) {
+				return false;
+			}
+		} else if (!this.size.equals(other.size)) {
+			return false;
+		}
+		return true;
+
+	}
+
 	@Override
 	public Object fromHashMap(final HashMap<String, Object> map) {
 		final FileItem result = new FileItem();
@@ -218,11 +272,11 @@ public class FileItem implements IPersistable {
 			result.setExt((String) map.get("ext"));
 		}
 
-		if (map.containsKey("filetype") && (map.get("filetype") != "") && !map.get("filetype").equals("")) {
+		if (map.containsKey("filetype") && (map.get("filetype") != null) && (map.get("filetype") != "") && !map.get("filetype").equals("")) {
 			result.setFiletype((String) map.get("filetype"));
 		}
 
-		if (map.containsKey("filehash") && (map.get("filehash") != "") && !map.get("filehash").equals("")) {
+		if (map.containsKey("filehash") && (map.get("filehash") != null) && (map.get("filehash") != "") && !map.get("filehash").equals("")) {
 			result.setFilehash((String) map.get("filehash"));
 		}
 
