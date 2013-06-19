@@ -77,7 +77,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 		// TODO 1st: Check all existing files if them exists [X]
 		for (final FileItem fileItem : this.dataHandler.getFileItems()) {
-			if (!new File(fileItem.getFullpath()).exists()) {
+			if (fileItem != null && fileItem.getFullpath() != null && !new File(fileItem.getFullpath()).exists()) {
 				missingFilesList.add(fileItem);
 			}
 		}
