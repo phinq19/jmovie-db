@@ -460,7 +460,11 @@ public class DB implements IDatabase {
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_fileinformation_fullpath ON fileInformation (fullpath);";
 			DB.update(sql);
-			sql = "CREATE INDEX IF NOT EXISTS idx_fileinformation_id_name_fullpath ON fileInformation (id, name, fullpath);";
+			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_fileinformation_name_size ON fileInformation (name, size);";
+			DB.update(sql);
+			sql = "CREATE INDEX IF NOT EXISTS idx_fileinformation_id ON fileInformation (id);";
+			DB.update(sql);
+			sql = "CREATE INDEX IF NOT EXISTS idx_fileinformation_name ON fileInformation (name);";
 			DB.update(sql);
 
 			// collectorInformation

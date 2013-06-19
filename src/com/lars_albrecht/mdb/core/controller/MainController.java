@@ -46,9 +46,16 @@ public class MainController implements IFinderListener, ICollectorListener {
 		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
 
+		final ArrayList<FileItem> typedFilesList = new ArrayList<FileItem>();
+
+		// type files
+		for (final FileItem fileItem : this.startTyper(ObjectHandler.fileListToFileItemList(e.getFiles()))) {
+			typedFilesList.add(fileItem);
+		}
+
 		// insert to database
 		try {
-			this.getDataHandler().persist(this.prepareForPersist(e.getFiles()));
+			this.getDataHandler().persist(this.prepareForPersist(typedFilesList));
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
@@ -59,45 +66,80 @@ public class MainController implements IFinderListener, ICollectorListener {
 	}
 
 	/**
+	 * TODO rename method / refactor
 	 * 
 	 * @param files
 	 * @return ArrayList<FileItem>
 	 */
-	private ArrayList<FileItem> prepareForPersist(final ArrayList<File> files) {
-		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
+	private ArrayList<FileItem> prepareForPersist(final ArrayList<FileItem> files) {
+		ArrayList<FileItem> resultList = new ArrayList<FileItem>();
+		final ArrayList<FileItem> missingFilesList = new ArrayList<FileItem>();
+
+		// TODO 1st: Check all existing files if them exists [X]
+		for (final FileItem fileItem : this.dataHandler.getFileItems()) {
+			if (!new File(fileItem.getFullpath()).exists()) {
+				missingFilesList.add(fileItem);
+			}
+		}
+
+		// TODO 2nd: Check if a new file is an old file (e.g. moved)
+		// TODO 2nd 1st: If new is old, replace in database.
+
+		// TODO 2nd 2nd: If new is new, add to database
+
+		// TODO 3rd: Mark all missing files with no new position in filesystem
+		// as missing
+
 		if (files != null && files.size() > 0) {
+
 			// TODO temporary. You can not be shure if the file has changed, but
 			// the same title stays.
-			for (final FileItem fileItem : this.startTyper(ObjectHandler.fileListToFileItemList(files))) {
+			for (final FileItem fileItem : files) {
 				if (!this.dataHandler.getFileItems().contains(fileItem)) {
-					tempList.add(fileItem);
+					resultList.add(fileItem);
 				}
 			}
 
-			// TODO find better method. Is too slow for many (big) items.
-			// METHOD 1
-			// for (final FileItem fileItem : tempList) {
-			// try {
-			// Debug.startTimer("Hash " + fileItem.getName());
-			// fileItem.setFilehash(MD5Checksum.getCRC32Checksum(fileItem.getFullpath()));
-			// Debug.stopTimer("Hash " + fileItem.getName());
-			// } catch (final Exception e) {
-			// e.printStackTrace();
-			// }
-			// }
-			// METHOD 2
-			// for (final FileItem fileItem : tempList) {
-			// try {
-			//
-			// //
-			// fileItem.setFilehash(MD5Checksum.getMD5Checksum(fileItem.getFullpath()));
-			// } catch (final Exception e) {
-			// e.printStackTrace();
-			// }
-			// }
+			resultList = this.getFilesWithHash(resultList);
+
 		}
 
-		return tempList;
+		return resultList;
+	}
+
+	/**
+	 * Currently not really used.
+	 * 
+	 * TODO create a file-hash and save it in FileItem. TODO find better method.
+	 * MD5 and CRC32 too slow for many (big) files. TODO CRC32 over only the
+	 * first (512) bytes?
+	 * 
+	 * 
+	 * @param files
+	 * @return ArrayList<FileItem>
+	 */
+	private ArrayList<FileItem> getFilesWithHash(final ArrayList<FileItem> files) {
+		// METHOD 1 CRC32
+		// for (final FileItem fileItem : tempList) {
+		// try {
+		// Debug.startTimer("Hash " + fileItem.getName());
+		// fileItem.setFilehash(MD5Checksum.getCRC32Checksum(fileItem.getFullpath()));
+		// Debug.stopTimer("Hash " + fileItem.getName());
+		// } catch (final Exception e) {
+		// e.printStackTrace();
+		// }
+		// }
+		// METHOD 2 MD5
+		// for (final FileItem fileItem : tempList) {
+		// try {
+		//
+		// //
+		// fileItem.setFilehash(MD5Checksum.getMD5Checksum(fileItem.getFullpath()));
+		// } catch (final Exception e) {
+		// e.printStackTrace();
+		// }
+		// }
+		return files;
 	}
 
 	@Override
