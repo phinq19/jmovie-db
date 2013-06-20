@@ -566,21 +566,22 @@ public class DB implements IDatabase {
 		// INSERT A DATABASE VERSION
 		String sql = "";
 		ResultSet rs = null;
-		sql = "SELECT value FROM options WHERE name = 'dbversion'";
+		sql = "SELECT COUNT(*) AS count, value FROM options WHERE name = 'dbversion'";
 		int currentDBVersion = -1;
 
 		try {
 			rs = DB.query(sql);
 			rs.next();
 			// TODO add real check if something is found
-			if (false) {
+			if (rs.getInt("count") > 0) {
 				currentDBVersion = rs.getInt("value");
 			} else {
-				currentDBVersion = 1;
+				currentDBVersion = -1;
 			}
 		} catch (final SQLException e) {
 			e.printStackTrace();
 		}
+
 		if (currentDBVersion < newDBVersion) {
 			try {
 				sql = "BEGIN TRANSACTION";
