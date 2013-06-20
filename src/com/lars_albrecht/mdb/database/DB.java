@@ -441,7 +441,7 @@ public class DB implements IDatabase {
 	}
 
 	@Override
-	public void init() {
+	public void init() throws Exception {
 		String sql = null;
 		try {
 			// fileInformation
@@ -546,9 +546,66 @@ public class DB implements IDatabase {
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_options ON options (name);";
 			DB.update(sql);
 
-		} catch (final Exception e) {
+			if (!this.updateDBWithVersion()) {
+				throw new Exception("Database could not be updated");
+			}
+
+		} catch (final SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Sets the database version to the options. If the version is newer at a
+	 * run, the database will be updated.
+	 * 
+	 * @return
+	 */
+	private boolean updateDBWithVersion() {
+		final int newDBVersion = 1;
+		// INSERT A DATABASE VERSION
+		String sql = "";
+		ResultSet rs = null;
+		sql = "SELECT value FROM options WHERE name = 'dbversion'";
+		int currentDBVersion = -1;
+
+		try {
+			rs = DB.query(sql);
+			rs.next();
+			// TODO add real check if something is found
+			if (false) {
+				currentDBVersion = rs.getInt("value");
+			} else {
+				currentDBVersion = 1;
+			}
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
+		if (currentDBVersion < newDBVersion) {
+			try {
+				sql = "BEGIN TRANSACTION";
+				DB.update(sql);
+				sql = "REPLACE INTO options (id, name, value) VALUES (1, 'dbversion', " + newDBVersion + ")";
+				DB.update(sql);
+
+				if (currentDBVersion == -1) { // NO VERSION = -1
+					sql = "ALTER TABLE fileInformation ADD COLUMN status INTEGER NOT NULL DEFAULT '0'";
+					DB.update(sql);
+				}
+
+				sql = "END TRANSACTION";
+				DB.update(sql);
+			} catch (final SQLException e) {
+				sql = "ROLLBACK TRANSACTION";
+				try {
+					DB.update(sql);
+				} catch (final SQLException e1) {
+					e1.printStackTrace();
+				}
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
 }

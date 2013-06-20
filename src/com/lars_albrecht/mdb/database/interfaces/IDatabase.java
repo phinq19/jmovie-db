@@ -9,6 +9,6 @@ package com.lars_albrecht.mdb.database.interfaces;
  */
 public interface IDatabase {
 
-	public void init();
+	public void init() throws Exception;
 
 }

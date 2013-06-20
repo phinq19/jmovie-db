@@ -225,6 +225,28 @@ public class DataHandler {
 	}
 
 	/**
+	 * Added in database version 1.
+	 * 
+	 * @param id
+	 * @param status
+	 */
+	public void updateStatusOfFileItem(final Integer id, final int status) {
+		if (id != null && id > 0) {
+			final String sql = "UPDATE fileInformation SET status = ? WHERE id = ?";
+			final ConcurrentHashMap<Integer, Object> values = new ConcurrentHashMap<Integer, Object>();
+			values.put(1, status);
+			values.put(2, id);
+			try {
+				DB.updatePS(sql, values);
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			} catch (final Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
 	 * Returns a list of FileItems which are searched by the search term
 	 * searchStr.
 	 * 
@@ -656,16 +678,22 @@ public class DataHandler {
 	 * interface. Insert not more than 500 items at time, because SQLite has a
 	 * limit of 500 (http://sqlite.org/limits.html @ point 7).
 	 * 
+	 * Use "doReplace" to replace an existing item instead of insert the item.
+	 * 
 	 * @see "http://sqlite.org/limits.html"
 	 * 
 	 * @param objects
+	 * @param doReplace
 	 * @throws Exception
 	 */
-	public void persist(final ArrayList<?> objects) throws Exception {
+	public void persist(final ArrayList<?> objects, final boolean doReplace) throws Exception {
 		if ((objects != null) && (objects.size() > 0)) {
 
 			final IPersistable tempPersistable = (IPersistable) objects.get(0);
-			final String insertStr = "INSERT OR IGNORE INTO '"
+			String insertReplaceStr = null;
+
+			insertReplaceStr = (doReplace ? "REPLACE INTO " : "INSERT OR IGNORE INTO ");
+			insertReplaceStr += " '"
 					+ tempPersistable.getDatabaseTable()
 					+ "' ("
 					+ Helper.implode(tempPersistable.toHashMap().keySet(), ",", "" + (DB.useQuotesForFields ? "'" : "") + "", ""
@@ -674,7 +702,7 @@ public class DataHandler {
 			final LinkedHashMap<Integer, Object> insertValues = new LinkedHashMap<Integer, Object>();
 			boolean isFirst = true;
 			Map.Entry<String, LinkedHashMap<Integer, Object>> insertItem = null;
-			String sql = insertStr;
+			String sql = insertReplaceStr;
 
 			// max count for sqlite inserts
 			final int maxObjectCount = 500;
@@ -694,7 +722,7 @@ public class DataHandler {
 						DB.updatePS(sql, insertValues);
 						objectItemCount = 0;
 						variablesCount = 0;
-						sql = insertStr;
+						sql = insertReplaceStr;
 						insertValues.clear();
 						isFirst = true;
 					} else {
