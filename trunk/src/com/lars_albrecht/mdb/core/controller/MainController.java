@@ -13,6 +13,10 @@ import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.FileFinder;
 import com.lars_albrecht.general.utilities.PropertiesExNotInitilizedException;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
+import com.lars_albrecht.mdb.core.collector.MediaInfoCollector;
+import com.lars_albrecht.mdb.core.collector.TheMovieDBCollector;
+import com.lars_albrecht.mdb.core.collector.TheTVDBCollector;
+import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.core.collector.event.ICollectorListener;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
@@ -20,7 +24,10 @@ import com.lars_albrecht.mdb.core.finder.event.IFinderListener;
 import com.lars_albrecht.mdb.core.handler.ConfigurationHandler;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
+import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
 import com.lars_albrecht.mdb.core.models.FileItem;
+import com.lars_albrecht.mdb.filter.VideoFileFilter;
 
 /**
  * @author lalbrecht
@@ -222,11 +229,20 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 		this.fController = new FinderController(this);
 		this.fController.addFinderEventListener(this);
+		this.fController.setFileFilter(new VideoFileFilter());
 
 		this.iController = new InterfaceController(this);
+		final ArrayList<AInterface> listOfInterfaces = new ArrayList<AInterface>();
+		listOfInterfaces.add(new WebInterface(this, this.iController));
+		this.iController.setInterfaces(listOfInterfaces);
 
 		this.cController = new CollectorController(this);
 		this.cController.addCollectorEventListener(this);
+		final ArrayList<ACollector> listOfCollectors = new ArrayList<ACollector>();
+		listOfCollectors.add(new MediaInfoCollector(this, this.cController));
+		listOfCollectors.add(new TheMovieDBCollector(this, this.cController));
+		listOfCollectors.add(new TheTVDBCollector(this, this.cController));
+		this.cController.setCollectors(listOfCollectors);
 
 		this.dataHandler = new DataHandler(this);
 		this.globalVars = new ConcurrentHashMap<String, Object>();
@@ -255,16 +271,28 @@ public class MainController implements IFinderListener, ICollectorListener {
 	}
 
 	private void startCollect(final ArrayList<FileItem> fileItemList) {
-		this.cController.run(fileItemList);
+		try {
+			this.cController.run(fileItemList);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void startInterfaces() {
-		this.iController.run();
+		try {
+			this.iController.run();
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public void startSearch() {
-		this.fController.run((ArrayList<File>) this.globalVars.get("searchPathList"));
+		try {
+			this.fController.run((ArrayList<File>) this.globalVars.get("searchPathList"));
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
