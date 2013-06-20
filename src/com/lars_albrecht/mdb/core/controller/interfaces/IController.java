@@ -15,6 +15,6 @@ public interface IController {
 
 	public ArrayList<ThreadEx> getThreadList();
 
-	public void run(final Object... params);
+	public void run(final Object... params) throws Exception;
 
 }

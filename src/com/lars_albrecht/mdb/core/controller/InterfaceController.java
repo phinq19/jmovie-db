@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.interfaces.IController;
-import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
 
 /**
@@ -19,12 +18,12 @@ public class InterfaceController implements IController {
 	final ArrayList<ThreadEx>		threadList		= new ArrayList<ThreadEx>();
 	private ArrayList<AInterface>	interfaces		= null;
 
+	@SuppressWarnings("unused")
 	private MainController			mainController	= null;
 
 	public InterfaceController(final MainController mainController) {
 		this.mainController = mainController;
 		this.interfaces = new ArrayList<AInterface>();
-		this.initInterfaces();
 	}
 
 	@Override
@@ -32,20 +31,27 @@ public class InterfaceController implements IController {
 		return this.threadList;
 	}
 
-	private void initInterfaces() {
-		this.interfaces.add(new WebInterface(this.mainController, this));
-	}
-
 	@Override
-	public void run(final Object... params) {
+	public void run(final Object... params) throws Exception {
 		this.runInterfaces();
 	}
 
-	private void runInterfaces() {
+	private void runInterfaces() throws Exception {
+		if (this.interfaces == null || this.interfaces.size() == 0) {
+			throw new Exception("Interface Controller run failed. No interfaces specified");
+		}
 		for (final AInterface interfaze : this.interfaces) {
 			this.threadList.add(new ThreadEx(interfaze));
 			this.threadList.get(this.threadList.size() - 1).start();
 		}
+	}
+
+	/**
+	 * @param interfaces
+	 *            the interfaces to set
+	 */
+	public final void setInterfaces(final ArrayList<AInterface> interfaces) {
+		this.interfaces = interfaces;
 	}
 
 }

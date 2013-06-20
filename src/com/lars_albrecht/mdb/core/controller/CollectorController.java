@@ -6,9 +6,6 @@ package com.lars_albrecht.mdb.core.controller;
 import java.util.ArrayList;
 
 import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
-import com.lars_albrecht.mdb.core.collector.MediaInfoCollector;
-import com.lars_albrecht.mdb.core.collector.TheMovieDBCollector;
-import com.lars_albrecht.mdb.core.collector.TheTVDBCollector;
 import com.lars_albrecht.mdb.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.core.collector.event.CollectorEventMulticaster;
@@ -26,21 +23,24 @@ public class CollectorController implements IController, ICollectorListener {
 	private ArrayList<ACollector>		collectors				= null;
 
 	private CollectorEventMulticaster	collectorMulticaster	= null;
+	@SuppressWarnings("unused")
 	private MainController				mainController			= null;
 
 	/**
 	 * 
 	 * @param mainController
+	 * @throws Exception
 	 */
 	public CollectorController(final MainController mainController) {
 		this.mainController = mainController;
-		this.collectors = new ArrayList<ACollector>();
 		this.collectorMulticaster = new CollectorEventMulticaster();
 		this.collectorMulticaster.add(this);
-		this.initCollector();
 	}
 
-	public void collectInfos(final ArrayList<FileItem> fileItems) {
+	public void collectInfos(final ArrayList<FileItem> fileItems) throws Exception {
+		if (this.collectors == null || this.collectors.size() == 0) {
+			throw new Exception("Collector Controller collect failed. No collectors specified");
+		}
 		ThreadEx tempThread = null;
 		final String[] info = {
 			"Collector"
@@ -58,15 +58,9 @@ public class CollectorController implements IController, ICollectorListener {
 		return this.threadList;
 	}
 
-	private void initCollector() {
-		this.collectors.add(new MediaInfoCollector(this.mainController, this));
-		this.collectors.add(new TheMovieDBCollector(this.mainController, this));
-		this.collectors.add(new TheTVDBCollector(this.mainController, this));
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
-	public void run(final Object... params) {
+	public void run(final Object... params) throws Exception {
 		if ((params.length == 1) && (params[0] instanceof ArrayList<?>)) {
 			this.collectInfos((ArrayList<FileItem>) params[0]);
 		}
@@ -89,6 +83,14 @@ public class CollectorController implements IController, ICollectorListener {
 
 	public CollectorEventMulticaster getCollectorMulticaster() {
 		return this.collectorMulticaster;
+	}
+
+	/**
+	 * @param collectors
+	 *            the collectors to set
+	 */
+	public final void setCollectors(final ArrayList<ACollector> collectors) {
+		this.collectors = collectors;
 	}
 
 }

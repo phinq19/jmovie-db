@@ -4,6 +4,7 @@
 package com.lars_albrecht.mdb.core.finder;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -12,7 +13,6 @@ import com.lars_albrecht.mdb.core.controller.FinderController;
 import com.lars_albrecht.mdb.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.core.finder.event.FinderEventMulticaster;
 import com.lars_albrecht.mdb.core.handler.OptionsHandler;
-import com.lars_albrecht.mdb.filter.VideoFileFilter;
 
 /**
  * @author lalbrecht
@@ -26,15 +26,17 @@ public class Finder implements Runnable {
 	private FinderEventMulticaster	multicaster	= null;
 
 	private ArrayList<File>			dirs		= null;
+	private FileFilter				filter		= null;
 
 	/**
 	 * 
 	 * @param controller
 	 * @param dir
 	 */
-	public Finder(final FinderController controller, final File dir) {
+	public Finder(final FinderController controller, final File dir, final FileFilter filter) {
 		this.controller = controller;
 		this.dir = dir;
+		this.filter = filter;
 		this.multicaster = controller.getFinderMulticaster();
 	}
 
@@ -50,7 +52,7 @@ public class Finder implements Runnable {
 			// if given dir exists and is a directory
 			if (dir.exists() && dir.isDirectory()) {
 				// list files
-				final File[] files = dir.listFiles(new VideoFileFilter());
+				final File[] files = dir.listFiles(this.filter);
 				// if files were found
 				if ((files != null) && (files.length > 0)) {
 					// for each file in files
@@ -64,7 +66,12 @@ public class Finder implements Runnable {
 
 								// start new thread to find new files in
 								// sub folder
-								this.controller.findFiles(tempDirList);
+								try {
+									this.controller.findFiles(tempDirList);
+								} catch (final Exception e) {
+									// should not be thrown.
+									e.printStackTrace();
+								}
 							} else if (file.isFile()) {
 								final ArrayList<File> tempFileList = new ArrayList<File>();
 								tempFileList.add(file);
