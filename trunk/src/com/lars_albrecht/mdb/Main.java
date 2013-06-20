@@ -31,7 +31,13 @@ public class Main {
 	}
 
 	private void initDB() {
-		new DB().init();
+		try {
+			new DB().init();
+		} catch (final Exception e) {
+			e.printStackTrace();
+			System.err.println("SYSTEM SHUT DOWN");
+			System.exit(-1);
+		}
 	}
 
 }

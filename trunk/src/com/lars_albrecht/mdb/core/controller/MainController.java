@@ -62,7 +62,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 		// insert to database
 		try {
-			this.getDataHandler().persist(this.prepareForPersist(typedFilesList));
+			this.persistFileItems(typedFilesList);
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
@@ -76,42 +76,78 @@ public class MainController implements IFinderListener, ICollectorListener {
 	 * TODO rename method / refactor
 	 * 
 	 * @param files
-	 * @return ArrayList<FileItem>
+	 * @throws Exception
 	 */
-	private ArrayList<FileItem> prepareForPersist(final ArrayList<FileItem> files) {
-		ArrayList<FileItem> resultList = new ArrayList<FileItem>();
+	private void persistFileItems(final ArrayList<FileItem> files) throws Exception {
 		final ArrayList<FileItem> missingFilesList = new ArrayList<FileItem>();
+		ArrayList<FileItem> newFilesList = new ArrayList<FileItem>();
+		final ArrayList<FileItem> movedFilesList = new ArrayList<FileItem>();
 
-		// TODO 1st: Check all existing files if them exists [X]
 		for (final FileItem fileItem : this.dataHandler.getFileItems()) {
 			if (fileItem != null && fileItem.getFullpath() != null && !new File(fileItem.getFullpath()).exists()) {
 				missingFilesList.add(fileItem);
+				System.out.println("FOUND MISSING ITEM " + fileItem.getName());
 			}
 		}
 
-		// TODO 2nd: Check if a new file is an old file (e.g. moved)
-		// TODO 2nd 1st: If new is old, replace in database.
-
-		// TODO 2nd 2nd: If new is new, add to database
-
-		// TODO 3rd: Mark all missing files with no new position in filesystem
-		// as missing
-
-		if (files != null && files.size() > 0) {
-
-			// TODO temporary. You can not be shure if the file has changed, but
-			// the same title stays.
-			for (final FileItem fileItem : files) {
-				if (!this.dataHandler.getFileItems().contains(fileItem)) {
-					resultList.add(fileItem);
+		boolean found = false;
+		for (final FileItem fileItem : files) {
+			found = false;
+			if (!this.dataHandler.getFileItems().contains(fileItem)) {
+				for (final FileItem missingFileItem : missingFilesList) {
+					if (this.isSameFile(fileItem, missingFileItem)) {
+						fileItem.setId(missingFileItem.getId());
+						movedFilesList.add(fileItem);
+						System.out.println("FOUND MOVED ITEM " + fileItem.getName());
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					System.out.println("NEW FILE ITEM " + fileItem.getName());
+					newFilesList.add(fileItem);
 				}
 			}
-
-			resultList = this.getFilesWithHash(resultList);
-
 		}
 
-		return resultList;
+		if (newFilesList != null && newFilesList.size() > 0) {
+			newFilesList = this.getFilesWithHash(newFilesList);
+		}
+
+		// persist new files
+		this.getDataHandler().persist(newFilesList, false);
+
+		// persist moved files
+		this.getDataHandler().persist(movedFilesList, true);
+
+		// update old files that are missing
+		// TODO create function and refactor code here
+		@SuppressWarnings("unused")
+		final int STATUS_NORMAL = 0;
+		final int STATUS_MISSING = 1;
+
+		for (final FileItem fileItem : missingFilesList) {
+			this.getDataHandler().updateStatusOfFileItem(fileItem.getId(), STATUS_MISSING);
+		}
+	}
+
+	/**
+	 * Compares to fileItems with name and size. If this are equals on both
+	 * files, the file is the same.
+	 * 
+	 * @param fileA
+	 * @param fileB
+	 * @return boolean
+	 */
+	private boolean isSameFile(final FileItem fileA, final FileItem fileB) {
+		if (!fileA.getName().equalsIgnoreCase(fileB.getName())) {
+			return false;
+		}
+		if (!fileA.getSize().equals(fileB.getSize())) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

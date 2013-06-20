@@ -232,7 +232,7 @@ public abstract class ACollector implements Runnable {
 	 */
 	private void persistTypeInformation() {
 		try {
-			this.mainController.getDataHandler().persist(this.typeInformationToAdd);
+			this.mainController.getDataHandler().persist(this.typeInformationToAdd, false);
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -240,7 +240,7 @@ public abstract class ACollector implements Runnable {
 
 	private void persistKeys() {
 		try {
-			this.mainController.getDataHandler().persist(this.keysToAdd);
+			this.mainController.getDataHandler().persist(this.keysToAdd, false);
 			this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_KEYS);
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -249,7 +249,7 @@ public abstract class ACollector implements Runnable {
 
 	private void persistValues() {
 		try {
-			this.mainController.getDataHandler().persist(this.valuesToAdd);
+			this.mainController.getDataHandler().persist(this.valuesToAdd, false);
 			this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_VALUES);
 		} catch (final Exception e) {
 			e.printStackTrace();
