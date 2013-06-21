@@ -28,7 +28,9 @@ public class AllPage extends WebPage {
 			OptionsHandler.setOption("listSortOption", listOrderOption);
 		}
 
-		Integer maxItemsForListPagingOption = Integer.parseInt((String) OptionsHandler.getOption("maxItemsForListPagingOption"));
+		final String maxItemsForListPagingOptionTmp = (String) OptionsHandler.getOption("maxItemsForListPagingOption");
+		Integer maxItemsForListPagingOption = (maxItemsForListPagingOptionTmp != null ? Integer.parseInt(maxItemsForListPagingOptionTmp)
+				: null);
 		if (maxItemsForListPagingOption == null) {
 			maxItemsForListPagingOption = 50;
 			OptionsHandler.setOption("maxItemsForListPagingOption", maxItemsForListPagingOption);
