@@ -493,7 +493,10 @@ public class FileItem implements IPersistable {
 		tempHashMap.put("ext", this.getExt());
 		tempHashMap.put("filehash", this.getFilehash());
 		tempHashMap.put("filetype", this.getFiletype());
-		tempHashMap.put("status", this.getStatus());
+
+		if (this.getStatus() != null) {
+			tempHashMap.put("status", this.getStatus());
+		}
 
 		if (this.getCreateTS() != null) {
 			tempHashMap.put("createTS", this.getCreateTS());
