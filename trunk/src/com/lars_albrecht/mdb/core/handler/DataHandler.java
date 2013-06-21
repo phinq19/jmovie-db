@@ -42,6 +42,7 @@ public class DataHandler {
 	private ArrayList<FileItem>								fileItems				= null;
 	private ArrayList<TypeInformation>						typeInformation			= null;
 	private ConcurrentHashMap<String, ArrayList<FileItem>>	noInfoFileItems			= null;
+	private ArrayList<FileItem>								missingFileItems		= null;
 
 	public static final int									RELOAD_ALL				= 0;
 	public static final int									RELOAD_KEYS				= 1;
@@ -49,6 +50,10 @@ public class DataHandler {
 	public static final int									RELOAD_TYPEINFO			= 3;
 	public static final int									RELOAD_FILEITEMS		= 4;
 	public static final int									RELOAD_NOINFOFILEITEMS	= 5;
+	public static final int									RELOAD_MISSINGFILEITEMS	= 6;
+
+	public static final int									FILEITEMSTATUS_NORMAL	= 0;
+	public static final int									FILEITEMSTATUS_MISSING	= 1;
 
 	public DataHandler(final MainController mainController) {
 		this.reloadData(DataHandler.RELOAD_ALL);
@@ -371,7 +376,7 @@ public class DataHandler {
 					}
 					resultItem = (FileItem) resultItem.fromHashMap(tempMap);
 					if (resultItem.getId() != null) {
-						final ArrayList<FileAttributeList> attribList = this.findAllInfoForId(fileId);
+						final ArrayList<FileAttributeList> attribList = this.findAllInfoForFileId(fileId);
 						if ((attribList != null) && (attribList.size() > 0)) {
 							resultItem.getAttributes().addAll(attribList);
 						}
@@ -384,16 +389,10 @@ public class DataHandler {
 		return resultItem;
 	}
 
-	public ArrayList<FileItem> findAllWithNoInfosForType(final String type) {
-		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
-
-		return resultList;
-	}
-
 	@SuppressWarnings({
 			"unchecked", "rawtypes"
 	})
-	public ArrayList<FileAttributeList> findAllInfoForId(final Integer id) {
+	public ArrayList<FileAttributeList> findAllInfoForFileId(final Integer fileId) {
 		final ArrayList<FileAttributeList> resultList = new ArrayList<FileAttributeList>();
 		// ArrayList<KeyValue<Key<String>, Value<Object>>>
 		HashMap<String, Object> tempMapKey = null;
@@ -403,7 +402,7 @@ public class DataHandler {
 				+ "	tiKey.id AS 'keyId', tiKey.Key AS 'keyKey', tiKey.infoType AS 'keyInfoType', tiKey.section AS 'keySection', tiKey.editable AS 'keyEditable', tiKey.searchable AS 'keySearchable', tiValue.id as 'valueId', tiValue.value as 'valueValue' "
 				+ "FROM " + "	fileInformation as fi " + "LEFT JOIN " + " 	typeInformation as ti " + "ON " + " 	ti.file_id = fi.id "
 				+ " LEFT JOIN " + " 	typeInformation_key AS tiKey " + "ON " + " 	tiKey.id = ti.key_id " + "LEFT JOIN "
-				+ "	typeInformation_value AS tiValue " + "ON " + "	tiValue.id = ti.value_id " + "WHERE " + "	fi.id = '" + id
+				+ "	typeInformation_value AS tiValue " + "ON " + "	tiValue.id = ti.value_id " + "WHERE " + "	fi.id = '" + fileId
 				+ "' ORDER BY keyInfoType, keySection ";
 		try {
 			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
@@ -474,6 +473,17 @@ public class DataHandler {
 			this.loadNoInfoFileItems();
 		}
 		return this.noInfoFileItems;
+	}
+
+	/**
+	 * 
+	 * @return the missingFileItems
+	 */
+	public ArrayList<FileItem> getMissingFileItems() {
+		if (this.missingFileItems == null) {
+			this.loadMissingFileItems();
+		}
+		return this.missingFileItems;
 	}
 
 	public void clearNoInfoFileItems() {
@@ -643,6 +653,11 @@ public class DataHandler {
 		return this;
 	}
 
+	private DataHandler loadMissingFileItems() {
+		this.missingFileItems = this.getAllMissingFileItems();
+		return this;
+	}
+
 	/**
 	 * Reload the keys.
 	 * 
@@ -742,6 +757,44 @@ public class DataHandler {
 			}
 
 		}
+	}
+
+	private ArrayList<FileItem> getAllMissingFileItems() {
+		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
+		HashMap<String, Object> tempMap = null;
+		final FileItem fileItem = new FileItem();
+		if (fileItem != null) {
+			// TODO move to helper function "getSearchresultOrder" or something
+			// like that
+			String searchResultOrderOption = (String) OptionsHandler.getOption("searchResultOrder");
+			if (searchResultOrderOption == null) {
+				searchResultOrderOption = "fileInformation.name";
+				OptionsHandler.setOption("searchResultOrder", searchResultOrderOption);
+			}
+
+			final String order = " ORDER BY '" + searchResultOrderOption + "'";
+
+			String where = "";
+			ResultSet rs = null;
+			where = " WHERE status = '1'";
+			final String sql = "SELECT * FROM " + fileItem.getDatabaseTable() + where + order;
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
+			try {
+				rs = DB.query(sql);
+				final ResultSetMetaData rsmd = rs.getMetaData();
+				for (; rs.next();) {
+					tempMap = new HashMap<String, Object>();
+					for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
+					}
+					resultList.add((FileItem) fileItem.fromHashMap(tempMap));
+				}
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return resultList;
 	}
 
 	private ConcurrentHashMap<String, ArrayList<FileItem>> getAllFileItemsWithNoCollectorinfo() {
@@ -847,6 +900,7 @@ public class DataHandler {
 				this.loadTypeInformation();
 				this.loadFileItems();
 				this.loadNoInfoFileItems();
+				this.loadMissingFileItems();
 				break;
 			case DataHandler.RELOAD_FILEITEMS:
 				this.loadFileItems();
@@ -862,6 +916,9 @@ public class DataHandler {
 				break;
 			case DataHandler.RELOAD_NOINFOFILEITEMS:
 				this.loadNoInfoFileItems();
+				break;
+			case DataHandler.RELOAD_MISSINGFILEITEMS:
+				this.loadMissingFileItems();
 				break;
 		}
 		Debug.stopTimer("DataHandler reloadData time");

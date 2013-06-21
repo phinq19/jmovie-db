@@ -5,11 +5,13 @@ package com.lars_albrecht.mdb.core.interfaces.web.pages;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
@@ -25,13 +27,27 @@ public class ShowInfoControlPage extends WebPage {
 			throws Exception {
 		super(actionname, request, mainController);
 
-		final ConcurrentHashMap<String, Object> info = this.mainController.getDataHandler().getInfoFromDatabase();
-		final Template infoControlViewTemplate = this.getPageTemplate();
-		String informationContainer = infoControlViewTemplate.getSubMarkerContent("information");
-		String controlViewContainer = infoControlViewTemplate.getSubMarkerContent("controlView");
-		String statusAreaContainer = infoControlViewTemplate.getSubMarkerContent("statusArea");
-		final String statusMessageContainer = infoControlViewTemplate.getSubMarkerContent("statusMessage");
+		this.setPageTemplate(this.generateInfoControlView());
 
+	}
+
+	private Template generateInfoControlView() {
+		Template infoControlTemplate = this.getPageTemplate();
+
+		infoControlTemplate = this.fillBasicInfoContainer(infoControlTemplate);
+		infoControlTemplate = this.fillControlContainer(infoControlTemplate);
+		infoControlTemplate = this.fillDuplicateContainer(infoControlTemplate);
+		infoControlTemplate = this.fillNoInfoContainer(infoControlTemplate);
+		infoControlTemplate = this.fillMissingContainer(infoControlTemplate);
+
+		return infoControlTemplate;
+	}
+
+	private Template fillBasicInfoContainer(final Template template) {
+		final Template templateWithBasicInfoContainer = template;
+		final ConcurrentHashMap<String, Object> info = this.mainController.getDataHandler().getInfoFromDatabase();
+
+		String informationContainer = templateWithBasicInfoContainer.getSubMarkerContent("information");
 		informationContainer = Template.replaceMarker(informationContainer, "fileCount", Integer.toString((Integer) info.get("fileCount")),
 				false);
 		informationContainer = Template.replaceMarker(informationContainer, "keyCount", Integer.toString((Integer) info.get("keyCount")),
@@ -42,6 +58,18 @@ public class ShowInfoControlPage extends WebPage {
 				Helper.implode((Map<?, ?>) info.get("filesWithFiletype"), ", ", null, null, " (", ")", "<span class=\"infoListEntry\">",
 						"</span>", false), false);
 
+		templateWithBasicInfoContainer.replaceMarker("basicInfoContainer", informationContainer, false);
+
+		return templateWithBasicInfoContainer;
+	}
+
+	private Template fillControlContainer(final Template template) {
+		final Template templateWithControlContainer = template;
+
+		String statusAreaContainer = templateWithControlContainer.getSubMarkerContent("statusArea");
+		final String statusMessageContainer = templateWithControlContainer.getSubMarkerContent("statusMessage");
+
+		String controlViewContainer = templateWithControlContainer.getSubMarkerContent("controlView");
 		String finderHrefString = "?action=showInfoControl&do=startFinder";
 		String finderClassString = "";
 		String collectorHrefString = "?action=showInfoControl&do=startCollectors";
@@ -50,8 +78,8 @@ public class ShowInfoControlPage extends WebPage {
 		final ArrayList<String> statusMessages = new ArrayList<String>();
 
 		// isStartFinder
-		if (request.getGetParams().containsKey("do") && (request.getGetParams().get("do") != null)
-				&& request.getGetParams().get("do").equalsIgnoreCase("startFinder")) {
+		if (this.request.getGetParams().containsKey("do") && (this.request.getGetParams().get("do") != null)
+				&& this.request.getGetParams().get("do").equalsIgnoreCase("startFinder")) {
 			finderHrefString = "javascript:void(0)";
 			finderClassString = "disabled";
 
@@ -59,8 +87,8 @@ public class ShowInfoControlPage extends WebPage {
 		}
 
 		// isStartCollectors
-		if (request.getGetParams().containsKey("do") && (request.getGetParams().get("do") != null)
-				&& request.getGetParams().get("do").equalsIgnoreCase("startCollectors")) {
+		if (this.request.getGetParams().containsKey("do") && (this.request.getGetParams().get("do") != null)
+				&& this.request.getGetParams().get("do").equalsIgnoreCase("startCollectors")) {
 			collectorHrefString = "javascript:void(0)";
 			collectorClassString = "disabled";
 
@@ -70,7 +98,11 @@ public class ShowInfoControlPage extends WebPage {
 					new FileItem(), null, null));
 			if ((fileList != null) && (fileList.size() > 0)) {
 				statusMessages.add("Collections can be refreshed ... work in progress");
-				this.mainController.getcController().collectInfos(fileList);
+				try {
+					this.mainController.getcController().collectInfos(fileList);
+				} catch (final Exception e) {
+					e.printStackTrace();
+				}
 			} else {
 				statusMessages.add("Collections cannot be refreshed" + (fileList.size() == 0 ? ", because no files are available" : "")
 						+ ". Process stopped.");
@@ -94,11 +126,87 @@ public class ShowInfoControlPage extends WebPage {
 
 		controlViewContainer = Template.replaceMarker(controlViewContainer, "statusArea", statusAreaContainer, false);
 
-		infoControlViewTemplate.replaceMarker("content", informationContainer, false);
-		infoControlViewTemplate.replaceMarker("controlView", controlViewContainer, false);
+		templateWithControlContainer.replaceMarker("controlView", controlViewContainer, false);
 
-		this.setPageTemplate(infoControlViewTemplate);
+		return templateWithControlContainer;
+	}
 
+	private Template fillDuplicateContainer(final Template template) {
+		final Template templateWithDuplicateContainer = template;
+		templateWithDuplicateContainer.replaceMarker("duplicatecontainer", templateWithDuplicateContainer.getSubMarkerContent("duplicate"),
+				false);
+		return templateWithDuplicateContainer;
+	}
+
+	private Template fillNoInfoContainer(final Template template) {
+		final Template templateWithNoInfoContainer = template;
+		final ConcurrentHashMap<String, ArrayList<FileItem>> noInfoList = this.mainController.getDataHandler().getNoInfoFileItems();
+		if (noInfoList.size() > 0) {
+			String noInfoContainer = template.getSubMarkerContent("noinformation");
+
+			String noInfoTables = "";
+			String noInfoTable = "";
+
+			String noInfoItemList = "";
+			String tempNoInfoItemList = null;
+
+			int noItemCounter = 0;
+			for (final Entry<String, ArrayList<FileItem>> entry : noInfoList.entrySet()) {
+				// TODO create method replaceAllMarker to replace a bunch of
+				// marker
+				noInfoTable = template.getSubMarkerContent("noinformationTable");
+				noInfoTable = Template.replaceMarker(noInfoTable, "collectorName", entry.getKey(), false);
+				noInfoItemList = "";
+				for (final FileItem fileItem : entry.getValue()) {
+					tempNoInfoItemList = template.getSubMarkerContent("noinformationItem");
+					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemId", fileItem.getId().toString(), true);
+					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "noInfoItemTitle", fileItem.getName(), false);
+					tempNoInfoItemList = Template.replaceMarker(tempNoInfoItemList, "oddeven", ((noItemCounter % 2) == 0 ? "even" : "odd"),
+							false);
+					noInfoItemList += tempNoInfoItemList;
+					noItemCounter++;
+				}
+				noInfoTable = Template.replaceMarker(noInfoTable, "noinformationItems", noInfoItemList, false);
+				noInfoTables += noInfoTable;
+			}
+
+			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationTables", noInfoTables, false);
+			noInfoContainer = Template.replaceMarker(noInfoContainer, "noinformationcounter", Integer.toString(noItemCounter), false);
+
+			templateWithNoInfoContainer.replaceMarker("noinfocontainer", noInfoContainer, false);
+		}
+
+		return templateWithNoInfoContainer;
+	}
+
+	private Template fillMissingContainer(final Template template) {
+		final Template templateWithMissingFileItemsContainer = template;
+		this.mainController.getDataHandler().reloadData(DataHandler.RELOAD_MISSINGFILEITEMS);
+		final ArrayList<FileItem> missingFilesList = this.mainController.getDataHandler().getMissingFileItems();
+		if (missingFilesList.size() > 0) {
+			String missingContainer = template.getSubMarkerContent("missing");
+
+			String missingItemList = "";
+			String tempMissingItemList = null;
+
+			int missingCounter = 0;
+			// TODO create method replaceAllMarker to replace a bunch of
+			// marker
+			for (final FileItem fileItem : missingFilesList) {
+				tempMissingItemList = template.getSubMarkerContent("missingItem");
+				tempMissingItemList = Template.replaceMarker(tempMissingItemList, "noInfoItemId", fileItem.getId().toString(), true);
+				tempMissingItemList = Template.replaceMarker(tempMissingItemList, "noInfoItemTitle", fileItem.getName(), false);
+				tempMissingItemList = Template.replaceMarker(tempMissingItemList, "oddeven", ((missingCounter % 2) == 0 ? "even" : "odd"),
+						false);
+				missingItemList += tempMissingItemList;
+				missingCounter++;
+			}
+			missingContainer = Template.replaceMarker(missingContainer, "missingItems", missingItemList, false);
+			missingContainer = Template.replaceMarker(missingContainer, "missingcounter", Integer.toString(missingCounter), false);
+			templateWithMissingFileItemsContainer.replaceMarker("missingcontainer", missingContainer, false);
+		}
+
+		return templateWithMissingFileItemsContainer;
 	}
 
 	@Override
