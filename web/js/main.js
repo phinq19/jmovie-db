@@ -66,8 +66,8 @@ function addBrowseJS(){
 }
 
 function addSettingsActions(){
-	if($('#searchSettings').length){
-		$('#searchSettings').find('select').each(function(){
+	if($('#searchSettings, #listSettings').length){
+		$('#searchSettings, #listSettings').find('select').each(function(){
 			$(this).change(function(){
 				$(this).parents('form:first').submit();
 			});

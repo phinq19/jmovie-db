@@ -126,7 +126,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 		this.getDataHandler().persist(movedFilesList, true);
 
 		// update old files that are missing
-		// TODO create function and refactor code here
+		// TODO create function
 		for (final FileItem fileItem : missingFilesList) {
 			this.getDataHandler().updateStatusOfFileItem(fileItem.getId(), DataHandler.FILEITEMSTATUS_MISSING);
 		}

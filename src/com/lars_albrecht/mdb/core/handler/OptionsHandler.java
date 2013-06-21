@@ -5,9 +5,12 @@ package com.lars_albrecht.mdb.core.handler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.mdb.database.DB;
+
+// TODO create defaults to reduce multiple code in classes.
 
 /**
  * @author lalbrecht
@@ -15,7 +18,12 @@ import com.lars_albrecht.mdb.database.DB;
  */
 public class OptionsHandler {
 
+	private static HashMap<String, Object>	optionCache	= new HashMap<String, Object>();
+
 	public static Object getOption(final String optionName) {
+		if (OptionsHandler.optionCache.containsKey(optionName)) {
+			return OptionsHandler.optionCache.get(optionName);
+		}
 		Object result = null;
 
 		ResultSet rs = null;
@@ -35,6 +43,8 @@ public class OptionsHandler {
 			e.printStackTrace();
 		}
 
+		OptionsHandler.optionCache.put(optionName, result);
+
 		return result;
 	}
 
@@ -50,6 +60,7 @@ public class OptionsHandler {
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
+		OptionsHandler.optionCache.put(optionName, optionValue);
 	}
 
 }

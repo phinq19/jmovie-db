@@ -1,5 +1,6 @@
 <div id="allView" class="contentPart">
 	{content}
+	{paginationContainer}
 </div>
 
 {allFileList-start}
@@ -24,3 +25,29 @@
 		<td>{updated}</td>
 	</tr>
 {allFileListItem-end}
+
+{pagination-start}
+<div class="pagination">
+	<div class="paginationTop">
+		<p>Zeige Seite {currentPage} von {maxPage}</p>
+	</div>
+
+	{paginationStartContainer}
+	
+	<span>{pageCurrentTitle}</span> 
+	
+	{paginationEndContainer}
+</div>
+{pagination-end}
+
+{paginationStart-start}
+	<span><a href="?action=showAll&page={pageFirst}">&lt;&lt;</a></span>
+	
+	<span><a href="?action=showAll&page={pagePrevious}">&lt;</a></span>
+{paginationStart-end}
+
+{paginationEnd-start}
+	<span><a href="?action=showAll&page={pageNext}">&gt;</a></span>
+	
+	<span><a href="?action=showAll&page={pageLast}">&gt;&gt;</a></span>
+{paginationEnd-end}
