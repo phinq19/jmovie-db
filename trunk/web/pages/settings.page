@@ -8,7 +8,40 @@
 		{searchSettings}
 		</form>
 	</div>
+	
+	<div id="listSettings">
+		<form action="?action=showSettings&do=save" method="post">
+		{listSettings}
+		</form>
+	</div>
 {settingsFields-end}
+
+{listSettings-start}
+	<h2>Listen</h2>
+	<h3 class="tableHeader">Einstellungen für Listen</h3>
+	<table>
+		<tr>
+			<th>Name</th>
+			<th>Einstellung</th>
+		</tr>
+		<tr>
+			<td>Sortieren nach...</td>
+			<td>
+				<select name="listSortOption">
+					{sortOptions}
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>Maximale Einträgen pro Seite</td>
+			<td>
+				<select name="maxItemsForListPagingOption">
+					{maxItemForListPagingOptions}
+				</select>
+			</td>
+		</tr>
+	</table>
+{listSettings-end}
 
 {searchSettings-start}
 	<h2>Suche</h2>

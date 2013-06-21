@@ -29,7 +29,8 @@ public class SettingsPage extends WebPage {
 		this.searchOptionsList.put("Dateipfad", "fileInformation.fullpath");
 		this.searchOptionsList.put("Dateigröße", "fileInformation.size");
 		this.searchOptionsList.put("Dateityp", "fileInformation.filetype");
-		this.searchOptionsList.put("Hinzugefügt am", "fileInformation.createdTS");
+		this.searchOptionsList.put("Hinzugefügt am (älteste zuerst)", "fileInformation.createTS ASC ");
+		this.searchOptionsList.put("Hinzugefügt am (neuste zuerst)", "fileInformation.createTS DESC ");
 
 		if (request.getGetParams().containsKey("do") && request.getGetParams().get("do").equalsIgnoreCase("save")) {
 			this.saveSettings(request);
@@ -55,11 +56,64 @@ public class SettingsPage extends WebPage {
 		// replace searchSettings
 		settingsFieldsContainer = Template.replaceMarker(settingsFieldsContainer, "searchSettings",
 				this.generateSearchSettingsView(settingsTemplate), false);
+		settingsFieldsContainer = Template.replaceMarker(settingsFieldsContainer, "listSettings",
+				this.generateListSettingsView(settingsTemplate), false);
 
 		// fill settings in contentmarker
 		settingsTemplate.replaceMarker("content", settingsFieldsContainer, false);
 
 		return settingsTemplate;
+	}
+
+	private String generateListSettingsView(final Template settingsTemplate) {
+		String listOrderOption = (String) OptionsHandler.getOption("listSortOption");
+		if (listOrderOption == null) {
+			listOrderOption = "fileInformation.name";
+			OptionsHandler.setOption("listSortOption", listOrderOption);
+		}
+		Integer maxItemsForListPagingOption = Integer.parseInt((String) OptionsHandler.getOption("maxItemsForListPagingOption"));
+		if (maxItemsForListPagingOption == null) {
+			maxItemsForListPagingOption = 50;
+			OptionsHandler.setOption("maxItemsForListPagingOption", maxItemsForListPagingOption);
+		}
+
+		String listSettingsContainer = settingsTemplate.getSubMarkerContent("listSettings");
+		String optionsContainer = "";
+		String tempOptionContainer = null;
+		for (final Entry<String, String> entry : this.searchOptionsList.entrySet()) {
+			tempOptionContainer = settingsTemplate.getSubMarkerContent("selectOption");
+			tempOptionContainer = Template.replaceMarker(tempOptionContainer, "optionValue", entry.getValue(), false);
+			tempOptionContainer = Template.replaceMarker(tempOptionContainer, "optionTitle", entry.getKey(), false);
+			if (entry.getValue().equalsIgnoreCase(listOrderOption)) {
+				tempOptionContainer = Template.replaceMarker(tempOptionContainer, "selected", "selected=\"selected\"", false);
+			} else {
+				tempOptionContainer = Template.replaceMarker(tempOptionContainer, "selected", "", false);
+			}
+			optionsContainer += tempOptionContainer;
+		}
+		listSettingsContainer = Template.replaceMarker(listSettingsContainer, "sortOptions", optionsContainer, false);
+
+		optionsContainer = "";
+		tempOptionContainer = null;
+		final int[] listItems = {
+				0, 25, 50, 100, 250, 500
+		};
+
+		for (final int i : listItems) {
+			tempOptionContainer = settingsTemplate.getSubMarkerContent("selectOption");
+			tempOptionContainer = Template.replaceMarker(tempOptionContainer, "optionValue", Integer.toString(i), false);
+			tempOptionContainer = Template
+					.replaceMarker(tempOptionContainer, "optionTitle", (i == 0 ? "Alle" : Integer.toString(i)), false);
+			if (i == maxItemsForListPagingOption) {
+				tempOptionContainer = Template.replaceMarker(tempOptionContainer, "selected", "selected=\"selected\"", false);
+			} else {
+				tempOptionContainer = Template.replaceMarker(tempOptionContainer, "selected", "", false);
+			}
+			optionsContainer += tempOptionContainer;
+		}
+		listSettingsContainer = Template.replaceMarker(listSettingsContainer, "maxItemForListPagingOptions", optionsContainer, false);
+
+		return listSettingsContainer;
 	}
 
 	private String generateSearchSettingsView(final Template settingsTemplate) {

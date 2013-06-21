@@ -797,6 +797,34 @@ public class DataHandler {
 		return resultList;
 	}
 
+	public ArrayList<FileItem> getFileItemsForPaging(final int startIndex, final int maxElems, final String orderBy) {
+		final ArrayList<FileItem> resultList = new ArrayList<FileItem>();
+		HashMap<String, Object> tempMap = null;
+		final FileItem fileItem = new FileItem();
+		if (fileItem != null) {
+			final String order = (orderBy == null ? "" : " ORDER BY " + orderBy);
+			final String limit = (maxElems > 0 ? " LIMIT " + startIndex + ", " + maxElems : "");
+			ResultSet rs = null;
+			final String sql = "SELECT * FROM " + fileItem.getDatabaseTable() + order + limit;
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
+			try {
+				rs = DB.query(sql);
+				final ResultSetMetaData rsmd = rs.getMetaData();
+				for (; rs.next();) {
+					tempMap = new HashMap<String, Object>();
+					for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+						tempMap.put(rsmd.getColumnLabel(i), rs.getObject(i));
+					}
+					resultList.add((FileItem) fileItem.fromHashMap(tempMap));
+				}
+			} catch (final SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return resultList;
+	}
+
 	private ConcurrentHashMap<String, ArrayList<FileItem>> getAllFileItemsWithNoCollectorinfo() {
 		final ConcurrentHashMap<String, ArrayList<FileItem>> resultList = new ConcurrentHashMap<String, ArrayList<FileItem>>();
 		final FileItem fileItem = new FileItem();
