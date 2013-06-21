@@ -86,7 +86,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 		for (final FileItem fileItem : this.dataHandler.getFileItems()) {
 			if (fileItem != null && fileItem.getFullpath() != null && !new File(fileItem.getFullpath()).exists()) {
 				missingFilesList.add(fileItem);
-				System.out.println("FOUND MISSING ITEM " + fileItem.getName());
+				Debug.log(Debug.LEVEL_TRACE, "FOUND MISSING ITEM " + fileItem.getName());
 			}
 		}
 
@@ -98,18 +98,19 @@ public class MainController implements IFinderListener, ICollectorListener {
 					if (this.isSameFile(fileItem, missingFileItem)) {
 						fileItem.setId(missingFileItem.getId());
 						movedFilesList.add(fileItem);
-						System.out.println("FOUND MOVED ITEM " + fileItem.getName());
+						Debug.log(Debug.LEVEL_TRACE, "FOUND MOVED ITEM " + fileItem.getName());
 						found = true;
 						break;
 					}
 				}
 				if (!found) {
-					System.out.println("NEW FILE ITEM " + fileItem.getName());
+					Debug.log(Debug.LEVEL_TRACE, "NEW FILE ITEM " + fileItem.getName());
 					newFilesList.add(fileItem);
 				}
 			} else {
 				final FileItem currentFileItem = this.dataHandler.getFileItems().get(this.dataHandler.getFileItems().indexOf(fileItem));
 				if (currentFileItem.getStatus() == 1) {
+					Debug.log(Debug.LEVEL_TRACE, "REFOUND MISSING ITEM " + fileItem.getName());
 					this.getDataHandler().updateStatusOfFileItem(currentFileItem.getId(), DataHandler.FILEITEMSTATUS_NORMAL);
 				}
 			}
