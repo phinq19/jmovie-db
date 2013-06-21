@@ -571,9 +571,7 @@ public class DB implements IDatabase {
 
 		try {
 			rs = DB.query(sql);
-			rs.next();
-			// TODO add real check if something is found
-			if (rs.getInt("count") > 0) {
+			if (rs.next() && rs.getInt("count") > 0) {
 				currentDBVersion = rs.getInt("value");
 			} else {
 				currentDBVersion = -1;

@@ -73,7 +73,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 	}
 
 	/**
-	 * TODO rename method / refactor
+	 * TODO refactor
 	 * 
 	 * @param files
 	 * @throws Exception
@@ -107,6 +107,11 @@ public class MainController implements IFinderListener, ICollectorListener {
 					System.out.println("NEW FILE ITEM " + fileItem.getName());
 					newFilesList.add(fileItem);
 				}
+			} else {
+				final FileItem currentFileItem = this.dataHandler.getFileItems().get(this.dataHandler.getFileItems().indexOf(fileItem));
+				if (currentFileItem.getStatus() == 1) {
+					this.getDataHandler().updateStatusOfFileItem(currentFileItem.getId(), DataHandler.FILEITEMSTATUS_NORMAL);
+				}
 			}
 		}
 
@@ -122,12 +127,8 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 		// update old files that are missing
 		// TODO create function and refactor code here
-		@SuppressWarnings("unused")
-		final int STATUS_NORMAL = 0;
-		final int STATUS_MISSING = 1;
-
 		for (final FileItem fileItem : missingFilesList) {
-			this.getDataHandler().updateStatusOfFileItem(fileItem.getId(), STATUS_MISSING);
+			this.getDataHandler().updateStatusOfFileItem(fileItem.getId(), DataHandler.FILEITEMSTATUS_MISSING);
 		}
 	}
 

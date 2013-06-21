@@ -1,6 +1,9 @@
 <div id="infoView" class="contentPart">
-	{content}
-	{controlView}
+	<div id="noInformation">{basicInfoContainer}</div>
+	<div id="controlView">{controlView}</div>
+	<div id="noInformation">{noinfocontainer}</div>
+	<div id="duplicatecontainer">{duplicatecontainer}</div>
+	<div id="missingcontainer">{missingcontainer}</div>
 </div>
 
 {information-start}
@@ -57,3 +60,57 @@
 {noInformation-start}
 	<p>Ein Fehler ist aufgetreten. Konnte keine Informationen finden/zählen.</p>
 {noInformation-end}
+
+
+
+{duplicate-start}
+<h2>Doppelte Einträge</h2>
+<p>Aktuell ist diese Anzeige nicht verfügbar.</p>
+{duplicate-end}
+
+{noinformation-start}
+<h2>Keine Informationen</h2>
+<p>Für folgende <span class="noInformationCounter">{noinformationcounter}</span> Einträge gibt es keine weiteren Informationen von den möglichen Collectoren:</p>
+{noinformationTables}
+{noinformation-end}
+
+{noinformationTable-start}
+<h3>{collectorName}</h3>
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Titel</th>
+		<th></th>
+	</tr>
+	{noinformationItems}
+</table>
+{noinformationTable-end}
+
+{noinformationItem-start}
+<tr class="{oddeven}">
+	<td>{noInfoItemId}</td>
+	<td>{noInfoItemTitle}</td>
+	<td><a href="?action=showFileDetails&fileId={noInfoItemId}">Anzeigen</a></td>
+</tr>
+{noinformationItem-end}
+
+{missing-start}
+<h2>Fehlende Dateien</h2>
+<p>Für folgende <span class="missingCounter">{missingcounter}</span> Einträge, wurde keine Datei mehr gefunden:</p>
+<table>
+	<tr>
+		<th>ID</th>
+		<th>Titel</th>
+		<th></th>
+	</tr>
+	{missingItems}
+</table>
+{missing-end}
+
+{missingItem-start}
+<tr class="{oddeven}">
+	<td>{noInfoItemId}</td>
+	<td>{noInfoItemTitle}</td>
+	<td><a href="?action=showFileDetails&fileId={noInfoItemId}">Anzeigen</a></td>
+</tr>
+{missingItem-end}

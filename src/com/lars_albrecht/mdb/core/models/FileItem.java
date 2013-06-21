@@ -28,6 +28,7 @@ public class FileItem implements IPersistable {
 	private String							filehash	= null;
 	private ArrayList<FileAttributeList>	attributes	= null;
 	private Integer							createTS	= null;
+	private Integer							status		= null;
 	private String							filetype	= null;
 	private Integer							updateTS	= null;
 
@@ -47,11 +48,12 @@ public class FileItem implements IPersistable {
 	 * @param size
 	 * @param ext
 	 * @param filetype
+	 * @param status
 	 * @param createTS
 	 * @param updateTS
 	 */
 	public FileItem(final Integer id, final String name, final String fullpath, final String dir, final Long size, final String ext,
-			final String filetype, final Integer createTS, final Integer updateTS) {
+			final String filetype, final Integer status, final Integer createTS, final Integer updateTS) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -60,6 +62,7 @@ public class FileItem implements IPersistable {
 		this.size = size;
 		this.ext = ext;
 		this.filetype = filetype;
+		this.status = status;
 		this.createTS = createTS;
 		this.updateTS = updateTS;
 	}
@@ -280,6 +283,10 @@ public class FileItem implements IPersistable {
 			result.setFilehash((String) map.get("filehash"));
 		}
 
+		if (map.containsKey("status") && (map.get("status") != null) && (map.get("status") != "")) {
+			result.setStatus((Integer) map.get("status"));
+		}
+
 		if (map.containsKey("createTS")) {
 			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
@@ -444,6 +451,21 @@ public class FileItem implements IPersistable {
 	}
 
 	/**
+	 * @return the status
+	 */
+	public final Integer getStatus() {
+		return this.status;
+	}
+
+	/**
+	 * @param status
+	 *            the status to set
+	 */
+	public final void setStatus(final Integer status) {
+		this.status = status;
+	}
+
+	/**
 	 * @return the updateTS
 	 */
 	public Integer getUpdateTS() {
@@ -471,6 +493,7 @@ public class FileItem implements IPersistable {
 		tempHashMap.put("ext", this.getExt());
 		tempHashMap.put("filehash", this.getFilehash());
 		tempHashMap.put("filetype", this.getFiletype());
+		tempHashMap.put("status", this.getStatus());
 
 		if (this.getCreateTS() != null) {
 			tempHashMap.put("createTS", this.getCreateTS());
