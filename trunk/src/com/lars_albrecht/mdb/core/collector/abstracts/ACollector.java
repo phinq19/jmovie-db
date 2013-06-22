@@ -118,7 +118,7 @@ public abstract class ACollector implements Runnable {
 		Debug.log(Debug.LEVEL_DEBUG, "end persist (" + this.getInfoType() + ")");
 	}
 
-	// TODO rename this method and move eventuelly to DataHandler!
+	// TODO rename this method and move to DataHandler!
 	protected void setNoInformationFoundFlag(final FileItem fileItem) {
 		final String sql = "INSERT OR IGNORE INTO collectorInformation " + "(collectorName, file_id, key, value) " + "VALUES(?, ?, ?, ?)";
 		final ConcurrentHashMap<Integer, Object> insertValues = new ConcurrentHashMap<Integer, Object>();
@@ -277,8 +277,13 @@ public abstract class ACollector implements Runnable {
 		Debug.log(Debug.LEVEL_TRACE, Arrays.deepToString(fileItems.toArray()));
 		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
 		final Object lastRunObj = OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
+		// TODO fix uncaughtException MSG: UncaughtException thrown
+		// (java.sql.Timestamp cannot be cast to java.lang.Long -
+		// java.lang.ClassCastException: java.sql.Timestamp cannot be cast to
+		// java.lang.Long) in Thread TheTVDB (264) java.lang.ClassCastException:
+		// java.sql.Timestamp cannot be cast to java.lang.Long
 		final Long lastRun = (lastRunObj == null ? null : (lastRunObj instanceof String ? Long.parseLong((String) lastRunObj)
-				: (Long) lastRunObj));
+				: (lastRunObj instanceof java.sql.Timestamp ? ((Timestamp) lastRunObj).getTime() : (Long) lastRunObj)));
 		for (int i = 0; i < fileItems.size(); i++) {
 			// item for this collector?
 			if (fileItems.get(i) != null && this.getCollectorTypes().contains(fileItems.get(i).getFiletype())) {

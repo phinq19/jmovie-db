@@ -165,8 +165,8 @@ public class FileDetailsPage extends WebPage {
 								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageSrc", (String) keyValue.getValue()
 										.getValue(), false);
 								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageClass", "posterImage", false);
-								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageTitle", keyValue.getKey().getKey(),
-										false);
+								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageTitle", (String) keyValue.getValue()
+										.getValue(), false);
 
 								imageContainer += tempImageContainer;
 							} else {
