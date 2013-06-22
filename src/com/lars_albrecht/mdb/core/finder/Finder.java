@@ -95,6 +95,7 @@ public class Finder implements Runnable {
 			final ArrayList<File> foundFiles = this.find(this.dirs);
 
 			this.multicaster.finderPreAdd((new FinderEvent(this, FinderEvent.FINDER_PREADD, foundFiles)));
+			// TODO fix: java.lang.ArrayIndexOutOfBoundsException
 			this.controller.getFoundFiles().addAll(foundFiles);
 			this.multicaster.finderAfterAdd((new FinderEvent(this, FinderEvent.FINDER_AFTERADD, this.controller.getFoundFiles())));
 		}
