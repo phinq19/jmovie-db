@@ -71,7 +71,9 @@ public class SettingsPage extends WebPage {
 			listOrderOption = "fileInformation.name";
 			OptionsHandler.setOption("listSortOption", listOrderOption);
 		}
-		Integer maxItemsForListPagingOption = Integer.parseInt((String) OptionsHandler.getOption("maxItemsForListPagingOption"));
+		Integer maxItemsForListPagingOption = (OptionsHandler.getOption("maxItemsForListPagingOption") instanceof String ? Integer
+				.parseInt((String) OptionsHandler.getOption("maxItemsForListPagingOption")) : (Integer) OptionsHandler
+				.getOption("maxItemsForListPagingOption"));
 		if (maxItemsForListPagingOption == null) {
 			maxItemsForListPagingOption = 50;
 			OptionsHandler.setOption("maxItemsForListPagingOption", maxItemsForListPagingOption);

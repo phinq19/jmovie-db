@@ -276,6 +276,8 @@ public abstract class ACollector implements Runnable {
 	private ArrayList<FileItem> prepareFileItems(final ArrayList<FileItem> fileItems, final String collectorName) {
 		Debug.log(Debug.LEVEL_TRACE, Arrays.deepToString(fileItems.toArray()));
 		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
+		final ArrayList<FileItem> noInformationList = this.mainController.getDataHandler().getNoInfoFileItems(this.getInfoType())
+				.get(this.getInfoType());
 		final Object lastRunObj = OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
 		// TODO fix uncaughtException MSG: UncaughtException thrown
 		// (java.sql.Timestamp cannot be cast to java.lang.Long -
@@ -296,8 +298,8 @@ public abstract class ACollector implements Runnable {
 					tempList.add(fileItems.get(i));
 				} else {
 					boolean noInfo = false;
-					if (this.mainController.getDataHandler().getNoInfoFileItems().get(this.getInfoType()) != null) {
-						noInfo = this.mainController.getDataHandler().getNoInfoFileItems().get(this.getInfoType())
+					if (this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType()) != null) {
+						noInfo = this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType())
 								.contains(fileItems.get(i));
 					}
 
@@ -310,7 +312,11 @@ public abstract class ACollector implements Runnable {
 				}
 			}
 		}
-		this.mainController.getDataHandler().clearNoInfoFileItems();
+		if (noInformationList != null && noInformationList.size() > 0) {
+			tempList.addAll(noInformationList);
+		}
+
+		this.mainController.getDataHandler().clearNoInfoFileItems(this.getInfoType());
 		return tempList;
 	}
 

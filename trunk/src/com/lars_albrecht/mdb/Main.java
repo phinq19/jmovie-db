@@ -20,6 +20,7 @@ public class Main {
 	private MainController	controller	= null;
 
 	public Main() {
+
 		this.init();
 		this.controller = new MainController();
 		this.controller.run();

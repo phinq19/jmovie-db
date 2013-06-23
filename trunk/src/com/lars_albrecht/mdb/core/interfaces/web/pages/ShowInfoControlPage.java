@@ -140,7 +140,7 @@ public class ShowInfoControlPage extends WebPage {
 
 	private Template fillNoInfoContainer(final Template template) {
 		final Template templateWithNoInfoContainer = template;
-		final ConcurrentHashMap<String, ArrayList<FileItem>> noInfoList = this.mainController.getDataHandler().getNoInfoFileItems();
+		final ConcurrentHashMap<String, ArrayList<FileItem>> noInfoList = this.mainController.getDataHandler().getNoInfoFileItems(null);
 		if (noInfoList.size() > 0) {
 			String noInfoContainer = template.getSubMarkerContent("noinformation");
 

@@ -28,9 +28,10 @@ public class AllPage extends WebPage {
 			OptionsHandler.setOption("listSortOption", listOrderOption);
 		}
 
-		final String maxItemsForListPagingOptionTmp = (String) OptionsHandler.getOption("maxItemsForListPagingOption");
-		Integer maxItemsForListPagingOption = (maxItemsForListPagingOptionTmp != null ? Integer.parseInt(maxItemsForListPagingOptionTmp)
-				: null);
+		final Object maxItemsForListPagingOptionObj = OptionsHandler.getOption("maxItemsForListPagingOption");
+		Integer maxItemsForListPagingOption = (maxItemsForListPagingOptionObj == null ? null
+				: (maxItemsForListPagingOptionObj instanceof String ? Integer.parseInt((String) maxItemsForListPagingOptionObj)
+						: (maxItemsForListPagingOptionObj instanceof Integer ? (Integer) maxItemsForListPagingOptionObj : null)));
 		if (maxItemsForListPagingOption == null) {
 			maxItemsForListPagingOption = 50;
 			OptionsHandler.setOption("maxItemsForListPagingOption", maxItemsForListPagingOption);
@@ -64,8 +65,7 @@ public class AllPage extends WebPage {
 		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItemsForPaging(startIndex, maxElems, sortOrder);
 
 		// pagination start
-		final boolean showPagination = fileItems.size() > 0 && maxItemsForPagingOption > 0 && fileItems.size() > maxItemsForPagingOption ? true
-				: false;
+		final boolean showPagination = fileItems.size() > 0 && maxItemsForPagingOption > -1 ? true : false;
 		if (showPagination) {
 			final int pageCount = (int) Math.ceil(new Double(maxExistingElems) / new Double(maxElems));
 			final int pageFirst = 0; // ever 0

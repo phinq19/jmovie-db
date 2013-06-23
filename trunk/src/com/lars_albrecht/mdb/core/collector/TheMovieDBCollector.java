@@ -65,6 +65,15 @@ public class TheMovieDBCollector extends ACollector {
 		}
 	}
 
+	/**
+	 * 
+	 * TODO improve detecting of the real filename and the finding of the movie
+	 * 
+	 * @param titles
+	 * @param year
+	 * @return
+	 * @throws IOException
+	 */
 	private MovieDb findMovie(final String[] titles, final Integer year) throws IOException {
 		ArrayList<MovieDb> tempList = null;
 		TheMovieDbApi tmdb = null;
@@ -79,7 +88,7 @@ public class TheMovieDBCollector extends ACollector {
 				// it, if no movie is found.
 				for (@SuppressWarnings("unused")
 				final String title : titles) {
-					// search for title
+					// search for all titles
 					tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, (year != null ? year : 0), this.langKey, true, 0);
 
 					if ((tempList != null) && (tempList.size() > 0)) {
@@ -87,8 +96,9 @@ public class TheMovieDBCollector extends ACollector {
 						break;
 					}
 
+					// search with all titles and without year if year exists
 					if (year != null) {
-						tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0);
+						tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0));
 
 						if ((tempList != null) && (tempList.size() > 0)) {
 							// if found, break loop
@@ -100,11 +110,12 @@ public class TheMovieDBCollector extends ACollector {
 					// without LAST " - <else>".
 					if (searchTitle.indexOf(" - ") > -1) {
 						searchTitle = searchTitle.substring(0, searchTitle.lastIndexOf(" - "));
+						tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0));
 					} else {
 						// if string dont contains " - ", then search without
 						// year if exists
 						if (year != null) {
-							tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0);
+							tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0));
 							break;
 						}
 						break;
