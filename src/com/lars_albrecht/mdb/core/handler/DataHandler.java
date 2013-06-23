@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
@@ -468,11 +469,21 @@ public class DataHandler {
 	/**
 	 * @return the noInfoFileItems
 	 */
-	public ConcurrentHashMap<String, ArrayList<FileItem>> getNoInfoFileItems() {
+	public ConcurrentHashMap<String, ArrayList<FileItem>> getNoInfoFileItems(final String infoType) {
 		if (this.noInfoFileItems == null) {
 			this.loadNoInfoFileItems();
 		}
-		return this.noInfoFileItems;
+		if (infoType == null) {
+			return this.noInfoFileItems;
+		} else {
+			final ConcurrentHashMap<String, ArrayList<FileItem>> tempList = new ConcurrentHashMap<String, ArrayList<FileItem>>();
+			for (final Entry<String, ArrayList<FileItem>> entry : this.noInfoFileItems.entrySet()) {
+				if (entry.getKey().equalsIgnoreCase(infoType)) {
+					tempList.put(entry.getKey(), entry.getValue());
+				}
+			}
+			return tempList;
+		}
 	}
 
 	/**
@@ -486,8 +497,8 @@ public class DataHandler {
 		return this.missingFileItems;
 	}
 
-	public void clearNoInfoFileItems() {
-		final String sql = "DELETE FROM collectorInformation WHERE key = 'noinformation'";
+	public void clearNoInfoFileItems(final String infoType) {
+		final String sql = "DELETE FROM collectorInformation WHERE key = 'noinformation' AND collectorName = '" + infoType + "'";
 
 		try {
 			DB.update(sql);

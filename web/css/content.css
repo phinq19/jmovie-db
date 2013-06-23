@@ -26,6 +26,7 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 															-webkit-box-shadow: 0 5px 5px #333;
 											        		   -moz-box-shadow: 0 5px 5px #333;
 											        		        box-shadow: 0 5px 5px #333;
+											         display:inline-block;
                 									}
 
 #titleBox 										{width:100%;}
@@ -56,7 +57,7 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 #detailView .listWrapper								{width:100%; clear:both; display:inline-block;}
 #detailView .listWrapper .key								{float:left; width: 25%; font-weight:bold;}
 #detailView .listWrapper .value								{float:left;}
-#detailView .posterImage								{width:150px; float:right;}
+#detailView .posterImage								{width:150px; float:right; border: 2px ridge #888; padding:8px; background-color:#000;}
 
 
 #detailView #attributes									{margin-top:20px; display:inline-block; width:100%;}
