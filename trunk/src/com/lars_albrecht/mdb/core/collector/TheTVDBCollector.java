@@ -50,9 +50,15 @@ public class TheTVDBCollector extends ACollector {
 	@Override
 	public void doCollect() {
 		this.fileAttributeListToAdd.clear();
+		ArrayList<FileAttributeList> tempFileAttributes = null;
 		for (final FileItem item : this.getFileItems()) {
 			// collect all data for all found items in the list
-			this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
+			if (item != null) {
+				tempFileAttributes = this.getFileAttributeListsForItem(item);
+				if (tempFileAttributes != null) {
+					this.fileAttributeListToAdd.put(item, tempFileAttributes);
+				}
+			}
 		}
 	}
 

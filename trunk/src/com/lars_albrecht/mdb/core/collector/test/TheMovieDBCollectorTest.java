@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.mdb;
+package com.lars_albrecht.mdb.core.collector.test;
 
 import java.util.ArrayList;
 import java.util.Map.Entry;
@@ -19,26 +19,23 @@ import com.lars_albrecht.mdb.database.DB;
  * @author lalbrecht
  * 
  */
-public class Main {
+public class TheMovieDBCollectorTest {
 
 	public static void main(final String[] args) {
-		new Main();
+		new TheMovieDBCollectorTest();
 	}
 
 	private MainController	controller	= null;
 
-	public Main() {
-
+	public TheMovieDBCollectorTest() {
 		this.init();
 		this.controller = new MainController();
 
 		final TheMovieDBCollector test = new TheMovieDBCollector(this.controller, null);
 		final ArrayList<FileItem> testList = new ArrayList<FileItem>();
 		final FileItem testItem1 = new FileItem();
-		final FileItem testItem2 = new FileItem();
-		final FileItem testItem3 = new FileItem();
 		testItem1.setName("Herr der Ringe - AC3 - 720p.avi");
-		testList.add(testItem1);
+		// testList.add(testItem1);
 		test.setFileItems(testList);
 		test.doCollect();
 
@@ -55,7 +52,6 @@ public class Main {
 		}
 
 		System.exit(-1);
-		this.controller.run();
 	}
 
 	private void init() {

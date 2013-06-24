@@ -485,11 +485,13 @@ public class Helper {
 	 */
 	public static String implode(final String[] list, final String delim, final String prefix, final String suffix) {
 		String temp = "";
-		for (int i = 0; i < list.length; i++) {
-			if (delim != null && i != 0) {
-				temp += delim;
+		if (list != null && list.length > 0) {
+			for (int i = 0; i < list.length; i++) {
+				if (delim != null && i != 0) {
+					temp += delim;
+				}
+				temp += (prefix != null ? prefix : "") + list[i] + (suffix != null ? suffix : "");
 			}
-			temp += (prefix != null ? prefix : "") + list[i] + (suffix != null ? suffix : "");
 		}
 		return temp;
 	}

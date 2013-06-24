@@ -53,13 +53,13 @@ public class TheMovieDBCollector extends ACollector {
 	@Override
 	public void doCollect() {
 		this.fileAttributeListToAdd.clear();
+		ArrayList<FileAttributeList> tempFileAttributes = null;
 		for (final FileItem item : this.getFileItems()) {
 			// collect all data for all found items in the list
 			if (item != null) {
-				final ArrayList<FileAttributeList> tempFileAttributes = this.getFileAttributeListsForItem(item);
-				// TODO check: check if null or return empty list?
+				tempFileAttributes = this.getFileAttributeListsForItem(item);
 				if (tempFileAttributes != null) {
-					this.fileAttributeListToAdd.put(item, this.getFileAttributeListsForItem(item));
+					this.fileAttributeListToAdd.put(item, tempFileAttributes);
 				}
 			}
 		}
@@ -88,7 +88,7 @@ public class TheMovieDBCollector extends ACollector {
 				// it, if no movie is found.
 				for (@SuppressWarnings("unused")
 				final String title : titles) {
-					// search for all titles
+					// search for all titles and year (if exists)
 					tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, (year != null ? year : 0), this.langKey, true, 0);
 
 					if ((tempList != null) && (tempList.size() > 0)) {
@@ -97,7 +97,7 @@ public class TheMovieDBCollector extends ACollector {
 					}
 
 					// search with all titles and without year if year exists
-					if (year != null) {
+					if (year != null && year > -1) {
 						tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0));
 
 						if ((tempList != null) && (tempList.size() > 0)) {
@@ -110,7 +110,6 @@ public class TheMovieDBCollector extends ACollector {
 					// without LAST " - <else>".
 					if (searchTitle.indexOf(" - ") > -1) {
 						searchTitle = searchTitle.substring(0, searchTitle.lastIndexOf(" - "));
-						tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0));
 					} else {
 						// if string dont contains " - ", then search without
 						// year if exists
@@ -124,6 +123,11 @@ public class TheMovieDBCollector extends ACollector {
 
 			}
 		} catch (final MovieDbException e) {
+			try {
+				Thread.sleep(5000);
+			} catch (final InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			Debug.log(
 					Debug.LEVEL_ERROR,
 					e.getExceptionType() + " in MovieDBCollector, try to research directly (Response: " + e.getResponse() + "): "

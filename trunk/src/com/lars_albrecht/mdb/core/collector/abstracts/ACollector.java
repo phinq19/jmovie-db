@@ -274,49 +274,53 @@ public abstract class ACollector implements Runnable {
 	 * @return ArrayList<FileItem>
 	 */
 	private ArrayList<FileItem> prepareFileItems(final ArrayList<FileItem> fileItems, final String collectorName) {
-		Debug.log(Debug.LEVEL_TRACE, Arrays.deepToString(fileItems.toArray()));
 		final ArrayList<FileItem> tempList = new ArrayList<FileItem>();
-		final ArrayList<FileItem> noInformationList = this.mainController.getDataHandler().getNoInfoFileItems(this.getInfoType())
-				.get(this.getInfoType());
-		final Object lastRunObj = OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
-		// TODO fix uncaughtException MSG: UncaughtException thrown
-		// (java.sql.Timestamp cannot be cast to java.lang.Long -
-		// java.lang.ClassCastException: java.sql.Timestamp cannot be cast to
-		// java.lang.Long) in Thread TheTVDB (264) java.lang.ClassCastException:
-		// java.sql.Timestamp cannot be cast to java.lang.Long
-		final Long lastRun = (lastRunObj == null ? null : (lastRunObj instanceof String ? Long.parseLong((String) lastRunObj)
-				: (lastRunObj instanceof java.sql.Timestamp ? ((Timestamp) lastRunObj).getTime() : (Long) lastRunObj)));
-		for (int i = 0; i < fileItems.size(); i++) {
-			// item for this collector?
-			if (fileItems.get(i) != null && this.getCollectorTypes().contains(fileItems.get(i).getFiletype())) {
-				// runned before?
-				if (lastRun == null) {
-					if (i == 0) {
-						// log only once
-						Debug.log(Debug.LEVEL_TRACE, "Collector never runned before: " + Helper.ucfirst(collectorName));
-					}
-					tempList.add(fileItems.get(i));
-				} else {
-					boolean noInfo = false;
-					if (this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType()) != null) {
-						noInfo = this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType())
-								.contains(fileItems.get(i));
-					}
-
-					if (!noInfo && fileItems.get(i).getUpdateTS() != null && lastRun > fileItems.get(i).getUpdateTS()) {
-						Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + fileItems.get(i));
-					} else {
-						Debug.log(Debug.LEVEL_TRACE, "Element NOT collected: " + fileItems.get(i));
+		if (fileItems != null && fileItems.size() > 0) {
+			Debug.log(Debug.LEVEL_TRACE, Arrays.deepToString(fileItems.toArray()));
+			final ArrayList<FileItem> noInformationList = this.mainController.getDataHandler().getNoInfoFileItems(this.getInfoType())
+					.get(this.getInfoType());
+			final Object lastRunObj = OptionsHandler.getOption("collectorEndRunLast" + Helper.ucfirst(collectorName));
+			// TODO fix uncaughtException MSG: UncaughtException thrown
+			// (java.sql.Timestamp cannot be cast to java.lang.Long -
+			// java.lang.ClassCastException: java.sql.Timestamp cannot be cast
+			// to
+			// java.lang.Long) in Thread TheTVDB (264)
+			// java.lang.ClassCastException:
+			// java.sql.Timestamp cannot be cast to java.lang.Long
+			final Long lastRun = (lastRunObj == null ? null : (lastRunObj instanceof String ? Long.parseLong((String) lastRunObj)
+					: (lastRunObj instanceof java.sql.Timestamp ? ((Timestamp) lastRunObj).getTime() : (Long) lastRunObj)));
+			for (int i = 0; i < fileItems.size(); i++) {
+				// item for this collector?
+				if (fileItems.get(i) != null && this.getCollectorTypes().contains(fileItems.get(i).getFiletype())) {
+					// runned before?
+					if (lastRun == null) {
+						if (i == 0) {
+							// log only once
+							Debug.log(Debug.LEVEL_TRACE, "Collector never runned before: " + Helper.ucfirst(collectorName));
+						}
 						tempList.add(fileItems.get(i));
+					} else {
+						boolean noInfo = false;
+						if (this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType()) != null) {
+							noInfo = this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType())
+									.contains(fileItems.get(i));
+						}
+
+						if (!noInfo && fileItems.get(i).getUpdateTS() != null && lastRun > fileItems.get(i).getUpdateTS()) {
+							Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + fileItems.get(i));
+						} else {
+							Debug.log(Debug.LEVEL_TRACE, "Element NOT collected: " + fileItems.get(i));
+							tempList.add(fileItems.get(i));
+						}
 					}
 				}
 			}
-		}
-		if (noInformationList != null && noInformationList.size() > 0) {
-			tempList.addAll(noInformationList);
-		}
+			if (noInformationList != null && noInformationList.size() > 0) {
+				tempList.addAll(noInformationList);
+			}
 
-		this.mainController.getDataHandler().clearNoInfoFileItems(this.getInfoType());
+			this.mainController.getDataHandler().clearNoInfoFileItems(this.getInfoType());
+		}
 		return tempList;
 	}
 
@@ -335,8 +339,10 @@ public abstract class ACollector implements Runnable {
 		Debug.startTimer("Collector persist time: " + this.getInfoType());
 		this.persist();
 		Debug.stopTimer("Collector persist time: " + this.getInfoType());
-		this.controller.getThreadList().remove(Thread.currentThread());
 		OptionsHandler.setOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
+		if (this.controller != null) {
+			this.controller.getThreadList().remove(Thread.currentThread());
+		}
 		this.collectorMulticaster.collectorsEndSingle((new CollectorEvent(this, CollectorEvent.COLLECTOR_ENDSINGLE_COLLECTOR, this
 				.getInfoType())));
 	}
