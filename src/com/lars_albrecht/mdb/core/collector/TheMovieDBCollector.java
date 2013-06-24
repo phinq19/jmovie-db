@@ -5,6 +5,7 @@ package com.lars_albrecht.mdb.core.collector;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -26,6 +27,7 @@ import com.omertron.themoviedbapi.TheMovieDbApi;
 import com.omertron.themoviedbapi.model.Genre;
 import com.omertron.themoviedbapi.model.Language;
 import com.omertron.themoviedbapi.model.MovieDb;
+import com.omertron.themoviedbapi.model.Trailer;
 
 /**
  * @author lalbrecht
@@ -467,6 +469,23 @@ public class TheMovieDBCollector extends ACollector {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_count", infoType, "votes", false, false),
 						new Value<Object>(movie.getVoteCount())));
 			}
+
+			// add special information
+			TheMovieDbApi tmdb = null;
+			try {
+				tmdb = new TheMovieDbApi(this.apiKey);
+				final List<Trailer> trailerList = tmdb.getMovieTrailers(movie.getId(), this.langKey);
+				if (trailerList != null && trailerList.size() > 0) {
+					for (final Trailer trailer : trailerList) {
+						resultList.add(new KeyValue<String, Object>(new Key<String>("trailer", infoType, "video", false, true),
+								new Value<Object>(trailer.getName() + ", " + trailer.getSize() + "," + trailer.getSource() + ","
+										+ trailer.getWebsite())));
+					}
+
+				}
+			} catch (final MovieDbException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return resultList;
@@ -477,4 +496,29 @@ public class TheMovieDBCollector extends ACollector {
 		return this.valuesToAdd;
 	}
 
+	// public static addTrailers(){
+	//
+	// for (final FileItem fileItem : this.getDataHandler().getFileItems()) {
+	// TheMovieDbApi tmdb = null;
+	// try {
+	// tmdb = new TheMovieDbApi(RessourceBundleEx.getInstance()
+	// .getProperty("apikey.themoviedb"));
+	// final List<Trailer> trailerList = tmdb.getMovieTrailers(movie.getId(),
+	// this.langKey);
+	// if (trailerList != null && trailerList.size() > 0) {
+	// for (final Trailer trailer : trailerList) {
+	// resultList.add(new KeyValue<String, Object>(new Key<String>("trailer",
+	// infoType, "video", false, true),
+	// new Value<Object>(trailer.getName() + ", " + trailer.getSize() + "," +
+	// trailer.getSource() + ","
+	// + trailer.getWebsite())));
+	// }
+	//
+	// }
+	// } catch (final MovieDbException e) {
+	// e.printStackTrace();
+	// }
+	// }
+	//
+	// }
 }
