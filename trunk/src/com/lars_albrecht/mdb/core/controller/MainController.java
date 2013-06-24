@@ -52,7 +52,6 @@ public class MainController implements IFinderListener, ICollectorListener {
 	public void finderAddFinish(final FinderEvent e) {
 		Debug.log(Debug.LEVEL_INFO, "Found " + e.getFiles().size() + " files. Type them and start to collect.");
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
-
 		final ArrayList<FileItem> typedFilesList = new ArrayList<FileItem>();
 
 		// type files
