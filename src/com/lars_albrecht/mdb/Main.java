@@ -3,16 +3,8 @@
  */
 package com.lars_albrecht.mdb;
 
-import java.util.ArrayList;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.lars_albrecht.general.utilities.Debug;
-import com.lars_albrecht.mdb.core.collector.TheMovieDBCollector;
 import com.lars_albrecht.mdb.core.controller.MainController;
-import com.lars_albrecht.mdb.core.models.FileAttributeList;
-import com.lars_albrecht.mdb.core.models.FileItem;
-import com.lars_albrecht.mdb.core.models.KeyValue;
 import com.lars_albrecht.mdb.database.DB;
 
 /**
@@ -31,30 +23,6 @@ public class Main {
 
 		this.init();
 		this.controller = new MainController();
-
-		final TheMovieDBCollector test = new TheMovieDBCollector(this.controller, null);
-		final ArrayList<FileItem> testList = new ArrayList<FileItem>();
-		final FileItem testItem1 = new FileItem();
-		final FileItem testItem2 = new FileItem();
-		final FileItem testItem3 = new FileItem();
-		testItem1.setName("Herr der Ringe - AC3 - 720p.avi");
-		testList.add(testItem1);
-		test.setFileItems(testList);
-		test.doCollect();
-
-		final ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>> fileAttributeListToAdd = test.getFileAttributeListToAdd();
-		for (final Entry<FileItem, ArrayList<FileAttributeList>> entry : fileAttributeListToAdd.entrySet()) {
-			System.out.println(entry.getKey().getName());
-			for (final FileAttributeList attributesList : entry.getValue()) {
-				for (final KeyValue<String, Object> keyValue : attributesList.getKeyValues()) {
-					System.out.println(keyValue.getKey() + " - " + keyValue.getValue());
-				}
-			}
-			System.out.println("");
-			System.out.println("");
-		}
-
-		System.exit(-1);
 		this.controller.run();
 	}
 
