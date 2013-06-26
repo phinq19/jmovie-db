@@ -54,6 +54,8 @@ public class ShowInfoControlPage extends WebPage {
 				false);
 		informationContainer = Template.replaceMarker(informationContainer, "valueCount",
 				Integer.toString((Integer) info.get("valueCount")), false);
+		informationContainer = Template.replaceMarker(informationContainer, "missingCount",
+				Integer.toString((Integer) info.get("missingCount")), false);
 		informationContainer = Template.replaceMarker(informationContainer, "countOfFiletypes",
 				Helper.implode((Map<?, ?>) info.get("filesWithFiletype"), ", ", null, null, " (", ")", "<span class=\"infoListEntry\">",
 						"</span>", false), false);
