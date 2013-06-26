@@ -548,8 +548,7 @@ public class DataHandler {
 		String sql = null;
 
 		try {
-			sql = "BEGIN TRANSACTION";
-			DB.update(sql);
+			DB.beginTransaction();
 
 			sql = "SELECT id FROM " + new FileItem().getDatabaseTable() + " WHERE status = '1'";
 			rs = DB.query(sql);
@@ -565,12 +564,10 @@ public class DataHandler {
 			sql = "DELETE FROM typeInformation WHERE file_id IN (" + Helper.implode(listOfMissingItems, ", ", null, null) + ")";
 			DB.update(sql);
 
-			sql = "END TRANSACTION";
-			DB.update(sql);
+			DB.endTransaction();
 		} catch (final SQLException e) {
-			sql = "ROLLBACK TRANSACTION";
 			try {
-				DB.update(sql);
+				DB.rollbackTransaction();
 			} catch (final SQLException e1) {
 				e1.printStackTrace();
 			}
