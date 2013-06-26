@@ -402,6 +402,18 @@ public class DB implements IDatabase {
 		st.close();
 	}
 
+	public static synchronized void beginTransaction() throws SQLException {
+		DB.update("BEGIN TRANSACTION;");
+	}
+
+	public static synchronized void endTransaction() throws SQLException {
+		DB.update("END TRANSACTION;");
+	}
+
+	public static synchronized void rollbackTransaction() throws SQLException {
+		DB.update("ROLLBACK TRANSACTION;");
+	}
+
 	/**
 	 * use for SQL commands CREATE, DROP, INSERT and UPDATE
 	 * 
@@ -591,8 +603,7 @@ public class DB implements IDatabase {
 
 		if (currentDBVersion < newDBVersion) {
 			try {
-				sql = "BEGIN TRANSACTION";
-				DB.update(sql);
+				DB.beginTransaction();
 				sql = "REPLACE INTO options (id, name, value) VALUES (1, 'dbversion', " + newDBVersion + ")";
 				DB.update(sql);
 
@@ -604,12 +615,10 @@ public class DB implements IDatabase {
 													// foreign keys
 				}
 
-				sql = "END TRANSACTION";
-				DB.update(sql);
+				DB.endTransaction();
 			} catch (final SQLException e) {
-				sql = "ROLLBACK TRANSACTION";
 				try {
-					DB.update(sql);
+					DB.rollbackTransaction();
 				} catch (final SQLException e1) {
 					e1.printStackTrace();
 				}
