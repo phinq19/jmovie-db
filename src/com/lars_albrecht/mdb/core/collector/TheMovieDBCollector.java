@@ -26,6 +26,7 @@ import com.omertron.themoviedbapi.TheMovieDbApi;
 import com.omertron.themoviedbapi.model.Genre;
 import com.omertron.themoviedbapi.model.Language;
 import com.omertron.themoviedbapi.model.MovieDb;
+import com.omertron.themoviedbapi.model.Trailer;
 
 /**
  * @author lalbrecht
@@ -90,7 +91,8 @@ public class TheMovieDBCollector extends ACollector {
 				for (@SuppressWarnings("unused")
 				final String title : titles) {
 					// search for all titles and year (if exists)
-					tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, (year != null ? year : 0), this.langKey, true, 0);
+					tempList = (ArrayList<MovieDb>) tmdb.searchMovie(searchTitle, (year != null ? year : 0), this.langKey, true, 0)
+							.getResults();
 
 					if ((tempList != null) && (tempList.size() > 0)) {
 						// if found, break loop
@@ -99,7 +101,7 @@ public class TheMovieDBCollector extends ACollector {
 
 					// search with all titles and without year if year exists
 					if (year != null && year > -1) {
-						tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0));
+						tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0).getResults());
 
 						if ((tempList != null) && (tempList.size() > 0)) {
 							// if found, break loop
@@ -115,7 +117,7 @@ public class TheMovieDBCollector extends ACollector {
 						// if string dont contains " - ", then search without
 						// year if exists
 						if (year != null) {
-							tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0));
+							tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0).getResults());
 							break;
 						}
 						break;
@@ -196,9 +198,12 @@ public class TheMovieDBCollector extends ACollector {
 
 			// TODO add "appending response" to this, if the version is coming
 			// up with it.
+			final String[] appendingResponse = {
+				"trailers"
+			};
 			MovieDb loadedMovie = null;
 			try {
-				loadedMovie = tmdb.getMovieInfo(id, this.langKey);
+				loadedMovie = tmdb.getMovieInfo(id, this.langKey, appendingResponse);
 			} catch (final MovieDbException e) {
 				e.printStackTrace();
 			}
@@ -471,15 +476,13 @@ public class TheMovieDBCollector extends ACollector {
 						new Value<Object>(movie.getVoteCount())));
 			}
 
-			/*
-			 * TODO Uncomment if new version is released if(movie.getTrailer()
-			 * != null && movie.getTrailer() > 0){ for (final Trailer trailer :
-			 * movie.getTrailer()) { resultList.add(new KeyValue<String,
-			 * Object>(new Key<String>("trailer", infoType, "video", false,
-			 * true), new Value<Object>(trailer.getName() + ", " +
-			 * trailer.getSize() + "," + trailer.getSource() + "," +
-			 * trailer.getWebsite()))); } }
-			 */
+			if (movie.getTrailers() != null && movie.getTrailers().size() > 0) {
+				for (final Trailer trailer : movie.getTrailers()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("trailer", infoType, "video", false, false),
+							new Value<Object>(trailer.getName() + "," + trailer.getSize() + "," + trailer.getSource() + ","
+									+ trailer.getWebsite())));
+				}
+			}
 
 		}
 

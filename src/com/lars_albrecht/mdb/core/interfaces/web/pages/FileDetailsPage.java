@@ -139,6 +139,17 @@ public class FileDetailsPage extends WebPage {
 													+ "action=showSearchresults&searchStr="
 													+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + "\"" + tempList.get(j) + "\"",
 															"utf-8") + "\">" + tempList.get(j) + "</a>";
+										} else if (currentInfoType.equalsIgnoreCase("themoviedb")
+												&& attributeList.getSectionName().equalsIgnoreCase("video")) {
+											// create trailerlink
+											// TODO create method
+											final ArrayList<String> trailerParams = Helper.explode((String) tempList.get(j), ",");
+											String trailerUrl = "";
+											if (trailerParams.get(3).trim().equalsIgnoreCase("youtube")) {
+												trailerUrl += "http://www.youtube.com/watch?v=" + trailerParams.get(2).trim();
+											}
+											value += "<a href=\"" + trailerUrl + "\">" + trailerParams.get(0).trim() + " ("
+													+ trailerParams.get(1).trim() + ")</a>";
 										} else {
 											value += tempList.get(j);
 										}
