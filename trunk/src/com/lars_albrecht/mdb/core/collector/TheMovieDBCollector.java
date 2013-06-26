@@ -5,7 +5,6 @@ package com.lars_albrecht.mdb.core.collector;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -27,7 +26,6 @@ import com.omertron.themoviedbapi.TheMovieDbApi;
 import com.omertron.themoviedbapi.model.Genre;
 import com.omertron.themoviedbapi.model.Language;
 import com.omertron.themoviedbapi.model.MovieDb;
-import com.omertron.themoviedbapi.model.Trailer;
 
 /**
  * @author lalbrecht
@@ -81,6 +79,7 @@ public class TheMovieDBCollector extends ACollector {
 		TheMovieDbApi tmdb = null;
 		try {
 			tmdb = new TheMovieDbApi(this.apiKey);
+
 			// tmdb.getConfiguration().setBaseUrl("http://api.themoviedb.org/3/");
 			// search with different combinations to find the movie.
 			// implode titles to one title
@@ -195,6 +194,8 @@ public class TheMovieDBCollector extends ACollector {
 			}
 			tempList = null;
 
+			// TODO add "appending response" to this, if the version is coming
+			// up with it.
 			MovieDb loadedMovie = null;
 			try {
 				loadedMovie = tmdb.getMovieInfo(id, this.langKey);
@@ -470,22 +471,16 @@ public class TheMovieDBCollector extends ACollector {
 						new Value<Object>(movie.getVoteCount())));
 			}
 
-			// add special information
-			TheMovieDbApi tmdb = null;
-			try {
-				tmdb = new TheMovieDbApi(this.apiKey);
-				final List<Trailer> trailerList = tmdb.getMovieTrailers(movie.getId(), this.langKey);
-				if (trailerList != null && trailerList.size() > 0) {
-					for (final Trailer trailer : trailerList) {
-						resultList.add(new KeyValue<String, Object>(new Key<String>("trailer", infoType, "video", false, true),
-								new Value<Object>(trailer.getName() + ", " + trailer.getSize() + "," + trailer.getSource() + ","
-										+ trailer.getWebsite())));
-					}
+			/*
+			 * TODO Uncomment if new version is released if(movie.getTrailer()
+			 * != null && movie.getTrailer() > 0){ for (final Trailer trailer :
+			 * movie.getTrailer()) { resultList.add(new KeyValue<String,
+			 * Object>(new Key<String>("trailer", infoType, "video", false,
+			 * true), new Value<Object>(trailer.getName() + ", " +
+			 * trailer.getSize() + "," + trailer.getSource() + "," +
+			 * trailer.getWebsite()))); } }
+			 */
 
-				}
-			} catch (final MovieDbException e) {
-				e.printStackTrace();
-			}
 		}
 
 		return resultList;
