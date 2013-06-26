@@ -15,19 +15,23 @@
 			<th>Anzahl</th>
 		</tr>
 		<tr>
-			<td>File Count</td>
+			<td>Anzahl Dateien</td>
 			<td>{fileCount}</td>
 		</tr>
 		<tr>
-			<td>Key Count</td>
+			<td>Anzahl Schlüssel</td>
 			<td>{keyCount}</td>
 		</tr>
 		<tr>
-			<td>Value Count</td>
+			<td>Anzahl Werte</td>
 			<td>{valueCount}</td>
 		</tr>
 		<tr>
-			<td>Filetypes (count of files)</td>
+			<td>Anzahl fehlender Dateien</td>
+			<td>{missingCount}</td>
+		</tr>
+		<tr>
+			<td>Dateitypen (anzahl der Dateien)</td>
 			<td>{countOfFiletypes}</td>
 		</tr>
 	</table>
@@ -40,8 +44,8 @@
 		<h3>Control</h3>
 		<nav>
 			<ul>
-				<li><a href="{finderHref}" class="{finderClass}">Start Finder</a></li>
-				<li><a href="{collectorHref}" class="{collectorClass}">Start Collectors</a></li>
+				<li><a href="{finderHref}" class="{finderClass}">Starte Finder</a></li>
+				<li><a href="{collectorHref}" class="{collectorClass}">Starte Collectors</a></li>
 			</ul>
 		</nav>
 	</div>

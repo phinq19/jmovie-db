@@ -515,6 +515,7 @@ public class DataHandler {
 		resultMap.put("valueCount", this.getRowCount(new Value<Object>()));
 		resultMap.put("filetypes", this.getFiletypesFromDatabase());
 		resultMap.put("filesWithFiletype", this.getFilesWithFiletypeFromDatabase());
+		resultMap.put("missingCount", this.getMissingFileItems().size());
 
 		return resultMap;
 	}
