@@ -444,6 +444,9 @@ public class DB implements IDatabase {
 	public void init() throws Exception {
 		String sql = null;
 		try {
+			sql = "PRAGMA foreign_keys = ON;";
+			DB.update(sql);
+
 			// fileInformation
 			sql = "CREATE TABLE IF NOT EXISTS 'fileInformation' ( ";
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
@@ -473,7 +476,8 @@ public class DB implements IDatabase {
 			sql += "'collectorName' VARCHAR(255), ";
 			sql += "'file_id' INTEGER, ";
 			sql += "'key' VARCHAR(255), ";
-			sql += "'value' VARCHAR(255) ";
+			sql += "'value' VARCHAR(255), ";
+			sql += "FOREIGN KEY (file_id) REFERENCES fileInformation(id) ON DELETE CASCADE ";
 			sql += ");";
 			DB.update(sql);
 			sql = "CREATE INDEX IF NOT EXISTS idx_collectorinformation_collectorname_file_id ON collectorInformation (collectorName, file_id);";
@@ -506,8 +510,11 @@ public class DB implements IDatabase {
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
 			sql += "'file_id' INTEGER, ";
 			sql += "'key_id' INTEGER, ";
-			sql += "'value_id' INTEGER ";
+			sql += "'value_id' INTEGER, ";
 			// sql += "'value' INTEGER ";
+			sql += "FOREIGN KEY (file_id) REFERENCES fileInformation(id) ON DELETE CASCADE, ";
+			sql += "FOREIGN KEY (key_id) REFERENCES typeInformation_key(id) ON DELETE CASCADE, ";
+			sql += "FOREIGN KEY (value_id) REFERENCES typeInformation_value(id) ON DELETE CASCADE ";
 			sql += "); ";
 			DB.update(sql);
 			sql = "CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_typeinformation_filekey ON typeInformation (file_id, key_id, value_id);";
@@ -527,7 +534,9 @@ public class DB implements IDatabase {
 			sql += "'id' INTEGER PRIMARY KEY AUTOINCREMENT, ";
 			sql += "'file_id' INTEGER, ";
 			sql += "'tag_id' INTEGER, ";
-			sql += "'isuser' INTEGER ";
+			sql += "'isuser' INTEGER, ";
+			sql += "FOREIGN KEY (file_id) REFERENCES fileInformation(id) ON DELETE CASCADE, ";
+			sql += "FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE ";
 			// sql += "'value' INTEGER ";
 			sql += "); ";
 			DB.update(sql);
@@ -587,9 +596,12 @@ public class DB implements IDatabase {
 				sql = "REPLACE INTO options (id, name, value) VALUES (1, 'dbversion', " + newDBVersion + ")";
 				DB.update(sql);
 
-				if (currentDBVersion == -1) { // NO VERSION = -1
+				if (currentDBVersion == -1) { // NO VERSION = -1 -> added status
+												// column
 					sql = "ALTER TABLE fileInformation ADD COLUMN status INTEGER NOT NULL DEFAULT '0'";
 					DB.update(sql);
+				} else if (currentDBVersion == 1) { // VERSION = 1 -> added
+													// foreign keys
 				}
 
 				sql = "END TRANSACTION";

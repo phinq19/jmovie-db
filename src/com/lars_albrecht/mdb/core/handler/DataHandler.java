@@ -539,6 +539,47 @@ public class DataHandler {
 		return result;
 	}
 
+	public int removeMissingFilesFromDatabase() {
+		int resultValue = -1;
+
+		ResultSet rs = null;
+
+		final ArrayList<Integer> listOfMissingItems = new ArrayList<Integer>();
+		String sql = null;
+
+		try {
+			sql = "BEGIN TRANSACTION";
+			DB.update(sql);
+
+			sql = "SELECT id FROM " + new FileItem().getDatabaseTable() + " WHERE status = '1'";
+			rs = DB.query(sql);
+
+			while (rs.next()) {
+				listOfMissingItems.add(rs.getInt("id"));
+			}
+			resultValue = listOfMissingItems.size();
+
+			sql = "DELETE FROM " + new FileItem().getDatabaseTable() + " WHERE status = '1';";
+			DB.update(sql);
+
+			sql = "DELETE FROM typeInformation WHERE file_id IN (" + Helper.implode(listOfMissingItems, ", ", null, null) + ")";
+			DB.update(sql);
+
+			sql = "END TRANSACTION";
+			DB.update(sql);
+		} catch (final SQLException e) {
+			sql = "ROLLBACK TRANSACTION";
+			try {
+				DB.update(sql);
+			} catch (final SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}
+
+		return resultValue;
+	}
+
 	public ArrayList<String> getFiletypesFromDatabase() {
 		final ArrayList<String> result = new ArrayList<String>();
 		ResultSet rs = null;
