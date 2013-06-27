@@ -34,6 +34,7 @@ import java.net.BindException;
 import java.net.ServerSocket;
 
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 
 /**
  * Example program from Chapter 1 Programming Spiders, Bots and Aggregators in
@@ -149,6 +150,7 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 public class WebServer {
 
 	private MainController	mainController	= null;
+	private WebInterface	webInterface	= null;
 	private ServerSocket	serverSocket	= null;
 
 	@Override
@@ -177,8 +179,9 @@ public class WebServer {
 	/**
 	 * WebServer constructor.
 	 */
-	protected void start(final MainController mainController) {
+	protected void start(final MainController mainController, final WebInterface webInterface) {
 		this.mainController = mainController;
+		this.webInterface = webInterface;
 		int socketPort = 8080;
 
 		System.out.println("Try to start WebServer. If socketPort is already in use, than try the next port (start @ port 8080)");
@@ -194,7 +197,7 @@ public class WebServer {
 		for (;;) {
 			try {
 				// wait for a connection
-				new Thread(new WebServerRunner(this.mainController, this.serverSocket.accept())).start();
+				new Thread(new WebServerRunner(this.mainController, this.serverSocket.accept(), this.webInterface)).start();
 			} catch (final Exception e) {
 				System.out.println("Error: " + e.getMessage());
 				e.printStackTrace();

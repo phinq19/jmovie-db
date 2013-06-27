@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
@@ -34,8 +35,9 @@ public class SearchResultsPage extends WebPage {
 	public final static int	SEARCHTYPE_TEXTALL		= 1;
 	public final static int	SEARCHTYPE_ATTRIBUTE	= 2;
 
-	public SearchResultsPage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
-		super(actionname, request, mainController);
+	public SearchResultsPage(final String actionname, final WebServerRequest request, final MainController mainController,
+			final WebInterface webInterface) throws Exception {
+		super(actionname, request, mainController, webInterface);
 
 		this.setPageTemplate(this.generateSearchresults(this.getPageTemplate(), request.getGetParams()));
 	}

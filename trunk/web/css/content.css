@@ -26,7 +26,6 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 															-webkit-box-shadow: 0 5px 5px #333;
 											        		   -moz-box-shadow: 0 5px 5px #333;
 											        		        box-shadow: 0 5px 5px #333;
-											         display:inline-block;
                 									}
 
 #titleBox 										{width:100%;}
@@ -50,7 +49,7 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 /** TODO SET TO ACTIVE IF ACTIVE **/
 #contentContainer nav a.active								{border-top:2px solid #ffffff;}
 
-#contentContainer .contentPart								{margin-bottom:20px;}
+#contentContainer .contentPart								{margin-bottom:20px; width:100%;}
 
 #detailView #fileInformation								{float:left;}
 #detailView #path									{font-size:0.8em;}

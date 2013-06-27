@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.web.helper.WebServerHelper;
 
 /**
@@ -24,10 +25,12 @@ public class WebServerRunner implements Runnable {
 
 	private MainController	mainController	= null;
 	private Socket			clientSocket	= null;
+	private WebInterface	webInterface	= null;
 
-	public WebServerRunner(final MainController mainController, final Socket clientSocket) {
+	public WebServerRunner(final MainController mainController, final Socket clientSocket, final WebInterface webInterface) {
 		this.mainController = mainController;
 		this.clientSocket = clientSocket;
+		this.webInterface = webInterface;
 	}
 
 	private ConcurrentHashMap<String, String> getQuery(final String url) throws UnsupportedEncodingException {
@@ -75,7 +78,7 @@ public class WebServerRunner implements Runnable {
 					// TODO try to remove this if
 					if (!urlStr.startsWith("ajax.html") && !urlStr.startsWith("json.html")) {
 
-						content = new WebServerHelper(this.mainController).getFileContent(urlStr, "web", request);
+						content = new WebServerHelper(this.mainController, this.webInterface).getFileContent(urlStr, "web", request);
 
 						// Send the response
 						// Send the headers
@@ -106,7 +109,7 @@ public class WebServerRunner implements Runnable {
 						out.println(content);
 
 					} else if (urlStr.startsWith("ajax.html")) {
-						content = new WebServerHelper(this.mainController).getAjaxContent(urlStr, request, false);
+						content = new WebServerHelper(this.mainController, this.webInterface).getAjaxContent(urlStr, request, false);
 						if (content != null) {
 							out.println("HTTP/1.0 200 OK");
 							out.println("Content-Type: text/html; charset=utf-8");
@@ -121,7 +124,7 @@ public class WebServerRunner implements Runnable {
 							out.println("404");
 						}
 					} else if (urlStr.startsWith("json.html")) {
-						content = new WebServerHelper(this.mainController).getAjaxContent(urlStr, request, true);
+						content = new WebServerHelper(this.mainController, this.webInterface).getAjaxContent(urlStr, request, true);
 						if (content != null) {
 							out.println("HTTP/1.0 200 OK");
 							out.println("Content-Type: application/json; charset=utf-8");

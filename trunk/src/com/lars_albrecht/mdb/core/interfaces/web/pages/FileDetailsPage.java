@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
@@ -22,8 +23,12 @@ import com.lars_albrecht.mdb.core.models.KeyValue;
  */
 public class FileDetailsPage extends WebPage {
 
-	public FileDetailsPage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
-		super(actionname, request, mainController);
+	private WebInterface	webInterface	= null;
+
+	public FileDetailsPage(final String actionname, final WebServerRequest request, final MainController mainController,
+			final WebInterface webInterface) throws Exception {
+		super(actionname, request, mainController, webInterface);
+		this.webInterface = webInterface;
 
 		if (request.getGetParams().containsKey("fileId") && (request.getGetParams().get("fileId") != null)) {
 			final Integer fileId = Integer.parseInt(request.getGetParams().get("fileId"));
@@ -89,8 +94,10 @@ public class FileDetailsPage extends WebPage {
 				String sectionList = "";
 				String attributeSectionList = "";
 				String images = "";
+				String currentSection = null;
 				// for each attribute ...
 				for (final FileAttributeList attributeList : item.getAttributes()) {
+					currentSection = attributeList.getSectionName();
 					if ((currentInfoType == null)
 							|| !currentInfoType.equalsIgnoreCase(attributeList.getKeyValues().get(0).getKey().getInfoType())) {
 						if (i > 0) {
@@ -108,7 +115,7 @@ public class FileDetailsPage extends WebPage {
 					}
 
 					// fill sectionlist
-					if ((!attributeList.getSectionName().equalsIgnoreCase("images")) && (attributeList.getKeyValues() != null)
+					if ((!currentSection.equalsIgnoreCase("images")) && (attributeList.getKeyValues() != null)
 							&& (attributeList.getKeyValues().size() > 0)) {
 						sectionList += detailViewTemplate.getSubMarkerContent("attributeListSection");
 						sectionList = Template.replaceMarker(sectionList, "sectionname", attributeList.getSectionName(), Boolean.TRUE);
@@ -139,19 +146,9 @@ public class FileDetailsPage extends WebPage {
 													+ "action=showSearchresults&searchStr="
 													+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + "\"" + tempList.get(j) + "\"",
 															"utf-8") + "\">" + tempList.get(j) + "</a>";
-										} else if (currentInfoType.equalsIgnoreCase("themoviedb")
-												&& attributeList.getSectionName().equalsIgnoreCase("video")) {
-											// create trailerlink
-											// TODO create method
-											final ArrayList<String> trailerParams = Helper.explode((String) tempList.get(j), ",");
-											String trailerUrl = "";
-											if (trailerParams.get(3).trim().equalsIgnoreCase("youtube")) {
-												trailerUrl += "http://www.youtube.com/watch?v=" + trailerParams.get(2).trim();
-											}
-											value += "<a href=\"" + trailerUrl + "\">" + trailerParams.get(0).trim() + " ("
-													+ trailerParams.get(1).trim() + ")</a>";
 										} else {
-											value += tempList.get(j);
+											value += this.webInterface.getFileDetailsOutputItem().getValue(currentInfoType,
+													attributeList.getSectionName(), keyValue, (String) tempList.get(j));
 										}
 									}
 

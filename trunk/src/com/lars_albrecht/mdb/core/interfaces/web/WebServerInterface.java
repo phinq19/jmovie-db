@@ -4,6 +4,7 @@
 package com.lars_albrecht.mdb.core.interfaces.web;
 
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 
 /**
  * @author lalbrecht
@@ -12,9 +13,11 @@ import com.lars_albrecht.mdb.core.controller.MainController;
 public class WebServerInterface implements Runnable {
 
 	private MainController	mainController	= null;
+	private WebInterface	webInterface	= null;
 
-	public WebServerInterface(final MainController mainController) {
+	public WebServerInterface(final MainController mainController, final WebInterface webInterface) {
 		this.mainController = mainController;
+		this.webInterface = webInterface;
 	}
 
 	@Override
@@ -28,7 +31,7 @@ public class WebServerInterface implements Runnable {
 	public void start() {
 		final WebServer ws = new WebServer();
 		if (ws != null) {
-			ws.start(this.mainController);
+			ws.start(this.mainController, this.webInterface);
 		}
 	}
 

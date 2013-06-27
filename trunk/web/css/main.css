@@ -85,7 +85,7 @@ body {
 .header-container,
 .footer-container,
 .main aside {
-    background: #888888;
+    background: #49B3FF;/* was #888888 */
 }
 
 .title {
