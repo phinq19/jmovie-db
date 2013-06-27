@@ -28,6 +28,7 @@ import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.abstracts.AInterface;
 import com.lars_albrecht.mdb.core.models.FileItem;
 import com.lars_albrecht.mdb.filter.VideoFileFilter;
+import com.lars_albrecht.mdb.outputItems.MovieFileDetailsOutputItem;
 
 /**
  * @author lalbrecht
@@ -270,7 +271,9 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 		this.iController = new InterfaceController(this);
 		final ArrayList<AInterface> listOfInterfaces = new ArrayList<AInterface>();
-		listOfInterfaces.add(new WebInterface(this, this.iController));
+		final WebInterface webInterface = new WebInterface(this, this.iController);
+		webInterface.setFileDetailsOutputItem(new MovieFileDetailsOutputItem());
+		listOfInterfaces.add(webInterface);
 		this.iController.setInterfaces(listOfInterfaces);
 
 		this.cController = new CollectorController(this);

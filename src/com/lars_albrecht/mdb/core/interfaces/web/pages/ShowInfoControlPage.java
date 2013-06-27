@@ -13,6 +13,7 @@ import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.DataHandler;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.models.FileItem;
@@ -23,9 +24,9 @@ import com.lars_albrecht.mdb.core.models.FileItem;
  */
 public class ShowInfoControlPage extends WebPage {
 
-	public ShowInfoControlPage(final String actionname, final WebServerRequest request, final MainController mainController)
-			throws Exception {
-		super(actionname, request, mainController);
+	public ShowInfoControlPage(final String actionname, final WebServerRequest request, final MainController mainController,
+			final WebInterface webInterface) throws Exception {
+		super(actionname, request, mainController, webInterface);
 
 		this.setPageTemplate(this.generateInfoControlView());
 
@@ -76,45 +77,56 @@ public class ShowInfoControlPage extends WebPage {
 		String finderClassString = "";
 		String collectorHrefString = "?action=showInfoControl&do=startCollectors";
 		String collectorClassString = "";
+		final String removeMissingHrefString = "?action=showInfoControl&do=removeMissing";
+		final String removeMissingClassString = "";
 
 		final ArrayList<String> statusMessages = new ArrayList<String>();
 
-		// isStartFinder
-		if (this.request.getGetParams().containsKey("do") && (this.request.getGetParams().get("do") != null)
-				&& this.request.getGetParams().get("do").equalsIgnoreCase("startFinder")) {
-			finderHrefString = "javascript:void(0)";
-			finderClassString = "disabled";
+		if (this.request.getGetParams().containsKey("do") && (this.request.getGetParams().get("do") != null)) {
+			final String doValue = this.request.getGetParams().get("do");
+			if (doValue.equalsIgnoreCase("startFinder")) {
+				// isStartFinder
+				finderHrefString = "javascript:void(0)";
+				finderClassString = "disabled";
 
-			statusMessages.add("Files will be refreshed ...");
-		}
+				statusMessages.add("Files will be refreshed ...");
+			} else if (doValue.equalsIgnoreCase("startCollectors")) {
+				// isStartCollectors
+				collectorHrefString = "javascript:void(0)";
+				collectorClassString = "disabled";
 
-		// isStartCollectors
-		if (this.request.getGetParams().containsKey("do") && (this.request.getGetParams().get("do") != null)
-				&& this.request.getGetParams().get("do").equalsIgnoreCase("startCollectors")) {
-			collectorHrefString = "javascript:void(0)";
-			collectorClassString = "disabled";
+				statusMessages.add("Collections will be refreshed ...");
 
-			statusMessages.add("Collections will be refreshed ...");
-
-			final ArrayList<FileItem> fileList = ObjectHandler.castObjectListToFileItemList(this.mainController.getDataHandler().findAll(
-					new FileItem(), null, null));
-			if ((fileList != null) && (fileList.size() > 0)) {
-				statusMessages.add("Collections can be refreshed ... work in progress");
-				try {
-					this.mainController.getcController().collectInfos(fileList);
-				} catch (final Exception e) {
-					e.printStackTrace();
+				final ArrayList<FileItem> fileList = ObjectHandler.castObjectListToFileItemList(this.mainController.getDataHandler()
+						.findAll(new FileItem(), null, null));
+				if ((fileList != null) && (fileList.size() > 0)) {
+					statusMessages.add("Collections can be refreshed ... work in progress");
+					try {
+						this.mainController.getcController().collectInfos(fileList);
+					} catch (final Exception e) {
+						e.printStackTrace();
+					}
+				} else {
+					statusMessages.add("Collections cannot be refreshed" + (fileList.size() == 0 ? ", because no files are available" : "")
+							+ ". Process stopped.");
 				}
-			} else {
-				statusMessages.add("Collections cannot be refreshed" + (fileList.size() == 0 ? ", because no files are available" : "")
-						+ ". Process stopped.");
+			} else if (doValue.equalsIgnoreCase("removeMissing")) {
+				statusMessages.add("Missing files will be removed ...");
+				this.mainController.getDataHandler().removeMissingFilesFromDatabase();
+			} else if (doValue.equalsIgnoreCase("stop")) {
+				System.exit(1);
 			}
+
 		}
 
 		controlViewContainer = Template.replaceMarker(controlViewContainer, "finderHref", finderHrefString, false);
 		controlViewContainer = Template.replaceMarker(controlViewContainer, "finderClass", finderClassString, false);
+
 		controlViewContainer = Template.replaceMarker(controlViewContainer, "collectorHref", collectorHrefString, false);
 		controlViewContainer = Template.replaceMarker(controlViewContainer, "collectorClass", collectorClassString, false);
+
+		controlViewContainer = Template.replaceMarker(controlViewContainer, "removeMissingClass", removeMissingHrefString, false);
+		controlViewContainer = Template.replaceMarker(controlViewContainer, "removeMissingHref", removeMissingClassString, false);
 
 		String statusMessagesContainer = "";
 		if (statusMessages.size() > 0) {

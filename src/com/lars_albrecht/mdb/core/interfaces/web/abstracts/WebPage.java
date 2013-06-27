@@ -5,6 +5,7 @@ package com.lars_albrecht.mdb.core.interfaces.web.abstracts;
 
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.core.controller.MainController;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 
 /**
@@ -18,7 +19,8 @@ public abstract class WebPage {
 	protected WebServerRequest	request			= null;
 	protected String			actionname		= null;
 
-	public WebPage(final String actionname, final WebServerRequest request, final MainController mainController) throws Exception {
+	public WebPage(final String actionname, final WebServerRequest request, final MainController mainController,
+			final WebInterface webInterface) throws Exception {
 		this.request = request;
 		this.mainController = mainController;
 		this.actionname = actionname;

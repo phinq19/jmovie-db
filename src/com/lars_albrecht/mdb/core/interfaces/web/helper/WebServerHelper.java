@@ -18,6 +18,7 @@ import com.lars_albrecht.mdb.Main;
 import com.lars_albrecht.mdb.core.abstracts.ThreadEx;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.core.interfaces.web.abstracts.WebPage;
 import com.lars_albrecht.mdb.core.interfaces.web.pages.AllPage;
@@ -40,13 +41,15 @@ import com.lars_albrecht.mdb.core.interfaces.web.pages.ShowInfoControlPage;
 public class WebServerHelper {
 
 	private MainController	mainController			= null;
+	private WebInterface	webInterface			= null;
 
 	public final static int	SEARCHTYPE_MIXED		= 0;
 	public final static int	SEARCHTYPE_TEXTALL		= 1;
 	public final static int	SEARCHTYPE_ATTRIBUTE	= 2;
 
-	public WebServerHelper(final MainController mainController) {
+	public WebServerHelper(final MainController mainController, final WebInterface webInterface) {
 		this.mainController = mainController;
+		this.webInterface = webInterface;
 	}
 
 	/**
@@ -77,23 +80,23 @@ public class WebServerHelper {
 				WebPage page = null;
 				// TODO do dynamically
 				if (action.equalsIgnoreCase("index")) {
-					page = new HomePage(action, request, this.mainController);
+					page = new HomePage(action, request, this.mainController, this.webInterface);
 				} else if (action.equalsIgnoreCase("showInfoControl")) {
-					page = new ShowInfoControlPage(action, request, this.mainController);
+					page = new ShowInfoControlPage(action, request, this.mainController, this.webInterface);
 				} else if (action.equalsIgnoreCase("showFileDetails")) {
-					page = new FileDetailsPage(action, request, this.mainController);
+					page = new FileDetailsPage(action, request, this.mainController, this.webInterface);
 				} else if (action.equalsIgnoreCase("showSearchresults")) {
-					page = new SearchResultsPage(action, request, this.mainController);
+					page = new SearchResultsPage(action, request, this.mainController, this.webInterface);
 				} else if (action.equalsIgnoreCase("showSettings")) {
-					page = new SettingsPage(action, request, this.mainController);
+					page = new SettingsPage(action, request, this.mainController, this.webInterface);
 				} else if (action.equalsIgnoreCase("showBrowser")) {
-					page = new BrowsePage(action, request, this.mainController);
+					page = new BrowsePage(action, request, this.mainController, this.webInterface);
 				} else if (action.equalsIgnoreCase("showAttributesTags")) {
-					page = new AttributesTagsPage(action, request, this.mainController);
+					page = new AttributesTagsPage(action, request, this.mainController, this.webInterface);
 				} else if (action.equalsIgnoreCase("showAll")) {
-					page = new AllPage(action, request, this.mainController);
+					page = new AllPage(action, request, this.mainController, this.webInterface);
 				} else {
-					page = new DefaultErrorPage("404", request, this.mainController);
+					page = new DefaultErrorPage("404", request, this.mainController, this.webInterface);
 				}
 				contentMarkerReplacement = page.getGeneratedContent();
 				subTitle = page.getTitle();

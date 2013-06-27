@@ -23,13 +23,13 @@ public abstract class AInterface implements Runnable {
 
 	@Override
 	public final void run() {
-		this.starInterface();
+		this.startInterface();
 		this.controller.getThreadList().remove(Thread.currentThread());
 	}
 
 	/**
 	 * Starts the interface.
 	 */
-	public abstract void starInterface();
+	public abstract void startInterface();
 
 }
