@@ -56,7 +56,10 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 #detailView .listWrapper								{width:100%; clear:both; display:inline-block;}
 #detailView .listWrapper .key								{float:left; width: 25%; font-weight:bold;}
 #detailView .listWrapper .value								{float:left;}
-#detailView .posterImage								{width:150px; float:right; border: 2px ridge #888; padding:8px; background-color:#000;}
+#detailView .posterImage								{width:150px; float:right; border: 2px ridge #888; padding:7px; background-color:#000;}
+#detailView .gallery									{float:left; margin-top:10px; width:70%;}
+#detailView .gallery ul									{list-style:none; padding:0;}
+#detailView .gallery ul li 								{float:left; margin:10px; padding:5px; border: 2px ridge #888; background-color:#000;}
 
 
 #detailView #attributes									{margin-top:20px; display:inline-block; width:100%;}

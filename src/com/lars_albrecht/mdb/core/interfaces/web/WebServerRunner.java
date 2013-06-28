@@ -95,6 +95,10 @@ public class WebServerRunner implements Runnable {
 								out.println("Content-Type: text/css; charset=utf-8");
 							} else if (urlStr.endsWith(".ico")) {
 								out.println("Content-Type: image/x-icon");
+							} else if (urlStr.endsWith(".png")) {
+								out.println("Content-Type: image/png");
+							} else if (urlStr.endsWith(".gif")) {
+								out.println("Content-Type: image/gif");
 							} else {
 								out.println("Content-Type: text/html; charset=utf-8");
 							}

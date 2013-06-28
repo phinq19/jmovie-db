@@ -7,12 +7,12 @@
 	<h2>{title}</h2>
 	<div id="path">{path}</div>
 	{images}
-	
 	<div id="fileInformation">
 		{listwrapperSize}
 		{listwrapperAdded}
 		{listwrapperType}
 	</div>
+	{gallery}
 	
 	{attributes}
 	
@@ -21,6 +21,22 @@
 {image-start}
 	<img src="{imageSrc}" class="{imageClass}" title="{imageTitle}" />
 {image-end}
+
+{gallery-start}
+<div class="gallery">
+	<ul>
+		{galleryItems}
+	</ul>
+</div>
+{gallery-end}
+
+{galleryItem-start}
+<li>
+	<a rel="gallery_item" href="{imageSrcBig}">
+		{image}
+	</a>
+</li>
+{galleryItem-end}
 
 {nofile-start}
 	<p>{nofileString}</p>

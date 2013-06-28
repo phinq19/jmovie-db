@@ -262,6 +262,8 @@ public class MainController implements IFinderListener, ICollectorListener {
 		FileFinder.getInstance().addToPathList(new File("trunk/web/css/vader/images"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/web/js"), -1);
 		FileFinder.getInstance().addToPathList(new File("trunk/web/vendor"), -1);
+		FileFinder.getInstance().addToPathList(new File("trunk/web/img"), -1);
+		FileFinder.getInstance().addToPathList(new File("trunk/web/img/plugins/fancybox"), -1);
 
 		this.tController = new TypeController(this);
 
