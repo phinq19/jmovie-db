@@ -6,6 +6,8 @@ package com.lars_albrecht.mdb.core.interfaces.web.pages;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
@@ -94,6 +96,7 @@ public class FileDetailsPage extends WebPage {
 				String sectionList = "";
 				String attributeSectionList = "";
 				String images = "";
+				String gallery = "";
 				String currentSection = null;
 				// for each attribute ...
 				for (final FileAttributeList attributeList : item.getAttributes()) {
@@ -142,9 +145,17 @@ public class FileDetailsPage extends WebPage {
 											value += ", ";
 										}
 										if (keyValue.getKey().getSearchable()) {
+											String searchableValue = (String) tempList.get(j);
+											final Pattern p = Pattern.compile("([^\\(\\)]+)");
+											final Matcher m = p.matcher(searchableValue);
+											if (m.find()) {
+												searchableValue = m.group(1);
+											}
+											searchableValue = searchableValue.trim();
+
 											value += "<a href=\"?"
 													+ "action=showSearchresults&searchStr="
-													+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + "\"" + tempList.get(j) + "\"",
+													+ URLEncoder.encode(keyValue.getKey().getKey() + "=" + "\"" + searchableValue + "\"",
 															"utf-8") + "\">" + tempList.get(j) + "</a>";
 										} else {
 											value += this.webInterface.getFileDetailsOutputItem().getValue(currentInfoType,
@@ -167,21 +178,46 @@ public class FileDetailsPage extends WebPage {
 					} else if (attributeList.getSectionName().equalsIgnoreCase("images")) {
 						String imageContainer = "";
 						String tempImageContainer = null;
+
+						String galleryContainer = null;
+						String tempGalleryItems = "";
+						String tempGalleryItem = null;
 						for (final KeyValue<String, Object> keyValue : attributeList.getKeyValues()) {
 							if (keyValue.getKey().getKey().equalsIgnoreCase("poster_path")) {
 								tempImageContainer = detailViewTemplate.getSubMarkerContent("image");
-								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageSrc", (String) keyValue.getValue()
-										.getValue(), false);
+								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageSrc",
+										"https://d3gtl9l2a4fn1j.cloudfront.net/t/p/w300" + (String) keyValue.getValue().getValue(), false);
 								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageClass", "posterImage", false);
 								tempImageContainer = Template.replaceMarker(tempImageContainer, "imageTitle", (String) keyValue.getValue()
 										.getValue(), false);
 
 								imageContainer += tempImageContainer;
 							} else {
-								// TODO create galley for the other pictures
+								if (galleryContainer == null) {
+									galleryContainer = detailViewTemplate.getSubMarkerContent("gallery");
+								}
+
+								tempGalleryItem = detailViewTemplate.getSubMarkerContent("image");
+								tempGalleryItem = Template.replaceMarker(tempGalleryItem, "imageSrc",
+										"https://d3gtl9l2a4fn1j.cloudfront.net/t/p/w92" + (String) keyValue.getValue().getValue(), false);
+								tempGalleryItem = Template.replaceMarker(tempGalleryItem, "imageClass", "galleryImage galleryImage-"
+										+ keyValue.getKey().getKey(), false);
+								tempGalleryItem = Template.replaceMarker(tempGalleryItem, "imageTitle", (String) keyValue.getValue()
+										.getValue(), false);
+
+								tempGalleryItem = Template.replaceMarker(detailViewTemplate.getSubMarkerContent("galleryItem"), "image",
+										tempGalleryItem, false);
+
+								tempGalleryItem = Template.replaceMarker(tempGalleryItem, "imageSrcBig",
+										"https://d3gtl9l2a4fn1j.cloudfront.net/t/p/w500" + (String) keyValue.getValue().getValue(), false);
+
+								tempGalleryItems += tempGalleryItem;
+
+								System.out.println(keyValue.getKey() + " - " + keyValue.getValue());
 							}
 						}
 						images = imageContainer;
+						gallery = Template.replaceMarker(galleryContainer, "galleryItems", tempGalleryItems, false);
 					}
 					i++;
 				}
@@ -193,6 +229,7 @@ public class FileDetailsPage extends WebPage {
 				attributes = Template.replaceMarker(attributes, "attributesList", attributeSectionList, Boolean.TRUE);
 
 				detailViewTemplate.replaceMarker("images", images, Boolean.FALSE);
+				detailViewTemplate.replaceMarker("gallery", gallery, Boolean.FALSE);
 
 				// add all attributes to template
 				detailViewTemplate.replaceMarker("attributes", attributes, Boolean.TRUE);

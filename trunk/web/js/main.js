@@ -28,24 +28,14 @@ function addAllJS(){
 	    return resultValue;
 	};
 	
-	var sortedTable = $("#allView table").stupidtable({
-	    'date':function(a,b){
-	        /* Get these into date objects for comparison. */
-	        aDate = date_from_string(a);
-	        bDate = date_from_string(b);
-	        return aDate - bDate;
-	    }
+	$(".gallery a").fancybox({
+		'transitionIn'	:	'elastic',
+		'transitionOut'	:	'elastic',
+		'speedIn'		:	600, 
+		'speedOut'		:	200, 
+		'overlayShow'	:	true
 	});
 	
-	sortedTable.bind('aftertablesort', function (event, data) {
-	    /* data.column - the index of the column sorted after a click
-	    // data.direction - the sorting direction (either asc or desc) */
-	
-	    var th = $(this).find("th");
-	    th.find(".arrow").remove();
-	    var arrow = data.direction === "asc" ? "↑" : "↓";
-	    th.eq(data.column).append('<span class="arrow">' + arrow +'</span>');
-	});
 }
 
 function addBrowseJS(){

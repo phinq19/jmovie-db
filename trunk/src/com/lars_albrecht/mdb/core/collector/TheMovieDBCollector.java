@@ -23,9 +23,12 @@ import com.lars_albrecht.mdb.core.models.KeyValue;
 import com.lars_albrecht.mdb.core.models.Value;
 import com.omertron.themoviedbapi.MovieDbException;
 import com.omertron.themoviedbapi.TheMovieDbApi;
+import com.omertron.themoviedbapi.model.Artwork;
 import com.omertron.themoviedbapi.model.Genre;
 import com.omertron.themoviedbapi.model.Language;
 import com.omertron.themoviedbapi.model.MovieDb;
+import com.omertron.themoviedbapi.model.PersonCast;
+import com.omertron.themoviedbapi.model.PersonCrew;
 import com.omertron.themoviedbapi.model.Trailer;
 
 /**
@@ -199,7 +202,7 @@ public class TheMovieDBCollector extends ACollector {
 			// TODO add "appending response" to this, if the version is coming
 			// up with it.
 			final String[] appendingResponse = {
-				"trailers"
+					"trailers", "images", "casts"
 			};
 			MovieDb loadedMovie = null;
 			try {
@@ -225,7 +228,8 @@ public class TheMovieDBCollector extends ACollector {
 		filename = Helper.replaceLast(filename, fileExtension, "");
 
 		final String separator = " - ";
-		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+)";
+		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?= - ))";
+		final String strPatternSingle = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+)";
 		final String yearPattern = "([0-9]{4})+";
 		final String endYearPattern = "([\\ \\.]){1}";
 		final String fullYearPattern = "(" + yearPattern + endYearPattern + ")";
@@ -233,7 +237,7 @@ public class TheMovieDBCollector extends ACollector {
 		final String titleSubtitleYearPattern = strPattern + separator + strPattern + separator + fullYearPattern;
 		final String titleYearPattern = strPattern + separator + fullYearPattern;
 		final String titleSubtitlePattern = strPattern + separator + strPattern;
-		final String titlePattern = strPattern;
+		final String titlePattern = strPatternSingle;
 
 		final String regex = "^((" + titleSubtitleYearPattern + ")|(" + titleYearPattern + ")|(" + titleSubtitlePattern + ")|("
 				+ titlePattern + "))" + "(.*$)";
@@ -445,6 +449,24 @@ public class TheMovieDBCollector extends ACollector {
 						new Value<Object>(movie.getHomepage())));
 			}
 
+			// add cast and crew
+			if (movie.getCast() != null && movie.getCast().size() > 0) {
+				for (final PersonCast personCast : movie.getCast()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("cast", infoType, "cast_and_crew", false, true),
+							new Value<Object>(personCast.getName()
+									+ (personCast.getCharacter() != null ? " (" + personCast.getCharacter() + ")" : ""))));
+				}
+			}
+
+			if (movie.getCrew() != null && movie.getCrew().size() > 0) {
+				for (final PersonCrew personCrew : movie.getCrew()) {
+					resultList
+							.add(new KeyValue<String, Object>(new Key<String>("crew", infoType, "cast_and_crew", false, true),
+									new Value<Object>(personCrew.getName()
+											+ (personCrew.getJob() != null ? " (" + personCrew.getJob() + ")" : ""))));
+				}
+			}
+
 			// add genres
 			if (movie.getGenres() != null) {
 				for (final Genre genre : movie.getGenres()) {
@@ -454,16 +476,21 @@ public class TheMovieDBCollector extends ACollector {
 			}
 
 			// add images
-			final String imageUrl = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w300";
-
 			if (movie.getPosterPath() != null) {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
-						new Value<Object>(imageUrl + movie.getPosterPath())));
+						new Value<Object>(movie.getPosterPath())));
 			}
 
 			if (movie.getBackdropPath() != null) {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
-						new Value<Object>(imageUrl + movie.getBackdropPath())));
+						new Value<Object>(movie.getBackdropPath())));
+			}
+
+			if (movie.getImages() != null && movie.getImages().size() > 0) {
+				for (final Artwork artwork : movie.getImages()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>(artwork.getArtworkType().name(), infoType, "images", false,
+							false), new Value<Object>(artwork.getFilePath())));
+				}
 			}
 
 			// add votes
@@ -475,6 +502,8 @@ public class TheMovieDBCollector extends ACollector {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_count", infoType, "votes", false, false),
 						new Value<Object>(movie.getVoteCount())));
 			}
+
+			// add trailers
 
 			if (movie.getTrailers() != null && movie.getTrailers().size() > 0) {
 				for (final Trailer trailer : movie.getTrailers()) {
