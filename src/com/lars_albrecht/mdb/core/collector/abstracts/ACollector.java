@@ -210,8 +210,6 @@ public abstract class ACollector implements Runnable {
 			for (final Map.Entry<FileItem, ArrayList<FileAttributeList>> entry : this.fileAttributeListToAdd.entrySet()) {
 				if (entry.getValue() != null && entry.getValue().size() > 0) {
 					try {
-						// TODO search for mistakes -> found e.g. series in
-						// movies.
 						if (((fileItemId = this.getFileItemId(entry.getKey())) > -1)) {
 							this.transformToTypeInformation(fileItemId, entry.getValue());
 						}
