@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.models.FileItem;
+import com.lars_albrecht.mdb.core.models.FileTag;
 import com.lars_albrecht.mdb.core.models.Key;
+import com.lars_albrecht.mdb.core.models.Tag;
 import com.lars_albrecht.mdb.core.models.TypeInformation;
 import com.lars_albrecht.mdb.core.models.Value;
 
@@ -60,6 +62,30 @@ public class ObjectHandler {
 		for (final Object oItem : oList) {
 			if (oItem instanceof Value) {
 				resultList.add((Value<?>) oItem);
+			}
+		}
+
+		return resultList;
+	}
+
+	public static ArrayList<Tag> castObjectListToTagList(final ArrayList<Object> oList) {
+
+		final ArrayList<Tag> resultList = new ArrayList<Tag>();
+		for (final Object oItem : oList) {
+			if (oItem instanceof Tag) {
+				resultList.add((Tag) oItem);
+			}
+		}
+
+		return resultList;
+	}
+
+	public static ArrayList<FileTag> castObjectListToFileTagList(final ArrayList<Object> oList) {
+
+		final ArrayList<FileTag> resultList = new ArrayList<FileTag>();
+		for (final Object oItem : oList) {
+			if (oItem instanceof FileTag) {
+				resultList.add((FileTag) oItem);
 			}
 		}
 

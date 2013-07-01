@@ -231,7 +231,7 @@ public class TheMovieDBCollector extends ACollector {
 		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?= - ))";
 		final String strPatternSingle = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+)";
 		final String yearPattern = "([0-9]{4})+";
-		final String endYearPattern = "([\\ \\.]){1}";
+		final String endYearPattern = "([\\ \\.]){0,1}";
 		final String fullYearPattern = "(" + yearPattern + endYearPattern + ")";
 
 		final String titleSubtitleYearPattern = strPattern + separator + strPattern + separator + fullYearPattern;

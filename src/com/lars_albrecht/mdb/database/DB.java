@@ -389,9 +389,11 @@ public class DB implements IDatabase {
 	 * use for SQL commands CREATE, DROP, INSERT, UPDATE and ALTER
 	 * 
 	 * @param expression
+	 * @return lastInsertedId
 	 * @throws SQLException
 	 */
-	public static synchronized void update(final String expression) throws SQLException {
+	public static synchronized int update(final String expression) throws SQLException {
+		int lastInsertedId = -1;
 		Statement st = null;
 		st = DB.getConnection().createStatement(); // statements
 		final int i = st.executeUpdate(expression); // run the query
@@ -399,7 +401,12 @@ public class DB implements IDatabase {
 			// Debug.log(Debug.LEVEL_ERROR, "db error : " + expression);
 		}
 
+		lastInsertedId = DB.getLastInsertedRowId(st);
+		Debug.log(Debug.LEVEL_DEBUG, "LAST INSERTEDROWID: " + lastInsertedId);
+
 		st.close();
+
+		return lastInsertedId;
 	}
 
 	public static synchronized void beginTransaction() throws SQLException {

@@ -118,6 +118,8 @@ public class FileDetailsPage extends WebPage {
 					}
 
 					// fill sectionlist
+					// TODO cut out the image-check and put it into an abstract
+					// or an interface
 					if ((!currentSection.equalsIgnoreCase("images")) && (attributeList.getKeyValues() != null)
 							&& (attributeList.getKeyValues().size() > 0)) {
 						sectionList += detailViewTemplate.getSubMarkerContent("attributeListSection");

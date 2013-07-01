@@ -19,9 +19,11 @@ import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.mdb.core.controller.MainController;
 import com.lars_albrecht.mdb.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.core.models.FileItem;
+import com.lars_albrecht.mdb.core.models.FileTag;
 import com.lars_albrecht.mdb.core.models.IPersistable;
 import com.lars_albrecht.mdb.core.models.Key;
 import com.lars_albrecht.mdb.core.models.KeyValue;
+import com.lars_albrecht.mdb.core.models.Tag;
 import com.lars_albrecht.mdb.core.models.TypeInformation;
 import com.lars_albrecht.mdb.core.models.Value;
 import com.lars_albrecht.mdb.database.DB;
@@ -42,6 +44,8 @@ public class DataHandler {
 	private ArrayList<Value<?>>								values					= null;
 	private ArrayList<FileItem>								fileItems				= null;
 	private ArrayList<TypeInformation>						typeInformation			= null;
+	private ArrayList<Tag>									tags					= null;
+	private ArrayList<FileTag>								fileTags				= null;
 	private ConcurrentHashMap<String, ArrayList<FileItem>>	noInfoFileItems			= null;
 	private ArrayList<FileItem>								missingFileItems		= null;
 
@@ -52,6 +56,8 @@ public class DataHandler {
 	public static final int									RELOAD_FILEITEMS		= 4;
 	public static final int									RELOAD_NOINFOFILEITEMS	= 5;
 	public static final int									RELOAD_MISSINGFILEITEMS	= 6;
+	public static final int									RELOAD_TAGS				= 7;
+	public static final int									RELOAD_FILETAGS			= 8;
 
 	public static final int									FILEITEMSTATUS_NORMAL	= 0;
 	public static final int									FILEITEMSTATUS_MISSING	= 1;
@@ -467,6 +473,26 @@ public class DataHandler {
 	}
 
 	/**
+	 * @return the tags
+	 */
+	public final ArrayList<Tag> getTags() {
+		if (this.tags == null) {
+			this.loadTags();
+		}
+		return this.tags;
+	}
+
+	/**
+	 * @return the fileTags
+	 */
+	public final ArrayList<FileTag> getFileTags() {
+		if (this.fileTags == null) {
+			this.loadFileTags();
+		}
+		return this.fileTags;
+	}
+
+	/**
 	 * @return the noInfoFileItems
 	 */
 	public ConcurrentHashMap<String, ArrayList<FileItem>> getNoInfoFileItems(final String infoType) {
@@ -638,6 +664,18 @@ public class DataHandler {
 		return this.values;
 	}
 
+	public void addTag(final Tag tag) throws Exception {
+		if (tag != null && !this.getTags().contains(tag)) {
+			this.persist(tag, false);
+		}
+	}
+
+	public void addFileTag(final FileTag fileTag) throws Exception {
+		if (fileTag != null && fileTag.getTagId() != null && fileTag.getFileId() != null && !this.getFileTags().contains(fileTag)) {
+			this.persist(fileTag, false);
+		}
+	}
+
 	/**
 	 * Returns the index of a section in a FileAttributeList.
 	 * 
@@ -700,6 +738,16 @@ public class DataHandler {
 
 	private DataHandler loadNoInfoFileItems() {
 		this.noInfoFileItems = this.getAllFileItemsWithNoCollectorinfo();
+		return this;
+	}
+
+	private DataHandler loadTags() {
+		this.tags = ObjectHandler.castObjectListToTagList(this.findAll(new Tag(), null, null));
+		return this;
+	}
+
+	private DataHandler loadFileTags() {
+		this.fileTags = ObjectHandler.castObjectListToFileTagList(this.findAll(new FileTag(), null, null));
 		return this;
 	}
 
@@ -807,6 +855,18 @@ public class DataHandler {
 			}
 
 		}
+	}
+
+	/**
+	 * 
+	 * @param object
+	 * @param doReplace
+	 * @throws Exception
+	 */
+	public void persist(final Object object, final boolean doReplace) throws Exception {
+		final ArrayList<Object> dummyList = new ArrayList<Object>();
+		dummyList.add(object);
+		this.persist(dummyList, doReplace);
 	}
 
 	private ArrayList<FileItem> getAllMissingFileItems() {
@@ -979,6 +1039,8 @@ public class DataHandler {
 				this.loadFileItems();
 				this.loadNoInfoFileItems();
 				this.loadMissingFileItems();
+				this.loadTags();
+				this.loadFileTags();
 				break;
 			case DataHandler.RELOAD_FILEITEMS:
 				this.loadFileItems();
@@ -997,6 +1059,12 @@ public class DataHandler {
 				break;
 			case DataHandler.RELOAD_MISSINGFILEITEMS:
 				this.loadMissingFileItems();
+				break;
+			case DataHandler.RELOAD_TAGS:
+				this.loadTags();
+				break;
+			case DataHandler.RELOAD_FILETAGS:
+				this.loadFileTags();
 				break;
 		}
 		Debug.stopTimer("DataHandler reloadData time");
