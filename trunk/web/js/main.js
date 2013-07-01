@@ -86,7 +86,37 @@ function addAutocompleteSearchBox(){
 					response( cache[ term ] );
 					return;
 				}
-				$.getJSON("json.html?action=autocomplete", request, function( data, status, xhr ) {
+				$.getJSON("json.html?action=autocompleteSearch", request, function( data, status, xhr ) {
+					cache[term] = data;
+					response(data);
+				});
+			}
+		});
+	}
+}
+
+function addAutocompleteTagBox(){
+	if($('#tagSearch').length){
+	
+		function split(val) {
+			return val.split(/,\s*/);
+		}
+		function extractLast(term) {
+			return split(term).pop();
+		}
+	
+		var cache = {};
+		$('#tagSearch').autocomplete({
+			minLength: 2,
+			multiple : true,
+			multipleSeparator : ', ',
+			source: function( request, response ) {
+				var term = request.term;
+				if ( term in cache ) {
+					response( cache[ term ] );
+					return;
+				}
+				$.getJSON("json.html?action=autocompleteTags", request, function( data, status, xhr ) {
 					cache[term] = data;
 					response(data);
 				});

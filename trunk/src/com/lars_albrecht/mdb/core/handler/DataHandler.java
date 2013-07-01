@@ -396,6 +396,29 @@ public class DataHandler {
 		return resultItem;
 	}
 
+	public ArrayList<FileTag> findAllTagsForFileId(final Integer fileId) {
+		final ArrayList<FileTag> resultList = new ArrayList<FileTag>();
+		// ArrayList<KeyValue<Key<String>, Value<Object>>>
+		ResultSet rs = null;
+		final String sql = "SELECT " + " tag.id AS tagId, tag.name AS 'tagName', fTag.id AS 'fileTagId', fTag.isuser AS 'fileTagIsUser' "
+				+ "FROM " + "	fileInformation as fi " + "LEFT JOIN " + " fileTags as fTag " + "ON " + " fi.id = fTag.file_id "
+				+ " LEFT JOIN " + " 	tags AS tag " + "ON " + " 	tag.id = fTag.tag_id " + "WHERE " + "	fi.id = '" + fileId
+				+ "' ORDER BY tag.name, fTag.isuser ";
+		try {
+			Debug.log(Debug.LEVEL_DEBUG, "SQL: " + sql);
+			rs = DB.query(sql);
+			FileTag tempFileTag = null;
+			for (; rs.next();) { // for each line
+				tempFileTag = new FileTag(rs.getInt("fileTagId"), fileId, new Tag(rs.getInt("tagId"), rs.getString("tagName")),
+						rs.getBoolean("fileTagIsUser"));
+				resultList.add(tempFileTag);
+			}
+		} catch (final SQLException e) {
+			e.printStackTrace();
+		}
+		return resultList;
+	}
+
 	@SuppressWarnings({
 			"unchecked", "rawtypes"
 	})
@@ -458,7 +481,6 @@ public class DataHandler {
 		} catch (final SQLException e) {
 			e.printStackTrace();
 		}
-		// System.exit(-1);
 		return resultList;
 	}
 
@@ -665,13 +687,18 @@ public class DataHandler {
 	}
 
 	public void addTag(final Tag tag) throws Exception {
+		// todo get last inserted id and return it
 		if (tag != null && !this.getTags().contains(tag)) {
 			this.persist(tag, false);
 		}
 	}
 
 	public void addFileTag(final FileTag fileTag) throws Exception {
-		if (fileTag != null && fileTag.getTagId() != null && fileTag.getFileId() != null && !this.getFileTags().contains(fileTag)) {
+		// todo get last inserted id and return it
+		if (fileTag != null && fileTag.getTag() != null && fileTag.getFileId() != null && !this.getFileTags().contains(fileTag)) {
+			if (!this.getTags().contains(fileTag.getTag())) {
+				this.addTag(fileTag.getTag());
+			}
 			this.persist(fileTag, false);
 		}
 	}
