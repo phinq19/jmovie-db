@@ -31,6 +31,7 @@ public class FileItem implements IPersistable {
 	private Integer							status		= null;
 	private String							filetype	= null;
 	private Integer							updateTS	= null;
+	private ArrayList<FileTag>				fileTags	= null;
 
 	/**
 	 * 
@@ -38,6 +39,7 @@ public class FileItem implements IPersistable {
 	public FileItem() {
 		super();
 		this.attributes = new ArrayList<FileAttributeList>();
+		this.fileTags = new ArrayList<FileTag>();
 	}
 
 	/**
@@ -509,11 +511,26 @@ public class FileItem implements IPersistable {
 		return tempHashMap;
 	}
 
+	/**
+	 * @return the fileTags
+	 */
+	public final ArrayList<FileTag> getFileTags() {
+		return this.fileTags;
+	}
+
+	/**
+	 * @param fileTags
+	 *            the fileTags to set
+	 */
+	public final void setFileTags(final ArrayList<FileTag> fileTags) {
+		this.fileTags = fileTags;
+	}
+
 	@Override
 	public String toString() {
 		return "Id: " + this.id + " | " + "Name: " + this.name + " | " + "Fullpath: " + this.fullpath + " | " + "Dir: " + this.dir + " | "
 				+ "Size: " + this.size + " | " + "Ext: " + this.ext + " | " + "CreatedTS: " + this.createTS + " | " + "UpdatedTS: "
-				+ this.updateTS + " | " + this.getAttributes();
+				+ this.updateTS + " | " + this.getAttributes() + " | " + this.getFileTags();
 	}
 
 }

@@ -23,6 +23,7 @@ public class Main {
 
 		this.init();
 		this.controller = new MainController();
+
 		this.controller.run();
 	}
 
