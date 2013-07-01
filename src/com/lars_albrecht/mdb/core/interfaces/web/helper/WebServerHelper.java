@@ -222,7 +222,7 @@ public class WebServerHelper {
 					if (content.equalsIgnoreCase("")) {
 						content = "<p>Keine Aktivitäten</p>";
 					}
-				} else if (action.equalsIgnoreCase("autocomplete") && request.getGetParams().get("term") != null) {
+				} else if (action.equalsIgnoreCase("autocompleteSearch") && request.getGetParams().get("term") != null) {
 					if (request.getGetParams().get("term").contains("=")) {
 						ArrayList<String> keyList = null;
 						final String searchKey = request.getGetParams().get("term")

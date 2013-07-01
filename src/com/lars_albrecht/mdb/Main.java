@@ -24,6 +24,14 @@ public class Main {
 		this.init();
 		this.controller = new MainController();
 
+		// try {
+		// this.controller.getDataHandler().addFileTag(new FileTag(null, 1, new
+		// Tag(null, "tesdfcstmxe"), false));
+		// } catch (final Exception e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+
 		this.controller.run();
 	}
 

@@ -13,7 +13,7 @@ public class FileTag implements IPersistable {
 
 	private Integer	id		= null;
 	private Integer	fileId	= null;
-	private Integer	tagId	= null;
+	private Tag		tag		= null;
 	private Boolean	isUser	= null;
 
 	public FileTag() {
@@ -22,26 +22,26 @@ public class FileTag implements IPersistable {
 	/**
 	 * @param id
 	 * @param fileId
-	 * @param tagId
+	 * @param tag
 	 * @param isUser
 	 */
-	public FileTag(final Integer id, final Integer fileId, final Integer tagId, final Boolean isUser) {
+	public FileTag(final Integer id, final Integer fileId, final Tag tag, final Boolean isUser) {
 		super();
 		this.id = id;
 		this.fileId = fileId;
-		this.tagId = tagId;
+		this.tag = tag;
 		this.isUser = isUser;
 	}
 
 	/**
 	 * @param fileId
-	 * @param tagId
+	 * @param tag
 	 * @param isUser
 	 */
-	public FileTag(final Integer fileId, final Integer tagId, final Boolean isUser) {
+	public FileTag(final Integer fileId, final Tag tag, final Boolean isUser) {
 		super();
 		this.fileId = fileId;
-		this.tagId = tagId;
+		this.tag = tag;
 		this.isUser = isUser;
 	}
 
@@ -78,18 +78,18 @@ public class FileTag implements IPersistable {
 	}
 
 	/**
-	 * @return the tagId
+	 * @return the tag
 	 */
-	public final Integer getTagId() {
-		return this.tagId;
+	public final Tag getTag() {
+		return this.tag;
 	}
 
 	/**
-	 * @param tagId
-	 *            the tagId to set
+	 * @param tag
+	 *            the tag to set
 	 */
-	public final void setTagId(final Integer tagId) {
-		this.tagId = tagId;
+	public final void setTag(final Tag tag) {
+		this.tag = tag;
 	}
 
 	/**
@@ -116,8 +116,10 @@ public class FileTag implements IPersistable {
 		if (map.containsKey("file_id")) {
 			result.setFileId((Integer) map.get("file_id"));
 		}
-		if (map.containsKey("tag_id")) {
-			result.setTagId((Integer) map.get("tag_id"));
+		if (map.containsKey("tag_id") && map.containsKey("tag_name")) {
+			result.setTag(new Tag((Integer) map.get("tag_id"), (String) map.get("tag_name")));
+		} else if (map.containsKey("tag_name")) {
+			result.setTag(new Tag((String) map.get("tag_name")));
 		}
 		if (map.containsKey("isuser")) {
 			result.setIsUser(map.get("isuser") instanceof Integer ? (Integer) map.get("isuser") == 0 ? false : true : (Boolean) map
@@ -139,7 +141,7 @@ public class FileTag implements IPersistable {
 			tempHashMap.put("id", this.getId());
 		}
 		tempHashMap.put("file_id", this.getFileId());
-		tempHashMap.put("tag_id", this.getTagId());
+		tempHashMap.put("tag_id", this.getTag().getId());
 		tempHashMap.put("isuser", this.getIsUser());
 
 		return tempHashMap;
@@ -147,7 +149,7 @@ public class FileTag implements IPersistable {
 
 	@Override
 	public String toString() {
-		return this.id + " | " + this.fileId + " | " + this.tagId + " | " + this.isUser;
+		return this.id + " | " + this.fileId + " | " + this.tag + " | " + this.isUser;
 	}
 
 	/*
@@ -162,7 +164,7 @@ public class FileTag implements IPersistable {
 		if (this.id == null) {
 			result = prime * result + ((this.fileId == null) ? 0 : this.fileId.hashCode());
 			result = prime * result + ((this.isUser == null) ? 0 : this.isUser.hashCode());
-			result = prime * result + ((this.tagId == null) ? 0 : this.tagId.hashCode());
+			result = prime * result + ((this.tag == null) ? 0 : this.tag.hashCode());
 		} else {
 			result = (prime * result) + ((this.id == null) ? 0 : this.id.hashCode());
 		}
@@ -205,11 +207,11 @@ public class FileTag implements IPersistable {
 		} else if (!this.isUser.equals(other.isUser)) {
 			return false;
 		}
-		if (this.tagId == null) {
-			if (other.tagId != null) {
+		if (this.tag == null) {
+			if (other.tag != null) {
 				return false;
 			}
-		} else if (!this.tagId.equals(other.tagId)) {
+		} else if (!this.tag.equals(other.tag)) {
 			return false;
 		}
 		return true;

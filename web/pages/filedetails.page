@@ -13,10 +13,32 @@
 		{listwrapperType}
 	</div>
 	{gallery}
-	
+	{tags}
 	{attributes}
 	
 {file-end}
+
+{tagsContainer-start}
+<div id="tagContainer">
+	<input type="text" name="tagSearch" id="tagSearch" value="" />
+	{tagList}
+</div>
+{tagsContainer-end}
+
+{tagsList-start}
+<div id="tagList">
+	<ul>
+		{tagList}
+	</ul>
+</div>
+{tagsList-end}
+
+{tagListItem-start}
+	<li>
+		<span class="tagTitle">{tagTitle}</span>
+		<span class="removeTag"><a href="ajax.html?action=removeTagFromFile&fileTagId={fileTagId}">entfernen</a></span>
+	</li>
+{tagListItem-end}
 
 {image-start}
 	<img src="{imageSrc}" class="{imageClass}" title="{imageTitle}" />
