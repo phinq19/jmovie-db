@@ -228,9 +228,9 @@ public class TheMovieDBCollector extends ACollector {
 		filename = Helper.replaceLast(filename, fileExtension, "");
 
 		final String separator = " - ";
-		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?= - ))";
+		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?= - |$))";
 		final String strPatternSingle = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+)";
-		final String yearPattern = "([0-9]{4})+";
+		final String yearPattern = "([0-9]{4})+(?= - |$)";
 		final String endYearPattern = "([\\ \\.]){0,1}";
 		final String fullYearPattern = "(" + yearPattern + endYearPattern + ")";
 
@@ -523,29 +523,4 @@ public class TheMovieDBCollector extends ACollector {
 		return this.valuesToAdd;
 	}
 
-	// public static addTrailers(){
-	//
-	// for (final FileItem fileItem : this.getDataHandler().getFileItems()) {
-	// TheMovieDbApi tmdb = null;
-	// try {
-	// tmdb = new TheMovieDbApi(RessourceBundleEx.getInstance()
-	// .getProperty("apikey.themoviedb"));
-	// final List<Trailer> trailerList = tmdb.getMovieTrailers(movie.getId(),
-	// this.langKey);
-	// if (trailerList != null && trailerList.size() > 0) {
-	// for (final Trailer trailer : trailerList) {
-	// resultList.add(new KeyValue<String, Object>(new Key<String>("trailer",
-	// infoType, "video", false, true),
-	// new Value<Object>(trailer.getName() + ", " + trailer.getSize() + "," +
-	// trailer.getSource() + ","
-	// + trailer.getWebsite())));
-	// }
-	//
-	// }
-	// } catch (final MovieDbException e) {
-	// e.printStackTrace();
-	// }
-	// }
-	//
-	// }
 }
