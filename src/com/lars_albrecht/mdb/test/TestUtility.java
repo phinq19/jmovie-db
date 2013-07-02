@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.mdb.test.core.collector;
+package com.lars_albrecht.mdb.test;
 
 import com.lars_albrecht.mdb.main.core.collector.TheMovieDBCollector;
 import com.lars_albrecht.mdb.main.core.collector.TheTVDBCollector;

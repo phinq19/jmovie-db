@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.lars_albrecht.mdb.main.core.collector.TheMovieDBCollector;
+import com.lars_albrecht.mdb.test.TestUtility;
 import com.omertron.themoviedbapi.model.MovieDb;
 
 /**

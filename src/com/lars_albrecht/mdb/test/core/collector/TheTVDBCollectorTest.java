@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.lars_albrecht.mdb.main.core.collector.TheTVDBCollector;
+import com.lars_albrecht.mdb.test.TestUtility;
 
 /**
  * 

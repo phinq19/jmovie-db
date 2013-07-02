@@ -135,10 +135,15 @@ public class FileDetailsPage extends WebPage {
 							String rows = "";
 							// fill rows
 							for (final KeyValue<String, Object> keyValue : attributeList.getKeyValues()) {
-								if (attributeListCpy.getKeyValues().contains(keyValue)) {
+								if (keyValue != null && keyValue.getKey() != null && attributeListCpy.getKeyValues().contains(keyValue)
+										&& this.webInterface.getFileDetailsOutputItem().keyAllowed(keyValue.getKey())) {
 									rows += detailViewTemplate.getSubMarkerContent("attributesListSectionItem");
 									rows = Template.replaceMarker(rows, "oddeven", ((evenOdd % 2) == 0 ? "even" : "odd"), Boolean.TRUE);
-									rows = Template.replaceMarker(rows, "key", keyValue.getKey().getKey(), Boolean.TRUE);
+									rows = Template.replaceMarker(
+											rows,
+											"key",
+											this.webInterface.getFileDetailsOutputItem().getKey(currentInfoType,
+													attributeList.getSectionName(), keyValue), Boolean.TRUE);
 
 									String value = "";
 									final ArrayList<Object> tempList = this.getValuesForKey(attributeListCpy, keyValue.getKey().getKey());
