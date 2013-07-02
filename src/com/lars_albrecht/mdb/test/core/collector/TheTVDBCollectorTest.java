@@ -10,15 +10,17 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.lars_albrecht.mdb.main.core.collector.TheTVDBCollector;
-import com.lars_albrecht.mdb.main.core.controller.MainController;
 
+/**
+ * 
+ * @author lalbrecht
+ * 
+ */
 public class TheTVDBCollectorTest {
-
-	private static TheTVDBCollector	testObject	= null;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
-		TheTVDBCollectorTest.testObject = new TheTVDBCollector(new MainController(), null);
+		TestUtility.init();
 	}
 
 	@Test
@@ -35,16 +37,16 @@ public class TheTVDBCollectorTest {
 			testMap.put("titles", titles);
 			testMap.put("episode", "S01E05");
 
-			Assert.assertEquals("Dexter - S01E05 (clean)", testMap, method.invoke(TheTVDBCollectorTest.testObject, "Dexter - S01E05.mkv"));
+			Assert.assertEquals("Dexter - S01E05 (clean)", testMap, method.invoke(TestUtility.tvDBCollector, "Dexter - S01E05.mkv"));
 			Assert.assertEquals("Dexter - S01E05 (+extras)", testMap,
-					method.invoke(TheTVDBCollectorTest.testObject, "Dexter - S01E05 - 720p - x264.mkv"));
+					method.invoke(TestUtility.tvDBCollector, "Dexter - S01E05 - 720p - x264.mkv"));
 
 			titles = new ArrayList<String>();
 			titles.add("Prison Break");
 			testMap.put("titles", titles);
 			testMap.put("episode", "S04E01E02");
 			Assert.assertEquals("Prison Break - S04E01E02 (clean)", testMap,
-					method.invoke(TheTVDBCollectorTest.testObject, "Prison Break - S04E01E02.mkv"));
+					method.invoke(TestUtility.tvDBCollector, "Prison Break - S04E01E02.mkv"));
 
 			titles = new ArrayList<String>();
 			titles.add("The Big Bang Theory");
@@ -52,9 +54,9 @@ public class TheTVDBCollectorTest {
 			testMap.put("episode", "S02E10");
 
 			Assert.assertEquals("The Big Bang Theory (clean)", testMap,
-					method.invoke(TheTVDBCollectorTest.testObject, "The Big Bang Theory - S02E10.mkv"));
+					method.invoke(TestUtility.tvDBCollector, "The Big Bang Theory - S02E10.mkv"));
 			Assert.assertEquals("The Big Bang Theory (+extras)", testMap,
-					method.invoke(TheTVDBCollectorTest.testObject, "The Big Bang Theory - S02E10 - AC3 - x264.mkv"));
+					method.invoke(TestUtility.tvDBCollector, "The Big Bang Theory - S02E10 - AC3 - x264.mkv"));
 
 		} catch (final NoSuchMethodException e) {
 			e.printStackTrace();
