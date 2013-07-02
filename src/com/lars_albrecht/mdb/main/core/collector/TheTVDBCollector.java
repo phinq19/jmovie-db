@@ -83,6 +83,7 @@ public class TheTVDBCollector extends ACollector {
 		TheTVDBApi ttvdb = null;
 		try {
 			ttvdb = new TheTVDBApi(this.apiKey);
+
 			// search with different combinations to find the serie.
 			// implode titles to one title
 			String searchTitle = Helper.implode(titles, " - ", null, null);
