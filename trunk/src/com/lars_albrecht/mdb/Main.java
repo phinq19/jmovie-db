@@ -4,8 +4,8 @@
 package com.lars_albrecht.mdb;
 
 import com.lars_albrecht.general.utilities.Debug;
-import com.lars_albrecht.mdb.core.controller.MainController;
-import com.lars_albrecht.mdb.database.DB;
+import com.lars_albrecht.mdb.main.core.controller.MainController;
+import com.lars_albrecht.mdb.main.database.DB;
 
 /**
  * @author lalbrecht
