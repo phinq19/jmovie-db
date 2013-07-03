@@ -24,7 +24,6 @@ import com.lars_albrecht.mdb.main.core.models.Key;
 import com.lars_albrecht.mdb.main.core.models.KeyValue;
 import com.lars_albrecht.mdb.main.core.models.TypeInformation;
 import com.lars_albrecht.mdb.main.core.models.Value;
-import com.lars_albrecht.mdb.main.database.DB;
 
 /**
  * @author lalbrecht
@@ -118,22 +117,6 @@ public abstract class ACollector implements Runnable {
 		Debug.log(Debug.LEVEL_DEBUG, "end persist (" + this.getInfoType() + ")");
 	}
 
-	// TODO rename this method and move to DataHandler!
-	protected void setNoInformationFoundFlag(final FileItem fileItem) {
-		final String sql = "INSERT OR IGNORE INTO collectorInformation " + "(collectorName, file_id, key, value) " + "VALUES(?, ?, ?, ?)";
-		final ConcurrentHashMap<Integer, Object> insertValues = new ConcurrentHashMap<Integer, Object>();
-		insertValues.put(1, this.getInfoType());
-		insertValues.put(2, fileItem.getId());
-		insertValues.put(3, "noinformation");
-		insertValues.put(4, Boolean.TRUE);
-
-		try {
-			DB.updatePS(sql, insertValues);
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * 
 	 * @param fileItemId
@@ -182,7 +165,6 @@ public abstract class ACollector implements Runnable {
 		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItems();
 		int pos = -1;
 		if ((pos = fileItems.indexOf(fileItem)) > -1) {
-			this.mainController.getDataHandler().updateUpdateTSForFileItem(fileItems.get(pos).getId());
 			return fileItems.get(pos).getId();
 		} else {
 			/*
@@ -212,12 +194,13 @@ public abstract class ACollector implements Runnable {
 					try {
 						if (((fileItemId = this.getFileItemId(entry.getKey())) > -1)) {
 							this.transformToTypeInformation(fileItemId, entry.getValue());
+							this.mainController.getDataHandler().updateUpdateTSForFileItem(fileItemId);
 						}
 					} catch (final Exception e) {
 						e.printStackTrace();
 					}
 				} else {
-					this.setNoInformationFoundFlag(entry.getKey());
+					this.mainController.getDataHandler().setNoInformationFoundFlag(entry.getKey(), this.getInfoType());
 				}
 			}
 		}
@@ -292,19 +275,22 @@ public abstract class ACollector implements Runnable {
 				if (fileItems.get(i) != null && this.getCollectorTypes().contains(fileItems.get(i).getFiletype())) {
 					// runned before?
 					if (lastRun == null) {
+						// no, never runned
 						if (i == 0) {
 							// log only once
 							Debug.log(Debug.LEVEL_TRACE, "Collector never runned before: " + Helper.ucfirst(collectorName));
 						}
 						tempList.add(fileItems.get(i));
 					} else {
-						boolean noInfo = false;
-						if (this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType()) != null) {
-							noInfo = this.mainController.getDataHandler().getNoInfoFileItems(null).get(this.getInfoType())
-									.contains(fileItems.get(i));
-						}
+						// yes, runned before
 
-						if (!noInfo && fileItems.get(i).getUpdateTS() != null && lastRun > fileItems.get(i).getUpdateTS()) {
+						boolean noInfo = false;
+
+						// no information found
+						noInfo = this.mainController.getDataHandler().getNoInfoFileItems(this.getInfoType()).contains(fileItems.get(i));
+						// new files
+						noInfo = noInfo ? noInfo : this.mainController.getDataHandler().getNewFileItems().contains(fileItems.get(i));
+						if (!noInfo) {
 							Debug.log(Debug.LEVEL_DEBUG, "Element collected already: " + fileItems.get(i));
 						} else {
 							Debug.log(Debug.LEVEL_TRACE, "Element NOT collected: " + fileItems.get(i));
@@ -337,7 +323,8 @@ public abstract class ACollector implements Runnable {
 		Debug.startTimer("Collector persist time: " + this.getInfoType());
 		this.persist();
 		Debug.stopTimer("Collector persist time: " + this.getInfoType());
-		OptionsHandler.setOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
+		OptionsHandler.setOption("collectorEndRunLast" + Helper.ucfirst(this.getInfoType()),
+				(new Timestamp(System.currentTimeMillis()).getTime() / 1000));
 		if (this.controller != null) {
 			this.controller.getThreadList().remove(Thread.currentThread());
 		}

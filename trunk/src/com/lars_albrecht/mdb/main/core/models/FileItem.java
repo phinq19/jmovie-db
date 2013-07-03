@@ -250,64 +250,65 @@ public class FileItem implements IPersistable {
 
 	@Override
 	public Object fromHashMap(final HashMap<String, Object> map) {
-		final FileItem result = new FileItem();
+		final FileItem resultItem = new FileItem();
 		if (map.containsKey("id")) {
-			result.setId((Integer) map.get("id"));
+			resultItem.setId((Integer) map.get("id"));
 		}
 		if (map.containsKey("name")) {
-			result.setName((String) map.get("name"));
+			resultItem.setName((String) map.get("name"));
 		}
 		if (map.containsKey("fullpath")) {
-			result.setFullpath((String) map.get("fullpath"));
+			resultItem.setFullpath((String) map.get("fullpath"));
 		}
 
 		if (map.containsKey("dir")) {
-			result.setDir((String) map.get("dir"));
+			resultItem.setDir((String) map.get("dir"));
 		}
 
 		if (map.containsKey("size")) {
 			if (map.get("size") instanceof Integer) {
-				result.setSize(((Integer) map.get("size")).longValue());
+				resultItem.setSize(((Integer) map.get("size")).longValue());
 			} else {
-				result.setSize((Long) map.get("size"));
+				resultItem.setSize((Long) map.get("size"));
 			}
 		}
 
 		if (map.containsKey("ext")) {
-			result.setExt((String) map.get("ext"));
+			resultItem.setExt((String) map.get("ext"));
 		}
 
 		if (map.containsKey("filetype") && (map.get("filetype") != null) && (map.get("filetype") != "") && !map.get("filetype").equals("")) {
-			result.setFiletype((String) map.get("filetype"));
+			resultItem.setFiletype((String) map.get("filetype"));
 		}
 
 		if (map.containsKey("filehash") && (map.get("filehash") != null) && (map.get("filehash") != "") && !map.get("filehash").equals("")) {
-			result.setFilehash((String) map.get("filehash"));
+			resultItem.setFilehash((String) map.get("filehash"));
 		}
 
 		if (map.containsKey("status") && (map.get("status") != null) && (map.get("status") != "")) {
-			result.setStatus((Integer) map.get("status"));
+			resultItem.setStatus((Integer) map.get("status"));
 		}
 
-		if (map.containsKey("createTS")) {
+		if (map.containsKey("createTS") && map.get("createTS") != null) {
 			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
-				result.setCreateTS(((Long) (sdfToDate.parse((String) map.get("createTS")).getTime() / 1000)).intValue());
+				resultItem.setCreateTS(((Long) (sdfToDate.parse((String) map.get("createTS")).getTime() / 1000)).intValue());
 			} catch (final ParseException e) {
 				e.printStackTrace();
 			}
 		}
 
-		if (map.containsKey("updateTS")) {
+		if (map.containsKey("updateTS") && map.get("updateTS") != null) {
 			final SimpleDateFormat sdfToDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			try {
-				result.setUpdateTS(((Long) (sdfToDate.parse((String) map.get("updateTS")).getTime() / 1000)).intValue());
+				resultItem.setUpdateTS(((Long) (sdfToDate.parse((String) map.get("updateTS")).getTime() / 1000)).intValue());
 			} catch (final ParseException e) {
 				e.printStackTrace();
 			}
+
 		}
 
-		return result;
+		return resultItem;
 	}
 
 	public FileItem generateFilehash() throws Exception {
@@ -505,7 +506,7 @@ public class FileItem implements IPersistable {
 		}
 
 		if (this.getUpdateTS() != null) {
-			tempHashMap.put("updateTS", this.getCreateTS());
+			tempHashMap.put("updateTS", this.getUpdateTS());
 		}
 
 		return tempHashMap;

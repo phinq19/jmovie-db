@@ -48,6 +48,7 @@ public class DataHandler {
 	private ArrayList<FileTag>								fileTags				= null;
 	private ConcurrentHashMap<String, ArrayList<FileItem>>	noInfoFileItems			= null;
 	private ArrayList<FileItem>								missingFileItems		= null;
+	private ArrayList<FileItem>								newFileItems			= null;
 
 	public static final int									RELOAD_ALL				= 0;
 	public static final int									RELOAD_KEYS				= 1;
@@ -63,6 +64,7 @@ public class DataHandler {
 	public static final int									FILEITEMSTATUS_MISSING	= 1;
 
 	public DataHandler(final MainController mainController) {
+		this.newFileItems = new ArrayList<FileItem>();
 		this.reloadData(DataHandler.RELOAD_ALL);
 	}
 
@@ -219,6 +221,21 @@ public class DataHandler {
 			}
 		}
 		return resultList;
+	}
+
+	public void setNoInformationFoundFlag(final FileItem fileItem, final String infoType) {
+		final String sql = "INSERT OR IGNORE INTO collectorInformation " + "(collectorName, file_id, key, value) " + "VALUES(?, ?, ?, ?)";
+		final ConcurrentHashMap<Integer, Object> insertValues = new ConcurrentHashMap<Integer, Object>();
+		insertValues.put(1, infoType);
+		insertValues.put(2, fileItem.getId());
+		insertValues.put(3, "noinformation");
+		insertValues.put(4, Boolean.TRUE);
+
+		try {
+			DB.updatePS(sql, insertValues);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void updateUpdateTSForFileItem(final Integer id) {
@@ -1111,6 +1128,13 @@ public class DataHandler {
 			}
 		}
 		return false;
+	}
+
+	/**
+	 * @return the newFileItems
+	 */
+	public final ArrayList<FileItem> getNewFileItems() {
+		return this.newFileItems;
 	}
 
 }
