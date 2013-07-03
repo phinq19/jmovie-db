@@ -116,8 +116,11 @@ public class MainController implements IFinderListener, ICollectorListener {
 			}
 		}
 
+		// save new files to load them in the collector
+		this.getDataHandler().getNewFileItems().clear();
 		if (newFilesList != null && newFilesList.size() > 0) {
 			newFilesList = this.getFilesWithHash(newFilesList);
+			this.getDataHandler().getNewFileItems().addAll(newFilesList);
 		}
 
 		// persist new files
