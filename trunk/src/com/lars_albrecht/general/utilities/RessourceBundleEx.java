@@ -8,29 +8,51 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Read out properties from *.properties-files to access strings for e.g.
  * localisation.
  * 
  * @author lalbrecht
- * @version 1.0.0.0
+ * @version 1.0.1.0
  * 
  */
 public final class RessourceBundleEx {
 
-	private static RessourceBundleEx	instance	= null;
+	private static RessourceBundleEx							instance	= null;
+	private static ConcurrentHashMap<String, RessourceBundleEx>	instances	= null;
 
 	/**
 	 * 
 	 * @return PropertiesReader
 	 */
+	@Deprecated
 	public static RessourceBundleEx getInstance() {
 
 		if (RessourceBundleEx.instance == null) {
 			RessourceBundleEx.instance = new RessourceBundleEx();
 		}
 		return RessourceBundleEx.instance;
+	}
+
+	/**
+	 * Returns a RessourceBundleEx with prefix "key".
+	 * 
+	 * @param key
+	 *            String
+	 * @return PropertiesReader
+	 */
+	public static RessourceBundleEx getInstance(final String key) {
+		if (RessourceBundleEx.instances == null) {
+			RessourceBundleEx.instances = new ConcurrentHashMap<String, RessourceBundleEx>();
+		}
+		if (!RessourceBundleEx.instances.containsKey(key) || RessourceBundleEx.instances.get(key) == null) {
+			RessourceBundleEx.instances.put(key, new RessourceBundleEx());
+			RessourceBundleEx.instances.get(key).setPrefix(key);
+		}
+
+		return RessourceBundleEx.instances.get(key);
 	}
 
 	private Locale	locale	= Locale.getDefault();

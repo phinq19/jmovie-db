@@ -8,6 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.lars_albrecht.mdb.main.core.models.Key;
+import com.lars_albrecht.mdb.main.core.models.KeyValue;
+import com.lars_albrecht.mdb.main.core.models.Value;
 import com.lars_albrecht.mdb.main.extras.outputItems.MovieFileDetailsOutputItem;
 
 /**
@@ -33,7 +35,13 @@ public class MovieFileDetailsOutputItemTest {
 	 */
 	@Test
 	public void testKeyAllowed() {
-		final Key<String> testKey = new Key<String>("Filename", "TheMovieDB", "general", false, false);
-		Assert.assertTrue("Test general key", MovieFileDetailsOutputItemTest.testObject.keyAllowed(testKey));
+		final KeyValue<String, Object> keyValue = new KeyValue<>(new Key<String>("homepage", "TheMovieDB", "facts", false, false),
+				new Value<Object>("http://www.google.com/"));
+		Assert.assertTrue("Test general key", MovieFileDetailsOutputItemTest.testObject.keyAllowed(keyValue.getKey().getInfoType(),
+				keyValue.getKey().getSection(), keyValue));
+
+		keyValue.getValue().setValue(null);
+		Assert.assertFalse("Test general key", MovieFileDetailsOutputItemTest.testObject.keyAllowed(keyValue.getKey().getInfoType(),
+				keyValue.getKey().getSection(), keyValue));
 	}
 }
