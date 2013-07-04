@@ -35,8 +35,8 @@ public class MovieFileDetailsOutputItemTest {
 	 */
 	@Test
 	public void testKeyAllowed() {
-		final KeyValue<String, Object> keyValue = new KeyValue<>(new Key<String>("homepage", "TheMovieDB", "facts", false, false),
-				new Value<Object>("http://www.google.com/"));
+		final KeyValue<String, Object> keyValue = new KeyValue<String, Object>(new Key<String>("homepage", "TheMovieDB", "facts", false,
+				false), new Value<Object>("http://www.google.com/"));
 		Assert.assertTrue("Test general key", MovieFileDetailsOutputItemTest.testObject.keyAllowed(keyValue.getKey().getInfoType(),
 				keyValue.getKey().getSection(), keyValue));
 
