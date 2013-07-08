@@ -196,6 +196,19 @@ public class WebServerRunner implements Runnable {
 
 					final int urlStart = line.startsWith("GET ") ? 5 : 6;
 					final int urlEnd = line.indexOf(" HTTP/1.1");
+
+					// TODO FIX: -> 08.07.2013 10:35:04 | uncaughtException MSG:
+					// UncaughtException thrown (String index out of range: -6 -
+					// java.lang.StringIndexOutOfBoundsException: String index
+					// out of range: -6) in Thread Thread-18985 (19205)
+					// java.lang.StringIndexOutOfBoundsException: String index
+					// out final of range: -6
+					// at java.lang.String.substring(String.java:1958)
+					// at
+					// com.lars_albrecht.mdb.main.core.interfaces.web.WebServerRunner.createRequest(WebServerRunner.java:199)
+					// at
+					// com.lars_albrecht.mdb.main.core.interfaces.web.WebServerRunner.run(WebServerRunner.java:73)
+					// at java.lang.Thread.run(Thread.java:722)
 					urlStr = line.substring(urlStart, urlEnd);
 
 					request.setMethod(line.substring(0, urlStart - 2));

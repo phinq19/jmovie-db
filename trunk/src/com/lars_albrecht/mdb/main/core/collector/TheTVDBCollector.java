@@ -269,7 +269,7 @@ public class TheTVDBCollector extends ACollector {
 						new Value<Object>(serie.getImdbId())));
 			}
 			if (serie.getSeriesName() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("title", infoType, "general", false, false), new Value<Object>(
+				resultList.add(new KeyValue<String, Object>(new Key<String>("title", infoType, "general", false, true), new Value<Object>(
 						serie.getSeriesName())));
 			}
 			if (serie.getOverview() != null) {
@@ -287,9 +287,10 @@ public class TheTVDBCollector extends ACollector {
 
 			// add series facts
 			if (serie.getSeriesId() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, false),
+				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, true),
 						new Value<Object>(serie.getSeriesId())));
 			}
+
 			if (serie.getStatus() != null) {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("status", infoType, "facts", false, false), new Value<Object>(
 						serie.getStatus())));
