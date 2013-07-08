@@ -199,8 +199,6 @@ public class TheMovieDBCollector extends ACollector {
 			}
 			tempList = null;
 
-			// TODO add "appending response" to this, if the version is coming
-			// up with it.
 			final String[] appendingResponse = {
 					"trailers", "images", "casts"
 			};
@@ -421,7 +419,7 @@ public class TheMovieDBCollector extends ACollector {
 						movie.getBudget())));
 			}
 			if (movie.getBelongsToCollection() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, false),
+				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, true),
 						new Value<Object>(movie.getBelongsToCollection().getId())));
 				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_name", infoType, "facts", false, true),
 						new Value<Object>(movie.getBelongsToCollection().getName())));

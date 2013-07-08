@@ -66,10 +66,8 @@ public class TheTVDBCollectorTest {
 		} catch (final IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (final IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (final InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

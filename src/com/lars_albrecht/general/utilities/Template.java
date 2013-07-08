@@ -137,8 +137,18 @@ public class Template {
 		return name;
 	}
 
-	public void replaceMarker(final String markername, final String replacement, final boolean replaceAll) {
+	public String replaceMarker(final String markername, final String replacement, final boolean replaceAll) {
 		this.content = Template.replaceMarker(this.content, markername, replacement, replaceAll);
+		return this.content;
+	}
+
+	public String replaceMarkers(final ConcurrentHashMap<String, String> markerReplacements) {
+		if (markerReplacements != null && markerReplacements.size() > 0) {
+			for (final Entry<String, String> entry : markerReplacements.entrySet()) {
+				this.replaceMarker(entry.getKey(), entry.getValue(), Boolean.FALSE);
+			}
+		}
+		return this.content;
 	}
 
 	/**
@@ -159,6 +169,16 @@ public class Template {
 			}
 		}
 		return content;
+	}
+
+	public static String replaceMarkers(final String content, final ConcurrentHashMap<String, String> markerReplacements) {
+		String resultContent = content;
+		if (content != null && markerReplacements != null && markerReplacements.size() > 0) {
+			for (final Entry<String, String> entry : markerReplacements.entrySet()) {
+				resultContent = Template.replaceMarker(content, entry.getKey(), entry.getValue(), false);
+			}
+		}
+		return resultContent;
 	}
 
 	public String getSubMarkerContent(final String markername) {

@@ -52,8 +52,6 @@ public class DB implements IDatabase {
 	/**
 	 * Sets a dynamic object in a PreparedStatement.
 	 * 
-	 * TODO change this method to handle more than one db-type at once.
-	 * 
 	 * @param pst
 	 *            PreparedStatement
 	 * @param index

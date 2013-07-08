@@ -43,23 +43,96 @@ public class BrowsePage extends WebPage {
 		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItems();
 
 		final TreeMap<String, ArrayList<FileItem>> fileList = new TreeMap<String, ArrayList<FileItem>>();
-		final String[] keyList = {
-				"0-9", "AÄ", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "OÖ", "P", "Q", "R", "S", "T", "UÜ", "V",
-				"W", "X", "Y", "Z", "^\\d^\\w"
+
+		final int[][][] threeDimArr = {
+				{
+						{
+								1, 2
+						}, {
+								3, 4
+						}
+				}, {
+						{
+								5, 6
+						}, {
+								7, 8
+						}
+				}
 		};
 
-		// TODO fix output of key (Create a map with key/values)
+		final String[][] keyList = {
+				{
+					"0-9"
+				}, {
+						"AÄ", "A / Ä"
+				}, {
+					"B"
+				}, {
+					"C"
+				}, {
+					"D"
+				}, {
+					"E"
+				}, {
+					"F"
+				}, {
+					"G"
+				}, {
+					"H"
+				}, {
+					"I"
+				}, {
+					"J"
+				}, {
+					"K"
+				}, {
+					"L"
+				}, {
+					"M"
+				}, {
+					"N"
+				}, {
+						"OÖ", "O / Ö"
+				}, {
+					"P"
+				}, {
+					"Q"
+				}, {
+					"R"
+				}, {
+					"S"
+				}, {
+					"T"
+				}, {
+						"UÜ", "U / Ü"
+				}, {
+					"V"
+				}, {
+					"W"
+				}, {
+					"X"
+				}, {
+					"Y"
+				}, {
+					"Z"
+				}, {
+						"^\\d^\\w", " Sonstiges"
+				}
+		};
+
 		Pattern pattern = null;
 		Matcher matcher = null;
 		for (final FileItem fileItem : fileItems) {
-			for (final String patternKey : keyList) {
-				pattern = Pattern.compile("[" + patternKey + "]");
+			for (final String[] patternKey : keyList) {
+				final String patternStr = patternKey[0];
+				final String patternName = patternKey.length > 1 ? patternKey[1] : patternKey[0];
+				pattern = Pattern.compile("[" + patternStr + "]");
 				matcher = pattern.matcher(fileItem.getName().substring(0, 1));
 				if (matcher.find()) {
-					if (!fileList.containsKey(patternKey)) {
-						fileList.put(patternKey, new ArrayList<FileItem>());
+					if (!fileList.containsKey(patternName)) {
+						fileList.put(patternName, new ArrayList<FileItem>());
 					}
-					fileList.get(patternKey).add(fileItem);
+					fileList.get(patternName).add(fileItem);
 					break;
 				}
 			}
@@ -75,12 +148,12 @@ public class BrowsePage extends WebPage {
 
 		for (final Entry<String, ArrayList<FileItem>> entry : fileList.entrySet()) {
 			fileListItemSingle = browseTemplateWithBrowseContainer.getSubMarkerContent("browserFileListItemSingle");
-			fileListItemSingle = Template.replaceMarker(fileListItemSingle, "title", entry.getKey(), false);
-			fileListItemSingle = Template.replaceMarker(fileListItemSingle, "class", "browseFileTable key_" + entry.getKey(), false);
+			fileListItemSingle = Template.replaceMarker(fileListItemSingle, "title", entry.getKey().trim(), false);
+			fileListItemSingle = Template.replaceMarker(fileListItemSingle, "class", "browseFileTable key_" + entry.getKey().trim(), false);
 
 			// set key/title
 			tempKeyListItem = browseTemplateWithBrowseContainer.getSubMarkerContent("browserKeyListItem");
-			tempKeyListItem = Template.replaceMarker(tempKeyListItem, "key", entry.getKey(), false);
+			tempKeyListItem = Template.replaceMarker(tempKeyListItem, "key", entry.getKey().trim(), false);
 			keyListItems += tempKeyListItem;
 
 			// set files
