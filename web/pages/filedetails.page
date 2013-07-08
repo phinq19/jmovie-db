@@ -28,7 +28,7 @@
 {tagsList-start}
 <div id="tagList">
 	<ul>
-		{tagList}
+		{tagList}<span class="remove">remove tag</span>
 	</ul>
 </div>
 {tagsList-end}

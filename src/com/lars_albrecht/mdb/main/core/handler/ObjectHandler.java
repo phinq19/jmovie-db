@@ -165,4 +165,22 @@ public class ObjectHandler {
 
 		return jsonString;
 	}
+
+	public static String tagListToJSON(final ArrayList<Tag> tags) {
+		String jsonString = null;
+
+		if (tags != null && tags.size() > 0) {
+			jsonString = "{";
+			final int i = 0;
+			for (final Tag tag : tags) {
+				jsonString += "\"" + tag.getId() + "\"" + ":" + "\"" + tag.getName() + "\"";
+				if (i < tags.size() - 1) {
+					jsonString += ",";
+				}
+			}
+
+			jsonString += "}";
+		}
+		return jsonString;
+	}
 }

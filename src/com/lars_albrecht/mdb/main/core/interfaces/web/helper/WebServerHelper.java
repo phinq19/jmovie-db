@@ -31,6 +31,7 @@ import com.lars_albrecht.mdb.main.core.interfaces.web.pages.LastFivePartial;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.SearchResultsPage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.SettingsPage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.ShowInfoControlPage;
+import com.lars_albrecht.mdb.main.core.models.Tag;
 
 /**
  * @author lalbrecht TODO Do better (Each "page" is an own Object/class and all
@@ -238,7 +239,8 @@ public class WebServerHelper {
 						for (final String string : keyList) {
 							if (string != null) {
 								newKeyList.add(searchKey + "=" + string);
-								System.out.println(searchKey + " - " + string);
+								// System.out.println(searchKey + " - " +
+								// string);
 							}
 						}
 						// TODO only show real value, but set with (example)
@@ -250,6 +252,19 @@ public class WebServerHelper {
 					}
 					if (content == null) {
 						content = "";
+					}
+				} else if (action.equalsIgnoreCase("autocompleteTags") && request.getGetParams().get("term") != null) {
+					content = ObjectHandler.tagListToJSON(this.mainController.getDataHandler().getTags());
+				} else if (action.equalsIgnoreCase("addTag") && request.getGetParams().get("term") != null) {
+					try {
+						final Tag tempTag = new Tag(request.getGetParams().get("term"));
+						this.mainController.getDataHandler().addTag(tempTag);
+						final ArrayList<Tag> tempTagList = new ArrayList<Tag>();
+						tempTagList.add(tempTag);
+						content = ObjectHandler.tagListToJSON(tempTagList);
+					} catch (final Exception e) {
+						content = null;
+						e.printStackTrace();
 					}
 				}
 			}

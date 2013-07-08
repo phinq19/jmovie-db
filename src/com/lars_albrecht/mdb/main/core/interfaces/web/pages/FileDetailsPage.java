@@ -84,8 +84,15 @@ public class FileDetailsPage extends WebPage {
 				detailViewTemplate.replaceMarker("listwrapperType", listWrapper, Boolean.TRUE);
 			}
 
+			// add tags
+			final String tagsContainer = detailViewTemplate.getSubMarkerContent("tagsContainer");
+			if (item.getFileTags() != null && item.getFileTags().size() > 0) {
+
+			}
+			detailViewTemplate.replaceMarker("tags", tagsContainer, false);
+
 			// if file has attributes
-			if ((item.getAttributes() != null) && (item.getAttributes().size() > 0)) {
+			if (item.getAttributes() != null && item.getAttributes().size() > 0) {
 				// get marker for attributes
 				String attributes = detailViewTemplate.getSubMarkerContent("attributes");
 
