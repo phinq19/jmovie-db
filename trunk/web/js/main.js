@@ -6,6 +6,7 @@ $(document).ready(function(){
 	/* start status timer */
 	resetInterval(interval);
 	addAutocompleteSearchBox();
+	addAutocompleteTagBox();
 	
 	
 	addBrowseJS();
@@ -120,8 +121,25 @@ function addAutocompleteTagBox(){
 					cache[term] = data;
 					response(data);
 				});
+			},
+			select: function( event, ui ) {
+				console.log( ui.item ?
+				"Selected: " + ui.item.value + " aka " + ui.item.id :
+				"Nothing selected, input was " + this.value );
 			}
 		});
+		
+		$('#tagSearch').keyup(function(event) {
+			var keyCode = typeof(event.which) != 'undefined' ? event.which : event.keyCode;
+		    if (keyCode == 13) {
+		        event.preventDefault();
+				$.getJSON("json.html?action=addTag", request, function( data, status, xhr ) {
+					cache[term] = data;
+					response(data);
+				});
+		    }
+		});
+		
 	}
 }
 

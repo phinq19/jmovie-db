@@ -707,6 +707,7 @@ public class DataHandler {
 		// todo get last inserted id and return it
 		if (tag != null && !this.getTags().contains(tag)) {
 			this.persist(tag, false);
+			this.tags.add(tag);
 		}
 	}
 
