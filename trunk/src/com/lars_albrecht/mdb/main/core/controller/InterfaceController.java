@@ -54,4 +54,11 @@ public class InterfaceController implements IController {
 		this.interfaces = interfaces;
 	}
 
+	/**
+	 * @return the interfaces
+	 */
+	public final ArrayList<AInterface> getInterfaces() {
+		return this.interfaces;
+	}
+
 }

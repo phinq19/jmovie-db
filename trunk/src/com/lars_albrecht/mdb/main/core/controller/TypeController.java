@@ -10,7 +10,11 @@ import com.lars_albrecht.mdb.main.core.typer.VideoTyper;
 import com.lars_albrecht.mdb.main.core.typer.abstracts.ATyper;
 
 /**
+ * The TypeController controls the type of the files.
+ * 
  * @author lalbrecht
+ * 
+ *         TODO TYPES must be controlled by collectors!
  * 
  */
 public class TypeController {

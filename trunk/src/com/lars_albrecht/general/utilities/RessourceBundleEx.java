@@ -23,6 +23,10 @@ public final class RessourceBundleEx {
 	private static RessourceBundleEx							instance	= null;
 	private static ConcurrentHashMap<String, RessourceBundleEx>	instances	= null;
 
+	private static Locale										locale		= Locale.getDefault();
+
+	private static String										prefix		= "";
+
 	/**
 	 * 
 	 * @return PropertiesReader
@@ -49,15 +53,12 @@ public final class RessourceBundleEx {
 		}
 		if (!RessourceBundleEx.instances.containsKey(key) || RessourceBundleEx.instances.get(key) == null) {
 			RessourceBundleEx.instances.put(key, new RessourceBundleEx());
-			RessourceBundleEx.instances.get(key).setPrefix(key);
+			RessourceBundleEx.instances.get(key);
+			RessourceBundleEx.setPrefix(key);
 		}
 
 		return RessourceBundleEx.instances.get(key);
 	}
-
-	private Locale	locale	= Locale.getDefault();
-
-	private String	prefix	= "";
 
 	/**
 	 * Private default constructor.
@@ -66,21 +67,21 @@ public final class RessourceBundleEx {
 	}
 
 	public Boolean contains(final String key) {
-		return ResourceBundle.getBundle(this.prefix, this.locale).containsKey(key);
+		return ResourceBundle.getBundle(RessourceBundleEx.prefix, RessourceBundleEx.locale).containsKey(key);
 	}
 
 	/**
 	 * @return the locale
 	 */
 	public synchronized final Locale getLocale() {
-		return this.locale;
+		return RessourceBundleEx.locale;
 	}
 
 	/**
 	 * @return the prefix
 	 */
 	public synchronized final String getPrefix() {
-		return this.prefix;
+		return RessourceBundleEx.prefix;
 	}
 
 	public ArrayList<String> getProperties(final String key) {
@@ -101,7 +102,7 @@ public final class RessourceBundleEx {
 	 */
 	public String getProperty(final String key) {
 		try {
-			final ResourceBundle bundle = ResourceBundle.getBundle(this.prefix, this.locale);
+			final ResourceBundle bundle = ResourceBundle.getBundle(RessourceBundleEx.prefix, RessourceBundleEx.locale);
 			return new String(bundle.getString(key).getBytes("ISO-8859-1"), "UTF-8");
 		} catch (final MissingResourceException e) {
 			e.printStackTrace();
@@ -115,16 +116,16 @@ public final class RessourceBundleEx {
 	 * @param locale
 	 *            the locale to set
 	 */
-	public synchronized final void setLocale(final Locale locale) {
-		this.locale = locale;
+	public static synchronized final void setLocale(final Locale locale) {
+		RessourceBundleEx.locale = locale;
 	}
 
 	/**
 	 * @param prefix
 	 *            the prefix to set
 	 */
-	public synchronized final void setPrefix(final String prefix) {
-		this.prefix = prefix;
+	public static synchronized final void setPrefix(final String prefix) {
+		RessourceBundleEx.prefix = prefix;
 	}
 
 }

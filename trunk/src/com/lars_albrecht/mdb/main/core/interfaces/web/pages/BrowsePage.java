@@ -44,22 +44,6 @@ public class BrowsePage extends WebPage {
 
 		final TreeMap<String, ArrayList<FileItem>> fileList = new TreeMap<String, ArrayList<FileItem>>();
 
-		final int[][][] threeDimArr = {
-				{
-						{
-								1, 2
-						}, {
-								3, 4
-						}
-				}, {
-						{
-								5, 6
-						}, {
-								7, 8
-						}
-				}
-		};
-
 		final String[][] keyList = {
 				{
 					"0-9"

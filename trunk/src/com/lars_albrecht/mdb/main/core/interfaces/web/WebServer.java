@@ -166,6 +166,7 @@ public class WebServer {
 		try {
 			// create the main server socket
 			this.serverSocket = new ServerSocket(socketPort);
+			this.webInterface.setPort(socketPort);
 			return true;
 		} catch (final BindException e) {
 			System.out.println("Socket already in use. Try another one.");
@@ -182,9 +183,10 @@ public class WebServer {
 	protected void start(final MainController mainController, final WebInterface webInterface) {
 		this.mainController = mainController;
 		this.webInterface = webInterface;
-		int socketPort = 8080;
+		int socketPort = webInterface.getPort();
 
-		System.out.println("Try to start WebServer. If socketPort is already in use, than try the next port (start @ port 8080)");
+		System.out.println("Try to start WebServer. If socketPort is already in use, than try the next port (start @ port " + socketPort
+				+ ")");
 
 		while (!this.startServerSocket(socketPort)) {
 			socketPort++;

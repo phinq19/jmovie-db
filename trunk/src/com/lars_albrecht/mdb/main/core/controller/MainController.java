@@ -24,6 +24,7 @@ import com.lars_albrecht.mdb.main.core.finder.event.IFinderListener;
 import com.lars_albrecht.mdb.main.core.handler.ConfigurationHandler;
 import com.lars_albrecht.mdb.main.core.handler.DataHandler;
 import com.lars_albrecht.mdb.main.core.handler.ObjectHandler;
+import com.lars_albrecht.mdb.main.core.interfaces.SystemTrayInterface;
 import com.lars_albrecht.mdb.main.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.main.core.interfaces.abstracts.AInterface;
 import com.lars_albrecht.mdb.main.core.models.FileItem;
@@ -242,6 +243,13 @@ public class MainController implements IFinderListener, ICollectorListener {
 	}
 
 	/**
+	 * @return the iController
+	 */
+	public final InterfaceController getiController() {
+		return this.iController;
+	}
+
+	/**
 	 * @return the globalVars
 	 */
 	public ConcurrentHashMap<String, Object> getGlobalVars() {
@@ -250,9 +258,9 @@ public class MainController implements IFinderListener, ICollectorListener {
 
 	private void init() {
 		Thread.setDefaultUncaughtExceptionHandler(new Debug());
-		RessourceBundleEx.getInstance().setPrefix("mdb");
-		Debug.log(Debug.LEVEL_INFO, RessourceBundleEx.getInstance().getProperty("application.name") + " ("
-				+ RessourceBundleEx.getInstance().getProperty("application.version") + ")");
+		RessourceBundleEx.setPrefix("mdb");
+		Debug.log(Debug.LEVEL_INFO, RessourceBundleEx.getInstance("mdb").getProperty("application.name") + " ("
+				+ RessourceBundleEx.getInstance("mdb").getProperty("application.version") + ")");
 
 		// specify folders to search for files
 		FileFinder.getInstance().addToPathList(new File("."), -1);
@@ -277,8 +285,10 @@ public class MainController implements IFinderListener, ICollectorListener {
 		this.iController = new InterfaceController(this);
 		final ArrayList<AInterface> listOfInterfaces = new ArrayList<AInterface>();
 		final WebInterface webInterface = new WebInterface(this, this.iController);
+		final SystemTrayInterface systemTrayInterface = new SystemTrayInterface(this, this.iController);
 		webInterface.setFileDetailsOutputItem(new MovieFileDetailsOutputItem());
 		listOfInterfaces.add(webInterface);
+		listOfInterfaces.add(systemTrayInterface);
 		this.iController.setInterfaces(listOfInterfaces);
 
 		this.cController = new CollectorController(this);
@@ -334,7 +344,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 	@SuppressWarnings("unchecked")
 	public void startSearch() {
 		try {
-			this.fController.run((ArrayList<File>) this.globalVars.get("searchPathList"));
+			this.fController.run(((ArrayList<File>) this.globalVars.get("searchPathList")));
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
@@ -356,5 +366,10 @@ public class MainController implements IFinderListener, ICollectorListener {
 		// Helper.ucfirst(e.getCollectorName()), new
 		// Timestamp(System.currentTimeMillis()));
 		Debug.log(Debug.LEVEL_INFO, "Collector " + e.getCollectorName() + " ends");
+	}
+
+	public void exitProgram() {
+		Debug.log(Debug.LEVEL_INFO, "Program will shut down");
+		System.exit(-1);
 	}
 }

@@ -42,7 +42,7 @@ public class TheMovieDBCollector extends ACollector {
 	private ArrayList<Value<?>>											valuesToAdd				= null;
 	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>	fileAttributeListToAdd	= null;
 
-	private final String												apiKey					= RessourceBundleEx.getInstance()
+	private final String												apiKey					= RessourceBundleEx.getInstance("mdb")
 																										.getProperty("apikey.themoviedb");
 	private final String												langKey					= "de";
 
