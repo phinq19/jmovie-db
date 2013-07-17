@@ -25,6 +25,7 @@ import com.lars_albrecht.mdb.main.core.handler.ConfigurationHandler;
 import com.lars_albrecht.mdb.main.core.handler.DataHandler;
 import com.lars_albrecht.mdb.main.core.handler.ObjectHandler;
 import com.lars_albrecht.mdb.main.core.interfaces.SystemTrayInterface;
+import com.lars_albrecht.mdb.main.core.interfaces.TelnetInterface;
 import com.lars_albrecht.mdb.main.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.main.core.interfaces.abstracts.AInterface;
 import com.lars_albrecht.mdb.main.core.models.FileItem;
@@ -286,8 +287,10 @@ public class MainController implements IFinderListener, ICollectorListener {
 		final ArrayList<AInterface> listOfInterfaces = new ArrayList<AInterface>();
 		final WebInterface webInterface = new WebInterface(this, this.iController);
 		final SystemTrayInterface systemTrayInterface = new SystemTrayInterface(this, this.iController);
+		final TelnetInterface telnetInterface = new TelnetInterface(this, this.iController);
 		webInterface.setFileDetailsOutputItem(new MovieFileDetailsOutputItem());
 		listOfInterfaces.add(webInterface);
+		listOfInterfaces.add(telnetInterface);
 		listOfInterfaces.add(systemTrayInterface);
 		this.iController.setInterfaces(listOfInterfaces);
 
