@@ -25,13 +25,13 @@ public class ConfigurationHandler {
 
 	public ConfigurationHandler() throws FileNotFoundException, IOException, PropertiesExNotInitilizedException {
 		PropertiesEx.getInstance().init(
-				FileFinder.getInstance().findFile(new File(RessourceBundleEx.getInstance().getProperty("config.ini")), false));
+				FileFinder.getInstance().findFile(new File(RessourceBundleEx.getInstance("mdb").getProperty("config.ini")), false));
 
 		if (PropertiesEx.getInstance().isInit()) {
 			this.readConfigFile();
 		} else {
 			throw new FileNotFoundException("File \""
-					+ new File(RessourceBundleEx.getInstance().getProperty("config.ini")).getAbsolutePath() + "\" not Found");
+					+ new File(RessourceBundleEx.getInstance("mdb").getProperty("config.ini")).getAbsolutePath() + "\" not Found");
 		}
 	}
 

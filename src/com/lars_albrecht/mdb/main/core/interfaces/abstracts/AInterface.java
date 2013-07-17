@@ -13,8 +13,9 @@ import com.lars_albrecht.mdb.main.core.controller.interfaces.IController;
  */
 public abstract class AInterface implements Runnable {
 
-	protected MainController	mainController	= null;
-	protected IController		controller		= null;
+	protected MainController	mainController		= null;
+	protected IController		controller			= null;
+	public boolean				canOpened	= false;
 
 	public AInterface(final MainController mainController, final IController controller) {
 		this.mainController = mainController;
@@ -31,5 +32,7 @@ public abstract class AInterface implements Runnable {
 	 * Starts the interface.
 	 */
 	public abstract void startInterface();
+
+	public abstract void openInterface();
 
 }

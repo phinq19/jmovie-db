@@ -15,6 +15,10 @@ import com.lars_albrecht.mdb.main.core.finder.event.FinderEventMulticaster;
 import com.lars_albrecht.mdb.main.core.finder.event.IFinderListener;
 
 /**
+ * This class finds the files. It becomes a list of File (directories) and loop
+ * them recursive to find all files. The added files will be controlled with the
+ * FileFilter "fileFilter".
+ * 
  * @author lalbrecht
  * 
  */
