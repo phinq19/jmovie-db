@@ -9,3 +9,7 @@ Create folder structure for Dune HD Media Players:
 http://dune-hd.com/firmware/misc/dune_folder_howto.txt
 OR / AND
 add support for yadis (yet anoter dune interface / scraper )
+
+
+
+SystemTrayInterface and TelnetInterface must be configurable through loadable classes from other
