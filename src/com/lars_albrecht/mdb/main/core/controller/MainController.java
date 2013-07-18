@@ -19,6 +19,8 @@ import com.lars_albrecht.mdb.main.core.collector.TheTVDBCollector;
 import com.lars_albrecht.mdb.main.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.main.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.main.core.collector.event.ICollectorListener;
+import com.lars_albrecht.mdb.main.core.collector.exporter.PDFExport;
+import com.lars_albrecht.mdb.main.core.exporter.abstracts.AExporter;
 import com.lars_albrecht.mdb.main.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.main.core.finder.event.IFinderListener;
 import com.lars_albrecht.mdb.main.core.handler.ConfigurationHandler;
@@ -42,6 +44,7 @@ public class MainController implements IFinderListener, ICollectorListener {
 	private TypeController						tController		= null;
 	private CollectorController					cController		= null;
 	private InterfaceController					iController		= null;
+	private ExportController					eController		= null;
 	private DataHandler							dataHandler		= null;
 	private ConfigurationHandler				configHandler	= null;
 
@@ -69,6 +72,14 @@ public class MainController implements IFinderListener, ICollectorListener {
 			ex.printStackTrace();
 		}
 		this.getDataHandler().reloadData(DataHandler.RELOAD_FILEITEMS);
+
+		try {
+			this.eController.run(this.eController.getExporters().get(0), new File("D:\\lalbrecht\\test.pdf"), this.getDataHandler()
+					.getFileItems());
+		} catch (final Exception e1) {
+			e1.printStackTrace();
+		}
+
 		Debug.log(Debug.LEVEL_INFO, "Probably collect for: " + this.getDataHandler().getFileItems().size());
 		// filter filled database data to reduce runtime
 		this.startCollect(this.getDataHandler().getFileItems());
@@ -251,6 +262,13 @@ public class MainController implements IFinderListener, ICollectorListener {
 	}
 
 	/**
+	 * @return the eController
+	 */
+	public final ExportController geteController() {
+		return this.eController;
+	}
+
+	/**
 	 * @return the globalVars
 	 */
 	public ConcurrentHashMap<String, Object> getGlobalVars() {
@@ -282,6 +300,11 @@ public class MainController implements IFinderListener, ICollectorListener {
 		this.fController = new FinderController(this);
 		this.fController.addFinderEventListener(this);
 		this.fController.setFileFilter(new VideoFileFilter());
+
+		this.eController = new ExportController(this);
+		final ArrayList<AExporter> listOfExporter = new ArrayList<AExporter>();
+		listOfExporter.add(new PDFExport(this, this.eController));
+		this.eController.setExporters(listOfExporter);
 
 		this.iController = new InterfaceController(this);
 		final ArrayList<AInterface> listOfInterfaces = new ArrayList<AInterface>();
