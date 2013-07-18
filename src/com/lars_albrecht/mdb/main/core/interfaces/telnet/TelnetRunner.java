@@ -9,8 +9,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.lars_albrecht.mdb.main.core.controller.MainController;
+import com.lars_albrecht.mdb.main.core.helper.InterfaceHelper;
+import com.lars_albrecht.mdb.main.core.models.FileItem;
 
 /**
  * @author lalbrecht
@@ -28,6 +32,7 @@ public class TelnetRunner implements Runnable {
 		System.out.println("created new runner");
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run() {
 		System.out.println("runner started");
@@ -43,11 +48,34 @@ public class TelnetRunner implements Runnable {
 					this.mainController.exitProgram();
 				} else if (this.line.equalsIgnoreCase("help")) {
 					this.printHelp(out);
+				} else if (this.line.matches("search\\s.*")) {
+					final String searchString = this.line.substring(this.line.indexOf(" ") + 1);
+					final ConcurrentHashMap<String, Object> searchResultMap = InterfaceHelper.searchItems(searchString,
+							this.mainController.getDataHandler());
+
+					if (searchResultMap.get("resultlist") != null) {
+						final int resultCount = ((ArrayList<FileItem>) searchResultMap.get("resultlist")).size();
+						out.println("\033[33m" + resultCount + " items found");
+						if (resultCount > 0) {
+							out.println("\033[37mID\tName");
+							for (final FileItem fileItem : (ArrayList<FileItem>) searchResultMap.get("resultlist")) {
+								out.println("\033[37m" + fileItem.getId() + "\t" + fileItem.getName());
+							}
+						}
+
+					} else {
+						out.println("\033[31mAn Error occured.");
+					}
+
+				} else {
+					for (final byte beight : this.line.getBytes(Charset.forName("UTF-8"))) {
+						System.out.println(beight);
+					}
+					out.println("\033[33mCommand:\033[36m " + this.line);
 				}
-				for (final byte beight : this.line.getBytes(Charset.forName("UTF-8"))) {
-					System.out.println(beight);
-				}
-				out.println("\033[33mCommand:\033[36m " + this.line);
+				out.print("\033[36m"); // cyan
+				out.flush();
+
 			}
 
 			this.client.close();
@@ -69,6 +97,9 @@ public class TelnetRunner implements Runnable {
 	private void printHelp(final PrintWriter out) {
 		out.print("\033[37m"); // white
 		out.println("Following commands are available:");
+		out.println("- search <search-word>");
+		out.println("- view <item-id> (work in progress)");
+		out.println("");
 		out.println("- help");
 		out.println("- exit");
 		out.println("");

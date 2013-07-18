@@ -4,21 +4,17 @@
 package com.lars_albrecht.mdb.main.core.interfaces.web.pages;
 
 import java.io.UnsupportedEncodingException;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
 import com.lars_albrecht.mdb.main.core.controller.MainController;
+import com.lars_albrecht.mdb.main.core.helper.InterfaceHelper;
 import com.lars_albrecht.mdb.main.core.interfaces.WebInterface;
 import com.lars_albrecht.mdb.main.core.interfaces.web.WebServerRequest;
 import com.lars_albrecht.mdb.main.core.interfaces.web.abstracts.WebPage;
-import com.lars_albrecht.mdb.main.core.interfaces.web.helper.WebServerHelper;
 import com.lars_albrecht.mdb.main.core.models.FileItem;
 
 /**
@@ -69,60 +65,14 @@ public class SearchResultsPage extends WebPage {
 				 * class/method to reuse this for other interfaces
 				 */
 				searchStr = GETParams.get("searchStr");
-
-				int searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
-
-				final ArrayList<Entry<String, String>> searchStrList = new ArrayList<Entry<String, String>>();
-				ArrayList<FileItem> foundList = new ArrayList<FileItem>();
-
-				// (([\S])+=".*?(\ ){0,}")|(([\S])+=([\S])+)|([\S])+
-				// finds attribute="value value"
-				final String findTextWithAttributeMoreWords = "(([\\S])+=\".*?(\\ ){0,}\")";
-
-				// finds attribute=value
-				final String findTextWithAttributeOneWord = "(([\\S])+=([\\S])+)";
-
-				// finds "value value"
-				final String findTextWithQuotes = "(\".*?\")";
-
-				// finds value
-				final String findText = "([\\S])+";
-
-				// concat all pattern to one with "or"
-				final String strPattern = findTextWithAttributeMoreWords + "|" + findTextWithAttributeOneWord + "|" + findTextWithQuotes
-						+ "|" + findText;
-
-				final Pattern pattern = Pattern.compile(strPattern);
-				final Matcher matcher = pattern.matcher(searchStr);
-				// Find all values and add them to searchStrList
-				while (matcher.find()) {
-					searchStrList.add(this.getRealSearchValues(matcher.group()));
-				}
-
-				// TODO fix search and output from searchkeys/values
-
-				for (final Entry<String, String> searchEntry : searchStrList) {
-					searchType = WebServerHelper.SEARCHTYPE_TEXTALL;
-					if (searchEntry.getKey() != null) {
-						if (this.mainController.getDataHandler().isKeyInKeyList(searchEntry.getKey())) {
-							searchType = WebServerHelper.SEARCHTYPE_ATTRIBUTE;
-						}
-					}
-
-					switch (searchType) {
-						default:
-						case SEARCHTYPE_TEXTALL:
-							foundList.addAll(Helper.uniqueList(this.mainController.getDataHandler().findAllFileItemForStringInAll(
-									searchEntry.getValue())));
-							break;
-						case SEARCHTYPE_ATTRIBUTE:
-							foundList.addAll(Helper.uniqueList(this.mainController.getDataHandler()
-									.findAllFileItemForStringInAttributesByKeyValue(searchEntry.getKey(), searchEntry.getValue())));
-							break;
-					}
-				}
-
-				foundList = Helper.uniqueList(foundList);
+				final ConcurrentHashMap<String, Object> searchResults = InterfaceHelper.searchItems(searchStr,
+						this.mainController.getDataHandler());
+				@SuppressWarnings("unchecked")
+				final ArrayList<Entry<String, String>> searchStrList = (ArrayList<Entry<String, String>>) searchResults
+						.get("searchstrings");
+				@SuppressWarnings("unchecked")
+				final ArrayList<FileItem> foundList = (ArrayList<FileItem>) searchResults.get("resultlist");
+				final int searchType = (int) searchResults.get("searchtype");
 
 				if (foundList.size() > 0) {
 					String searchResultContainer = searchResultsTemplate.getSubMarkerContent("results");
@@ -177,34 +127,6 @@ public class SearchResultsPage extends WebPage {
 
 		return searchResultsTemplate;
 	}
-
-	// TODO PUT TO OWN CLASS START
-
-	private Entry<String, String> getRealSearchValues(final String input) {
-		Entry<String, String> output = null;
-		String key = null;
-		String value = null;
-
-		String[] keyValue = null;
-		if (input.contains("=")) {
-			keyValue = input.split("=");
-
-			keyValue[1] = keyValue[1].replaceAll("\"", "");
-
-			key = keyValue[0];
-			value = keyValue[1];
-		} else if (input.contains("\"")) {
-			value = input.replaceAll("\"", "");
-		} else {
-			value = input;
-		}
-
-		output = new SimpleEntry<String, String>(key, value);
-
-		return output;
-	}
-
-	// TODO PUT TO OWN CLASS END
 
 	@Override
 	public String getTitle() {
