@@ -113,12 +113,14 @@ public class ObjectHandler {
 	public static ArrayList<FileItem> fileListToFileItemList(final ArrayList<File> foundFilesList) {
 		final ArrayList<FileItem> tempFileItemList = new ArrayList<FileItem>();
 		for (final File file : foundFilesList) {
-			try {
-				tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper
-						.getFileExtension(file.getName()), null, null));
+			if (file != null) {
+				try {
+					tempFileItemList.add(new FileItem(file.getName(), file.getAbsolutePath(), file.getParent(), file.length(), Helper
+							.getFileExtension(file.getName()), null, null));
 
-			} catch (final NullPointerException e) {
-				Debug.log(Debug.LEVEL_ERROR, "null pointer " + file + " " + file.getName() + " - " + file.getAbsolutePath());
+				} catch (final NullPointerException e) {
+					Debug.log(Debug.LEVEL_ERROR, "null pointer " + file + " " + file.getName() + " - " + file.getAbsolutePath());
+				}
 			}
 		}
 

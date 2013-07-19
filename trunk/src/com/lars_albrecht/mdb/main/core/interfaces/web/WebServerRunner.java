@@ -195,7 +195,7 @@ public class WebServerRunner implements Runnable {
 				if (line.startsWith("GET ") || line.startsWith("POST ")) {
 
 					final int urlStart = line.startsWith("GET ") ? 5 : 6;
-					final int urlEnd = line.indexOf(" HTTP/1.1");
+					final int urlEnd = line.indexOf(" HTTP/1.1") > -1 ? line.indexOf(" HTTP/1.1") : line.indexOf(" HTTP/");
 
 					// TODO FIX: -> 08.07.2013 10:35:04 | uncaughtException MSG:
 					// UncaughtException thrown (String index out of range: -6 -
