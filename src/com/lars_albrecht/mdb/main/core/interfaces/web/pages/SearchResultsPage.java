@@ -72,7 +72,7 @@ public class SearchResultsPage extends WebPage {
 						.get("searchstrings");
 				@SuppressWarnings("unchecked")
 				final ArrayList<FileItem> foundList = (ArrayList<FileItem>) searchResults.get("resultlist");
-				final int searchType = (int) searchResults.get("searchtype");
+				final int searchType = ((Integer) searchResults.get("searchtype"));
 
 				if (foundList.size() > 0) {
 					String searchResultContainer = searchResultsTemplate.getSubMarkerContent("results");
