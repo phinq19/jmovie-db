@@ -47,6 +47,8 @@ public class CollectorController implements IController, ICollectorListener {
 			"Collector"
 		};
 		for (final ACollector collector : this.collectors) {
+			collector.setMainController(this.mainController);
+			collector.setController(this);
 			collector.setFileItems(fileItems);
 			tempThread = new ThreadEx(collector, collector.getInfoType(), info);
 			this.threadList.add(tempThread);

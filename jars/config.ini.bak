@@ -1,4 +1,0 @@
-module.finder.path.1 = <PATH-TO-FILES>
-
-module.collector.mediainfo.path.cli = <PATH-TO-MEDIAINFO-EXECUTABLE>
-module.collector.mediainfo.path.template = <PATH-TO-MEDIAINFOTEMPLATE>

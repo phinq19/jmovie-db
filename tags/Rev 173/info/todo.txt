@@ -13,3 +13,7 @@ add support for yadis (yet anoter dune interface / scraper )
 
 
 SystemTrayInterface and TelnetInterface must be configurable through loadable classes from other
+
+http://webmasters.stackexchange.com/questions/24901/coverflow-3d-slider-jquery-plugin
+
+Interfaces can be easily extended.

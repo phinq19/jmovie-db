@@ -47,17 +47,11 @@ public abstract class ACollector implements Runnable {
 	 * @param mainController
 	 * @param controller
 	 */
-	public ACollector(final MainController mainController, final IController controller) {
-		this.mainController = mainController;
-		this.controller = controller;
+	public ACollector() {
 		this.keysToAdd = new ArrayList<Key<String>>();
 		this.valuesToAdd = new ArrayList<Value<?>>();
 		this.typeInformationToAdd = new ArrayList<TypeInformation>();
 		this.collectorTypes = new ArrayList<String>();
-
-		if (controller instanceof CollectorController) {
-			this.collectorMulticaster = ((CollectorController) controller).getCollectorMulticaster();
-		}
 	}
 
 	public ArrayList<String> getCollectorTypes() {
@@ -310,6 +304,10 @@ public abstract class ACollector implements Runnable {
 
 	@Override
 	public final void run() {
+		if (this.controller instanceof CollectorController) {
+			this.collectorMulticaster = ((CollectorController) this.controller).getCollectorMulticaster();
+		}
+
 		OptionsHandler.setOption("collectorStartRunLast" + Helper.ucfirst(this.getInfoType()), new Timestamp(System.currentTimeMillis()));
 		Debug.startTimer("Collector collect time: " + this.getInfoType());
 		this.fileItems = this.prepareFileItems(this.fileItems, this.getInfoType());
@@ -334,6 +332,22 @@ public abstract class ACollector implements Runnable {
 
 	public final void setFileItems(final ArrayList<FileItem> fileItems) {
 		this.fileItems = fileItems;
+	}
+
+	/**
+	 * @param mainController
+	 *            the mainController to set
+	 */
+	public final void setMainController(final MainController mainController) {
+		this.mainController = mainController;
+	}
+
+	/**
+	 * @param controller
+	 *            the controller to set
+	 */
+	public final void setController(final IController controller) {
+		this.controller = controller;
 	}
 
 }
