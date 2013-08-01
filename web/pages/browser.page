@@ -1,0 +1,32 @@
+<div id="browseView" class="contentPart">
+	<div id="browser">{browsercontainer}</div>
+</div>
+
+{browser-start}
+<h2>Durchsuchen</h2>
+
+<ul class="keyList">
+	{keyListItems}
+</ul>
+
+{fileListItems}
+{browser-end}
+
+{browserFileListItemSingle-start}
+<table class="{class}">
+	<tr>
+		<th>{title}</th>
+	</tr>
+	{fileListItemSingles}
+</table>
+{browserFileListItemSingle-end}
+
+{browserFileListItem-start}
+	<tr>
+		<td><a href="?action=showFileDetails&fileId={itemId}">{name}</a></td>
+	</tr>
+{browserFileListItem-end}
+
+{browserKeyListItem-start}
+	<li><a href="javascript:void(0)">{key}</a></li>
+{browserKeyListItem-end}

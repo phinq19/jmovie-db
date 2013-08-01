@@ -1,0 +1,17 @@
+// additional parameters
+tempMovie.set("videoquality", Float.parseFloat(5));
+tempMovie.set("soundquality", Float.parseFloat(3));
+tempMovie.set("watched", Boolean.TRUE);
+
+// additional apis
+// http://www.ofdbgw.org/
+
+// Serien
+// http://www.omdb.org/movie/14452/parts
+// example: http://ofdbgw.lirzg.net/search/Hinter%20Gittern%20-%20Der%20Frauenknast
+Matcher matcher = Pattern.compile("([S]{1}([0-9]{1,})[E]{1}([0-9]{1,}))+").matcher(partOfFilename); 
+if(matcher.find()){
+	tempMovie.set("isseries", Boolean.TRUE);
+	tempMovie.set("season", matcher.group(2));
+	tempMovie.set("episode", matcher.group(3));
+}

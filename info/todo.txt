@@ -1,0 +1,19 @@
+Create nfo files like xbmc to use it for e.g. serviio
+http://wiki.xbmc.org/index.php?title=NFO_files
+
+see here: 
+http://www.serviio.org/component/content/article/10-uncategorised/12-metadata-extraction?highlight=WyJtZXRhZGF0YSJd
+
+
+Create folder structure for Dune HD Media Players:
+http://dune-hd.com/firmware/misc/dune_folder_howto.txt
+OR / AND
+add support for yadis (yet anoter dune interface / scraper )
+
+
+
+SystemTrayInterface and TelnetInterface must be configurable through loadable classes from other
+
+http://webmasters.stackexchange.com/questions/24901/coverflow-3d-slider-jquery-plugin
+
+Interfaces can be easily extended.

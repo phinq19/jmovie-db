@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Thu Apr 04 08:20:15 CEST 2013
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=true
+jarname=jars\\mdb-svn_fat-rev-106.jar
+manifest.mergeall=true
+manifest.mainclass=com.lars_albrecht.mdb.Main
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=<inc|mdb-svn/trunk>~web/

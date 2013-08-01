@@ -1,0 +1,47 @@
+<div id="searchresultsView" class="contentPart">
+	{content}
+</div>
+
+{results-start}
+	<p>
+		<span class="searchResultCount">{searchResultCount}</span> 
+		Ergebnisse wurden für
+		{resultText} 
+		gefunden
+	</p>
+	
+	<div class="resulttable">
+		<table>
+			<tbody>
+				<tr>
+					<th>Filename</th>
+				</tr>
+				{resultListItems}
+			</tbody>
+		</table>
+	</div>
+{results-end}
+
+{resultTextTextAll-start}
+		"<span class="searchTerm">{searchTerm}</span>"
+{resultTextTextAll-end}
+
+{resultTextAttribute-start}
+		das Attribut <span class="searchKey">{searchKey}</span> mit dem Wert <span class="searchValue">{searchValue}</span>
+{resultTextAttribute-end}
+
+{resultListItem-start}
+				<tr class="{oddeven}">
+					<td>
+						<a href="?action=showFileDetails&fileId={fileid}">{title}</a>
+					</td>
+				</tr>
+{resultListItem-end}
+
+{noResults-start}
+<p>Es wurden leider keine Ergebnisse gefunden</p>
+{noResults-end}
+
+{noInput-start}
+<p>Suchen Sie mit hilfe der Suche nach Filmen und Dateien</p>
+{noInput-end}
