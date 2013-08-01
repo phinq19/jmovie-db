@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.lars_albrecht.mdb.main.core.collector.exporter;
+package com.lars_albrecht.mdb.main.core.exporter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -53,7 +53,6 @@ public class PDFExport extends AExporter {
 			document.open();
 			document.add(this.generateMultiItemTable(fileList));
 			document.close();
-
 		} catch (FileNotFoundException | DocumentException e) {
 			e.printStackTrace();
 		}

@@ -19,7 +19,7 @@ import com.lars_albrecht.mdb.main.core.collector.TheTVDBCollector;
 import com.lars_albrecht.mdb.main.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.main.core.collector.event.CollectorEvent;
 import com.lars_albrecht.mdb.main.core.collector.event.ICollectorListener;
-import com.lars_albrecht.mdb.main.core.collector.exporter.PDFExport;
+import com.lars_albrecht.mdb.main.core.exporter.PDFExport;
 import com.lars_albrecht.mdb.main.core.exporter.abstracts.AExporter;
 import com.lars_albrecht.mdb.main.core.finder.event.FinderEvent;
 import com.lars_albrecht.mdb.main.core.finder.event.IFinderListener;
