@@ -9,6 +9,7 @@ import com.lars_albrecht.jmoviedb.mdb.collector.MediaInfoCollector;
 import com.lars_albrecht.jmoviedb.mdb.collector.TheMovieDBCollector;
 import com.lars_albrecht.jmoviedb.mdb.collector.TheTVDBCollector;
 import com.lars_albrecht.jmoviedb.mdb.filter.VideoFileFilter;
+import com.lars_albrecht.jmoviedb.mdb.outputItems.MovieFileDetailsOutputItem;
 import com.lars_albrecht.jmoviedb.mdb.typer.VideoTyper;
 import com.lars_albrecht.mdb.main.MDB;
 import com.lars_albrecht.mdb.main.MDBConfig;
@@ -24,7 +25,8 @@ public class JMovieDB {
 			final MDBConfig mdbConfig = new MDBConfig();
 			mdbConfig.setRessourceBundleName("mdb");
 			mdbConfig.setFinderFileFilter(new VideoFileFilter());
-			mdbConfig.setSystemTrayInterfaceIconImageFile(new File("tray/bulb.gif"));
+			mdbConfig.setSystemTrayInterfaceIconImageFile(new File("trunk/tray/bulb.gif"));
+			mdbConfig.setWebInterfaceFileDetailsOutputItem(new MovieFileDetailsOutputItem());
 
 			mdbConfig.getListOfCollectors().add(new MediaInfoCollector());
 			mdbConfig.getListOfCollectors().add(new TheMovieDBCollector());
