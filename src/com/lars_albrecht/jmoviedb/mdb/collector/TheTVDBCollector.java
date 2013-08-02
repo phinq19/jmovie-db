@@ -33,7 +33,7 @@ public class TheTVDBCollector extends ACollector {
 	private ArrayList<Value<?>>											valuesToAdd				= null;
 	private ConcurrentHashMap<FileItem, ArrayList<FileAttributeList>>	fileAttributeListToAdd	= null;
 
-	private final String												apiKey					= RessourceBundleEx.getInstance("mdb")
+	private final String												apiKey					= RessourceBundleEx.getInstance("jmdb")
 																										.getProperty("apikey.thetvdb");
 	private final String												langKey					= "de";
 

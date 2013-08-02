@@ -48,6 +48,10 @@ public class FileFinder {
 		}
 	}
 
+	public void addToPathList(final String path, final int position) {
+		this.addToPathList(new File(path), position);
+	}
+
 	public ArrayList<File> getPathList() {
 		return this.pathList;
 	}

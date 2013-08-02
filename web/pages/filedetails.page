@@ -1,0 +1,116 @@
+<div id="detailView" class="contentPart">
+	{content}
+</div>
+
+{file-start}
+	
+	<h2>{title}</h2>
+	<div id="path">{path}</div>
+	{images}
+	<div id="fileInformation">
+		{listwrapperSize}
+		{listwrapperAdded}
+		{listwrapperType}
+	</div>
+	{gallery}
+	{tags}
+	{attributes}
+	
+{file-end}
+
+{tagsContainer-start}
+<div id="tagContainer">
+	<input type="text" name="tagSearch" id="tagSearch" value="" />
+	{tagList}
+</div>
+{tagsContainer-end}
+
+{tagsList-start}
+<div id="tagList">
+	<ul>
+		{tagList}<span class="remove">remove tag</span>
+	</ul>
+</div>
+{tagsList-end}
+
+{tagListItem-start}
+	<li>
+		<span class="tagTitle">{tagTitle}</span>
+		<span class="removeTag"><a href="ajax.html?action=removeTagFromFile&fileTagId={fileTagId}">entfernen</a></span>
+	</li>
+{tagListItem-end}
+
+{image-start}
+	<img src="{imageSrc}" class="{imageClass}" title="{imageTitle}" />
+{image-end}
+
+{gallery-start}
+<div class="gallery">
+	<ul>
+		{galleryItems}
+	</ul>
+</div>
+{gallery-end}
+
+{galleryItem-start}
+<li>
+	<a rel="gallery_item" href="{imageSrcBig}">
+		{image}
+	</a>
+</li>
+{galleryItem-end}
+
+{nofile-start}
+	<p>{nofileString}</p>
+{nofile-end}
+
+{listwrapper-start}
+<div class="listWrapper">
+	<div class="key">{key}</div>
+	<div class="value">{value}</div>
+</div>
+{listwrapper-end}
+
+{attributes-start}
+	<hr />
+	
+	<div id="attributes">
+		<nav>
+			<ul>
+				<li><a href=\"#MediaInfo\">MediaInfo</a></li>
+				<li><a href=\"#themoviedb\">The Movie DB</a></li>
+				<li><a href=\"#thetvdb\">The TV DB</a></li>
+			</ul>
+		</nav>
+		
+		<h3>Attributes</h3>
+		{attributesList}
+	</div>
+{attributes-end}
+
+{attributesList-start}
+	<div class="infoSection">
+		<h4 id="{id}">{infotype-title}</h4>
+		{sections}
+	</div>
+{attributesList-end}
+
+{attributeListSection-start}
+		<div class="sectionSection">
+			<h5 class="tableHeader">{sectionname}</h5>
+			<table>
+				<tr>
+					<th>{keyTitle}</th>
+					<th>{valueTitle}</th>
+				</tr>
+				{rows}
+			</table>
+		</div>
+{attributeListSection-end}
+
+{attributesListSectionItem-start}
+				<tr class="{oddeven}">
+					<td>{key}</td>
+					<td>{value}</td>
+				</tr>
+{attributesListSectionItem-end}

@@ -23,7 +23,6 @@ public class JMovieDB {
 	public JMovieDB() {
 		try {
 			final MDBConfig mdbConfig = new MDBConfig();
-			mdbConfig.setRessourceBundleName("mdb");
 			mdbConfig.setFinderFileFilter(new VideoFileFilter());
 			mdbConfig.setSystemTrayInterfaceIconImageFile(new File("trunk/tray/bulb.gif"));
 			mdbConfig.setWebInterfaceFileDetailsOutputItem(new MovieFileDetailsOutputItem());
