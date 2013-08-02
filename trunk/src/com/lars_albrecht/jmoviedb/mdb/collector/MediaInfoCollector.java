@@ -93,7 +93,7 @@ public class MediaInfoCollector extends ACollector {
 
 		if ((sectionsWithKeyValue != null) && (sectionsWithKeyValue.size() > 0)) {
 			for (final Map.Entry<String, ArrayList<KeyValue<String, Object>>> section : sectionsWithKeyValue.entrySet()) {
-				resultList.add(new FileAttributeList(section.getValue(), section.getKey(), item.getId()));
+				resultList.add(new FileAttributeList(section.getValue(), section.getKey(), item.getId(), this.getInfoType()));
 			}
 		}
 
