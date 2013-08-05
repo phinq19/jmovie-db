@@ -133,9 +133,8 @@ function addAutocompleteTagBox(){
 			var keyCode = typeof(event.which) != 'undefined' ? event.which : event.keyCode;
 		    if (keyCode == 13) {
 		        event.preventDefault();
-				$.getJSON("json.html?action=addTag", request, function( data, status, xhr ) {
-					cache[term] = data;
-					response(data);
+				$.getJSON("json.html?action=addTag", {'value' : $('#tagSearch').val(), 'fileId' : $('input[name="fileId"]').val()}, function( data, status, xhr ) {
+					console.log(data);
 				});
 		    }
 		});
