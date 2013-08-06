@@ -31,8 +31,16 @@
 			<td>{missingCount}</td>
 		</tr>
 		<tr>
-			<td>Dateitypen (anzahl der Dateien)</td>
+			<td>Dateitypen (Anzahl der Dateien)</td>
 			<td>{countOfFiletypes}</td>
+		</tr>
+		<tr>
+			<td>Tags (Anzahl der Tags)</td>
+			<td>{countOfTags}</td>
+		</tr>
+		<tr>
+			<td>Datei Tags (Anzahl der Datei Tags)</td>
+			<td>{countOfFileTags}</td>
 		</tr>
 	</table>
 {information-end}
