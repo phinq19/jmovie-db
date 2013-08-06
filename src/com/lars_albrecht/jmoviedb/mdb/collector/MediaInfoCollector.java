@@ -150,7 +150,7 @@ public class MediaInfoCollector extends ACollector {
 				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
 				for (String completeSection : sections) {
-					if (completeSection != null && !completeSection.equalsIgnoreCase("")) {
+					if (completeSection != null && !completeSection.equalsIgnoreCase("") && completeSection.indexOf("{") > -1) {
 						final String sectionName = completeSection
 								.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
 						completeSection = completeSection.substring(completeSection.indexOf("}") + 1);

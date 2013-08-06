@@ -134,7 +134,24 @@ function addAutocompleteTagBox(){
 		    if (keyCode == 13) {
 		        event.preventDefault();
 				$.getJSON("json.html?action=addTag", {'value' : $('#tagSearch').val(), 'fileId' : $('input[name="fileId"]').val()}, function( data, status, xhr ) {
-					console.log(data);
+					var title = $('<span />', {
+						'class' : 'tagTitle',
+						'text' : data.name
+					});
+
+					var link = $('<a />', {
+						'href' : 'ajax.html?action=removeTagFromFile&fileTagId=' + data.id,
+						'text' : 'entfernen'
+					});
+					
+					var remove = $('<span />', {
+						'class' : 'removeTag',
+						'html' : link
+					});
+					
+					var li = $('<li />').append(title).append(remove);
+					
+					$('#tagList ul').append(li);
 				});
 		    }
 		});

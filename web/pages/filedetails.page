@@ -28,7 +28,7 @@
 {tagsList-start}
 <div id="tagList">
 	<ul>
-		{tagList}<span class="remove">remove tag</span>
+		{tagList}
 	</ul>
 </div>
 {tagsList-end}
@@ -36,9 +36,13 @@
 {tagListItem-start}
 	<li>
 		<span class="tagTitle">{tagTitle}</span>
-		<span class="removeTag"><a href="ajax.html?action=removeTagFromFile&fileTagId={fileTagId}">entfernen</a></span>
+		{removeLink}
 	</li>
 {tagListItem-end}
+
+{removeLink-start}
+<span class="removeTag"><a href="ajax.html?action=removeTagFromFile&fileTagId={fileTagId}">entfernen</a></span>
+{removeLink-end}
 
 {image-start}
 	<img src="{imageSrc}" class="{imageClass}" title="{imageTitle}" />

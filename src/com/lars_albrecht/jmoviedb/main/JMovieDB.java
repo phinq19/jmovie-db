@@ -5,6 +5,7 @@ package com.lars_albrecht.jmoviedb.main;
 
 import java.io.File;
 
+import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.jmoviedb.mdb.collector.MediaInfoCollector;
 import com.lars_albrecht.jmoviedb.mdb.collector.TheMovieDBCollector;
 import com.lars_albrecht.jmoviedb.mdb.collector.TheTVDBCollector;
@@ -26,6 +27,7 @@ public class JMovieDB {
 			mdbConfig.setFinderFileFilter(new VideoFileFilter());
 			mdbConfig.setSystemTrayInterfaceIconImageFile(new File("trunk/tray/bulb.gif"));
 			mdbConfig.setWebInterfaceFileDetailsOutputItem(new MovieFileDetailsOutputItem());
+			mdbConfig.setLoglevel(Debug.LEVEL_ERROR);
 
 			mdbConfig.getListOfCollectors().add(new MediaInfoCollector());
 			mdbConfig.getListOfCollectors().add(new TheMovieDBCollector());
