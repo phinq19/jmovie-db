@@ -61,6 +61,12 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 #detailView .gallery ul									{list-style:none; padding:0;}
 #detailView .gallery ul li 								{float:left; margin:10px; padding:5px; border: 2px ridge #888; background-color:#000;}
 
+#detailView #tagList ul 								{font-size:12px; list-style:none; margin:0; padding:0;}
+#detailView #tagList ul li								{float:left; border:1px solid #49B3FF; margin:5px 5px 0 0; padding:5px;}
+#detailView #tagList ul li:hover span.tagTitle			{font-weight:bold;}
+#detailView #tagList ul li:hover span.removeTag 		{display:block;}
+#detailView #tagList ul li span.removeTag 				{display:none; clear:both; text-align:center; background-color:#49B3FF; padding:0 5px;}
+#detailView #tagList ul li span.removeTag a				{color:#fff;}
 
 #detailView #attributes									{margin-top:20px; display:inline-block; width:100%;}
 #detailView #attributes nav								{margin-bottom:20px;}
@@ -92,3 +98,10 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 #browseView .browseFileTable								{display:none;}
 
 #allView table a 									{width:250px; display:block;}
+
+
+
+
+input[type=text],
+input[type=password]									{height:20px; line-height:20px; border:1px solid #49B3FF; text-indent:5px; font-size:12px;}
+select													{height:24px; line-height:24px; border:1px solid #49B3FF; font-size:12px; padding:2px 0;}

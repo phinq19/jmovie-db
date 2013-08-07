@@ -181,7 +181,7 @@ public class TheTVDBCollector extends ACollector {
 
 			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(item.getName());
 			if ((data != null) && data.containsKey("titles") && data.containsKey("episode")) {
-				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[data.size()]);
+				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[data.size() - 1]);
 				episode = (String) data.get("episode");
 
 				if ((titles != null) && (titles.length > 0)) {
