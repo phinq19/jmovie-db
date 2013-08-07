@@ -1,8 +1,6 @@
 #summary One-sentence summary of this page.
 
 = Introduction =
+jMovieDB is an application that uses [https://code.google.com/p/metadatabase/ metadatabase] to easily support a different set of interfaces and exporters.
 
-Wiki of jMovieDB
-
-  * [MainUserIndex] for users
-  * [MainDeveloperIndex] for developer
+jMovieDB can find and display movies and series. The informations for them would be collected by TheMovieDB (for movies), TheTVDB (for series) and MediaInfo (for both).
