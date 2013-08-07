@@ -156,6 +156,24 @@ function addAutocompleteTagBox(){
 		    }
 		});
 		
+		$('#tagContainer').on('click', '.removeTag a', function(event){
+		    var link = $(this).attr('href');
+		    var thisElem = $(this);
+		    
+			$.ajax({
+				type: "POST",
+				url: link,
+				success: function(data) {
+					thisElem.parents('li').remove();
+				},
+				error: function(data){
+					alert('An error occured: ' + data);
+				}
+			});
+		    
+		    return false;
+		});
+		
 	}
 }
 

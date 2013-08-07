@@ -78,7 +78,7 @@ public class MovieFileDetailsOutputItem extends AbstractFileDetailsOutputItem {
 	@Override
 	public String getKey(final String infoType, final String sectionName, final KeyValue<String, Object> keyValue) {
 		final String key = this.translateKey(infoType, sectionName, keyValue);
-		System.out.println(key);
+		// System.out.println(key);
 		if (key == null) {
 			return this.getDefaultKey(infoType, sectionName, keyValue);
 		} else {
@@ -89,7 +89,7 @@ public class MovieFileDetailsOutputItem extends AbstractFileDetailsOutputItem {
 
 	private String translateKey(final String infoType, final String sectionName, final KeyValue<String, Object> keyValue) {
 		final String translateKey = "moviedb.filedetails." + infoType + "." + sectionName + "." + keyValue.getKey().getKey();
-		System.out.println(translateKey);
+		// System.out.println(translateKey);
 		if (RessourceBundleEx.getInstance("mdb-trans").contains(translateKey)) {
 			return RessourceBundleEx.getInstance("mdb-trans").getProperty(translateKey);
 		} else {
