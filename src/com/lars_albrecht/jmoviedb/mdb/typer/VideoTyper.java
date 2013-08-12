@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.lars_albrecht.mdb.main.core.models.FileItem;
+import com.lars_albrecht.mdb.main.core.models.persistable.FileItem;
 import com.lars_albrecht.mdb.main.core.typer.abstracts.ATyper;
 
 /**
