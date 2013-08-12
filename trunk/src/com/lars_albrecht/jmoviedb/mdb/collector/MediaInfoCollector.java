@@ -14,10 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.lars_albrecht.jmoviedb.mdb.external.ProcExec;
 import com.lars_albrecht.mdb.main.core.collector.abstracts.ACollector;
 import com.lars_albrecht.mdb.main.core.models.FileAttributeList;
-import com.lars_albrecht.mdb.main.core.models.FileItem;
-import com.lars_albrecht.mdb.main.core.models.Key;
 import com.lars_albrecht.mdb.main.core.models.KeyValue;
-import com.lars_albrecht.mdb.main.core.models.Value;
+import com.lars_albrecht.mdb.main.core.models.persistable.FileItem;
+import com.lars_albrecht.mdb.main.core.models.persistable.Key;
+import com.lars_albrecht.mdb.main.core.models.persistable.Value;
 
 /**
  * @author lalbrecht
