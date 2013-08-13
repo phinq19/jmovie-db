@@ -54,7 +54,7 @@
 			<ul>
 				<li><a href="{finderHref}" class="{finderClass}">Starte Finder</a></li>
 				<li><a href="{collectorHref}" class="{collectorClass}">Starte Collectors</a></li>
-				<li><a href="{removeMissingHref}" class="{collectorClass}">Lösche fehlende Dateien</a></li>
+				<li><a href="{removeMissingHref}" class="{removeMissingClass}">Lösche fehlende Dateien</a></li>
 			</ul>
 		</nav>
 	</div>
