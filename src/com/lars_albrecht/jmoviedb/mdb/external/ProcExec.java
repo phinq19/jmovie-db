@@ -17,13 +17,19 @@ import com.lars_albrecht.general.utilities.Helper;
  */
 public class ProcExec {
 
-	public static final int		SYSTEM_UNKNOWN	= -1;
-	public static final int		SYSTEM_WIN		= 0;
-	public static final int		SYSTEM_UNIX		= 1;
-	public static final int		SYSTEM_MACOS	= 2;
-	public InputStreamReader	input			= null;
+	public static final int	SYSTEM_UNKNOWN	= -1;
+	public static final int	SYSTEM_WIN		= 0;
+	public static final int	SYSTEM_UNIX		= 1;
+	public static final int	SYSTEM_MACOS	= 2;
 
-	private static int			system			= ProcExec.SYSTEM_UNKNOWN;
+	static boolean isMacOsSystem() {
+		final String osName = System.getProperty("os.name").toLowerCase();
+		return osName.indexOf("mac") >= 0;
+	}
+
+	public InputStreamReader	input	= null;
+
+	private static int			system	= ProcExec.SYSTEM_UNKNOWN;
 
 	static boolean isLinuxSystem() {
 		final String osName = System.getProperty("os.name").toLowerCase();
@@ -35,13 +41,8 @@ public class ProcExec {
 			return true;
 		} else {
 			final String osName = System.getProperty("os.name").toLowerCase();
-			return osName.indexOf("nix") >= 0 || osName.indexOf("nux") >= 0 || osName.indexOf("aix") > 0;
+			return (osName.indexOf("nix") >= 0) || (osName.indexOf("nux") >= 0) || (osName.indexOf("aix") > 0);
 		}
-	}
-
-	static boolean isMacOsSystem() {
-		final String osName = System.getProperty("os.name").toLowerCase();
-		return osName.indexOf("mac") >= 0;
 	}
 
 	static boolean isWindowsSystem() {
