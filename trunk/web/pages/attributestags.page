@@ -6,9 +6,85 @@
 {attributesContainer-start}
 <h2>Attribute</h2>
 <p>Die Anzeige von Attributen ist aktuell nicht möglich.</p>
+<p>Es folgt eine <strong>Beispielanzeige:</strong></p>
+<div id="attributesList">
+	<table>
+		<tr>
+			<th>Attribut</th>
+			<th>Info Typ</th>
+			<th>Section</th>
+			<th>Anzahl</th>
+			<th>Ändern</th>
+		</tr>
+		<tr>
+			<td>Filename</td>
+			<td>MediaInfo</td>
+			<td>General</td>
+			<td><a href="">524</a></td>
+			<td>
+				<span class=""><a href="">Edit</a></span>
+				<span class=""><a href="">Delete</a></span>
+			</td>
+		</tr>
+		<tr>
+			<td>Resolution</td>
+			<td>MediaInfo</td>
+			<td>Video</td>
+			<td><a href="">234</a></td>
+			<td>
+				<span class=""><a href="">Edit</a></span>
+				<span class=""><a href="">Delete</a></span>
+			</td>
+		</tr>
+		<tr>
+			<td>Network</td>
+			<td>TheTVDB</td>
+			<td>General</td>
+			<td><a href="">23</a></td>
+			<td>
+				<span class=""><a href="">Edit</a></span>
+				<span class=""><a href="">Delete</a></span>
+			</td>
+		</tr>
+	</table>
+</div>
 {attributesContainer-end}
 
 {tagsContainer-start}
 <h2>Tags</h2>
 <p>Die Anzeige und Verwaltung der Tags ist aktuell nicht möglich.</p>
+<p>Es folgt eine <strong>Beispielanzeige:</strong></p>
+<div id="tagsList">
+	<table>
+		<tr>
+			<th>Tag</th>
+			<th>Anzahl</th>
+			<th>Ändern</th>
+		</tr>
+		<tr>
+			<td>Example Tag</td>
+			<td><a href="">12</a></td>
+			<td>
+				<span class=""><a href="">Edit</a></span>
+				<span class=""><a href="">Delete</a></span>
+			</td>
+		</tr>
+		<tr>
+			<td>2nd Example Tag</td>
+			<td><a href="">5</a></td>
+			<td>
+				<span class=""><a href="">Edit</a></span>
+				<span class=""><a href="">Delete</a></span>
+			</td>
+		</tr>
+		<tr>
+			<td>3rd Example Tag</td>
+			<td>0</td>
+			<td>
+				<span class=""><a href="">Edit</a></span>
+				<span class=""><a href="">Delete</a></span>
+			</td>
+		</tr>
+	</table>
+</div>
 {tagsContainer-end}
