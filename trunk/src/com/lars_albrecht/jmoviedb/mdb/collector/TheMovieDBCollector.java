@@ -68,6 +68,148 @@ public class TheMovieDBCollector extends ACollector {
 	}
 
 	/**
+	 * Returns a list of all infos in a keyValue-List.
+	 * 
+	 * @param movie
+	 * @param infoType
+	 * @return ArrayList<KeyValue<String, Object>>
+	 */
+	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final MovieDb movie, final String infoType) {
+		ArrayList<KeyValue<String, Object>> resultList = null;
+		if (movie != null) {
+			resultList = new ArrayList<KeyValue<String, Object>>();
+
+			// add general infos
+			if (new Integer(movie.getId()) != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("tmdb_id", infoType, "general", false, false),
+						new Value<Object>(new Integer(movie.getId()))));
+			}
+			if (movie.getImdbID() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("imdb_id", infoType, "general", false, false),
+						new Value<Object>(movie.getImdbID())));
+			}
+			if (movie.getOriginalTitle() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("original_title", infoType, "general", false, false),
+						new Value<Object>(movie.getOriginalTitle())));
+			}
+			if (movie.getTitle() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("title", infoType, "general", false, false), new Value<Object>(
+						movie.getTitle())));
+			}
+			if (movie.getOverview() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "general", false, false),
+						new Value<Object>(movie.getOverview())));
+			}
+
+			if (movie.getTagline() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("tagline", infoType, "general", false, false),
+						new Value<Object>(movie.getTagline())));
+			}
+
+			// add movie facts
+			if (new Long(movie.getBudget()) != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("budget", infoType, "facts", false, false), new Value<Object>(
+						movie.getBudget())));
+			}
+			if (movie.getBelongsToCollection() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, true),
+						new Value<Object>(movie.getBelongsToCollection().getId())));
+				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_name", infoType, "facts", false, true),
+						new Value<Object>(movie.getBelongsToCollection().getName())));
+			}
+			if (movie.getStatus() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("status", infoType, "facts", false, false), new Value<Object>(
+						movie.getStatus())));
+			}
+			if (new Integer(movie.getRuntime()) != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("runtime", infoType, "facts", false, false), new Value<Object>(
+						movie.getRuntime())));
+			}
+			if (new Long(movie.getRevenue()) != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("revenue", infoType, "facts", false, false), new Value<Object>(
+						movie.getRevenue())));
+			}
+			if (movie.getSpokenLanguages() != null) {
+				for (final Language language : movie.getSpokenLanguages()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("language", infoType, "facts", false, true),
+							new Value<Object>(language.getName())));
+				}
+			}
+			if (movie.getHomepage() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("homepage", infoType, "facts", false, false),
+						new Value<Object>(movie.getHomepage())));
+			}
+
+			// add cast and crew
+			if ((movie.getCast() != null) && (movie.getCast().size() > 0)) {
+				for (final PersonCast personCast : movie.getCast()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("cast", infoType, "cast_and_crew", false, true),
+							new Value<Object>(personCast.getName()
+									+ (personCast.getCharacter() != null ? " (" + personCast.getCharacter() + ")" : ""))));
+				}
+			}
+
+			if ((movie.getCrew() != null) && (movie.getCrew().size() > 0)) {
+				for (final PersonCrew personCrew : movie.getCrew()) {
+					resultList
+							.add(new KeyValue<String, Object>(new Key<String>("crew", infoType, "cast_and_crew", false, true),
+									new Value<Object>(personCrew.getName()
+											+ (personCrew.getJob() != null ? " (" + personCrew.getJob() + ")" : ""))));
+				}
+			}
+
+			// add genres
+			if (movie.getGenres() != null) {
+				for (final Genre genre : movie.getGenres()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("genre", infoType, "genre", false, true),
+							new Value<Object>(genre.getName())));
+				}
+			}
+
+			// add images
+			if (movie.getPosterPath() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
+						new Value<Object>(movie.getPosterPath())));
+			}
+
+			if (movie.getBackdropPath() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
+						new Value<Object>(movie.getBackdropPath())));
+			}
+
+			if ((movie.getImages() != null) && (movie.getImages().size() > 0)) {
+				for (final Artwork artwork : movie.getImages()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>(artwork.getArtworkType().name(), infoType, "images", false,
+							false), new Value<Object>(artwork.getFilePath())));
+				}
+			}
+
+			// add votes
+			if (movie.getVoteAverage() > 0) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_average", infoType, "votes", false, false),
+						new Value<Object>(movie.getVoteAverage())));
+			}
+			if (movie.getVoteCount() > 0) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_count", infoType, "votes", false, false),
+						new Value<Object>(movie.getVoteCount())));
+			}
+
+			// add trailers
+
+			if ((movie.getTrailers() != null) && (movie.getTrailers().size() > 0)) {
+				for (final Trailer trailer : movie.getTrailers()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("trailer", infoType, "video", false, false),
+							new Value<Object>(trailer.getName() + "," + trailer.getSize() + "," + trailer.getSource() + ","
+									+ trailer.getWebsite())));
+				}
+			}
+
+		}
+
+		return resultList;
+	}
+
+	/**
 	 * 
 	 * TODO improve detecting of the real filename and the finding of the movie
 	 * 
@@ -101,7 +243,7 @@ public class TheMovieDBCollector extends ACollector {
 					}
 
 					// search with all titles and without year if year exists
-					if (year != null && year > -1) {
+					if ((year != null) && (year > -1)) {
 						tempList.addAll(tmdb.searchMovie(searchTitle, 0, this.langKey, true, 0).getResults());
 
 						if ((tempList != null) && (tempList.size() > 0)) {
@@ -272,26 +414,26 @@ public class TheMovieDBCollector extends ACollector {
 			}
 
 			// titleSubtitleYearPattern -> GROUP 2 - GROUP 7
-			if (m.group(2) != null && m.group(3) != null && m.group(4) != null && m.group(6) != null) {
+			if ((m.group(2) != null) && (m.group(3) != null) && (m.group(4) != null) && (m.group(6) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(3));
 				((ArrayList<String>) data.get("titles")).add(m.group(4));
 				data.replace("year", Integer.parseInt(m.group(6)));
 			}
 
 			// titleYearPattern -> GROUP 8 - GROUP 12
-			if (m.group(8) != null && m.group(9) != null && m.group(11) != null) {
+			if ((m.group(8) != null) && (m.group(9) != null) && (m.group(11) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(9));
 				data.replace("year", Integer.parseInt(m.group(11)));
 			}
 
 			// titleSubtitlePattern -> GROUP 13 - GROUP 15
-			if (m.group(13) != null && m.group(14) != null && m.group(15) != null) {
+			if ((m.group(13) != null) && (m.group(14) != null) && (m.group(15) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(14));
 				((ArrayList<String>) data.get("titles")).add(m.group(15));
 			}
 
 			// titlePattern -> GROUP 16 - GROUP 17
-			if (m.group(16) != null && m.group(17) != null) {
+			if ((m.group(16) != null) && (m.group(17) != null)) {
 				((ArrayList<String>) data.get("titles")).add(m.group(17));
 			}
 		}
@@ -370,148 +512,6 @@ public class TheMovieDBCollector extends ACollector {
 			Debug.log(Debug.LEVEL_ERROR, e.getMessage());
 		}
 		return tempKeyValueList;
-	}
-
-	/**
-	 * Returns a list of all infos in a keyValue-List.
-	 * 
-	 * @param movie
-	 * @param infoType
-	 * @return ArrayList<KeyValue<String, Object>>
-	 */
-	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final MovieDb movie, final String infoType) {
-		ArrayList<KeyValue<String, Object>> resultList = null;
-		if (movie != null) {
-			resultList = new ArrayList<KeyValue<String, Object>>();
-
-			// add general infos
-			if (new Integer(movie.getId()) != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("tmdb_id", infoType, "general", false, false),
-						new Value<Object>(new Integer(movie.getId()))));
-			}
-			if (movie.getImdbID() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("imdb_id", infoType, "general", false, false),
-						new Value<Object>(movie.getImdbID())));
-			}
-			if (movie.getOriginalTitle() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("original_title", infoType, "general", false, false),
-						new Value<Object>(movie.getOriginalTitle())));
-			}
-			if (movie.getTitle() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("title", infoType, "general", false, false), new Value<Object>(
-						movie.getTitle())));
-			}
-			if (movie.getOverview() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "general", false, false),
-						new Value<Object>(movie.getOverview())));
-			}
-
-			if (movie.getTagline() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("tagline", infoType, "general", false, false),
-						new Value<Object>(movie.getTagline())));
-			}
-
-			// add movie facts
-			if (new Long(movie.getBudget()) != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("budget", infoType, "facts", false, false), new Value<Object>(
-						movie.getBudget())));
-			}
-			if (movie.getBelongsToCollection() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_id", infoType, "facts", false, true),
-						new Value<Object>(movie.getBelongsToCollection().getId())));
-				resultList.add(new KeyValue<String, Object>(new Key<String>("collection_name", infoType, "facts", false, true),
-						new Value<Object>(movie.getBelongsToCollection().getName())));
-			}
-			if (movie.getStatus() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("status", infoType, "facts", false, false), new Value<Object>(
-						movie.getStatus())));
-			}
-			if (new Integer(movie.getRuntime()) != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("runtime", infoType, "facts", false, false), new Value<Object>(
-						movie.getRuntime())));
-			}
-			if (new Long(movie.getRevenue()) != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("revenue", infoType, "facts", false, false), new Value<Object>(
-						movie.getRevenue())));
-			}
-			if (movie.getSpokenLanguages() != null) {
-				for (final Language language : movie.getSpokenLanguages()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("language", infoType, "facts", false, true),
-							new Value<Object>(language.getName())));
-				}
-			}
-			if (movie.getHomepage() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("homepage", infoType, "facts", false, false),
-						new Value<Object>(movie.getHomepage())));
-			}
-
-			// add cast and crew
-			if (movie.getCast() != null && movie.getCast().size() > 0) {
-				for (final PersonCast personCast : movie.getCast()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("cast", infoType, "cast_and_crew", false, true),
-							new Value<Object>(personCast.getName()
-									+ (personCast.getCharacter() != null ? " (" + personCast.getCharacter() + ")" : ""))));
-				}
-			}
-
-			if (movie.getCrew() != null && movie.getCrew().size() > 0) {
-				for (final PersonCrew personCrew : movie.getCrew()) {
-					resultList
-							.add(new KeyValue<String, Object>(new Key<String>("crew", infoType, "cast_and_crew", false, true),
-									new Value<Object>(personCrew.getName()
-											+ (personCrew.getJob() != null ? " (" + personCrew.getJob() + ")" : ""))));
-				}
-			}
-
-			// add genres
-			if (movie.getGenres() != null) {
-				for (final Genre genre : movie.getGenres()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("genre", infoType, "genre", false, true),
-							new Value<Object>(genre.getName())));
-				}
-			}
-
-			// add images
-			if (movie.getPosterPath() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
-						new Value<Object>(movie.getPosterPath())));
-			}
-
-			if (movie.getBackdropPath() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
-						new Value<Object>(movie.getBackdropPath())));
-			}
-
-			if (movie.getImages() != null && movie.getImages().size() > 0) {
-				for (final Artwork artwork : movie.getImages()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>(artwork.getArtworkType().name(), infoType, "images", false,
-							false), new Value<Object>(artwork.getFilePath())));
-				}
-			}
-
-			// add votes
-			if (movie.getVoteAverage() > 0) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_average", infoType, "votes", false, false),
-						new Value<Object>(movie.getVoteAverage())));
-			}
-			if (movie.getVoteCount() > 0) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("vote_count", infoType, "votes", false, false),
-						new Value<Object>(movie.getVoteCount())));
-			}
-
-			// add trailers
-
-			if (movie.getTrailers() != null && movie.getTrailers().size() > 0) {
-				for (final Trailer trailer : movie.getTrailers()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("trailer", infoType, "video", false, false),
-							new Value<Object>(trailer.getName() + "," + trailer.getSize() + "," + trailer.getSource() + ","
-									+ trailer.getWebsite())));
-				}
-			}
-
-		}
-
-		return resultList;
 	}
 
 	@Override

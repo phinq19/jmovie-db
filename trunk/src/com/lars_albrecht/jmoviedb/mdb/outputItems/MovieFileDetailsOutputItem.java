@@ -18,6 +18,18 @@ import com.lars_albrecht.mdb.main.core.models.KeyValue;
 public class MovieFileDetailsOutputItem extends AbstractFileDetailsOutputItem {
 
 	@Override
+	public String getKey(final String infoType, final String sectionName, final KeyValue<String, Object> keyValue) {
+		final String key = this.translateKey(infoType, sectionName, keyValue);
+		// System.out.println(key);
+		if (key == null) {
+			return this.getDefaultKey(infoType, sectionName, keyValue);
+		} else {
+			return key;
+		}
+
+	}
+
+	@Override
 	public String getValue(final String infoType, final String sectionName, final KeyValue<String, Object> keyValue, final String value) {
 		if (infoType.equalsIgnoreCase("themoviedb")) {
 			if (sectionName.equalsIgnoreCase("video")) {
@@ -31,7 +43,7 @@ public class MovieFileDetailsOutputItem extends AbstractFileDetailsOutputItem {
 				}
 			} else if (sectionName.equalsIgnoreCase("facts")) {
 				if (keyValue.getKey().getKey().equalsIgnoreCase("homepage")) {
-					return (value != null && value.length() > 0) ? "<a href=\"" + value + "\">" + value + "</a>" : null;
+					return ((value != null) && (value.length() > 0)) ? "<a href=\"" + value + "\">" + value + "</a>" : null;
 				}
 			}
 		}
@@ -73,18 +85,6 @@ public class MovieFileDetailsOutputItem extends AbstractFileDetailsOutputItem {
 		}
 
 		return true;
-	}
-
-	@Override
-	public String getKey(final String infoType, final String sectionName, final KeyValue<String, Object> keyValue) {
-		final String key = this.translateKey(infoType, sectionName, keyValue);
-		// System.out.println(key);
-		if (key == null) {
-			return this.getDefaultKey(infoType, sectionName, keyValue);
-		} else {
-			return key;
-		}
-
 	}
 
 	private String translateKey(final String infoType, final String sectionName, final KeyValue<String, Object> keyValue) {

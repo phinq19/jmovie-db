@@ -21,6 +21,10 @@ import com.lars_albrecht.mdb.main.MDBConfig;
  */
 public class JMovieDB {
 
+	public static void main(final String[] args) {
+		new JMovieDB();
+	}
+
 	public JMovieDB() {
 		try {
 			final MDBConfig mdbConfig = new MDBConfig();
@@ -40,9 +44,5 @@ public class JMovieDB {
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void main(final String[] args) {
-		new JMovieDB();
 	}
 }
