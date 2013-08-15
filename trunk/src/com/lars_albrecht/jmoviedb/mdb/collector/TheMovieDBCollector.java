@@ -4,6 +4,8 @@
 package com.lars_albrecht.jmoviedb.mdb.collector;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,10 +16,13 @@ import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.main.core.collector.abstracts.ACollector;
+import com.lars_albrecht.mdb.main.core.handler.datahandler.MediaHandler;
+import com.lars_albrecht.mdb.main.core.handler.datahandler.abstracts.ADataHandler;
 import com.lars_albrecht.mdb.main.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.main.core.models.KeyValue;
 import com.lars_albrecht.mdb.main.core.models.persistable.FileItem;
 import com.lars_albrecht.mdb.main.core.models.persistable.Key;
+import com.lars_albrecht.mdb.main.core.models.persistable.MediaItem;
 import com.lars_albrecht.mdb.main.core.models.persistable.Value;
 import com.omertron.themoviedbapi.MovieDbException;
 import com.omertron.themoviedbapi.TheMovieDbApi;
@@ -74,7 +79,7 @@ public class TheMovieDBCollector extends ACollector {
 	 * @param infoType
 	 * @return ArrayList<KeyValue<String, Object>>
 	 */
-	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final MovieDb movie, final String infoType) {
+	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final MovieDb movie, final String infoType, final FileItem fileItem) {
 		ArrayList<KeyValue<String, Object>> resultList = null;
 		if (movie != null) {
 			resultList = new ArrayList<KeyValue<String, Object>>();
@@ -167,23 +172,45 @@ public class TheMovieDBCollector extends ACollector {
 			}
 
 			// add images
-			// ADataHandler.getDataHandler(MediaHandler.class).addData("", );
-
 			if (movie.getPosterPath() != null) {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
 						new Value<Object>(movie.getPosterPath())));
+				try {
+					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
+							new MediaItem("poster", MediaItem.TYPE_WEB_IMAGE, new URI(movie.getPosterPath())));
+				} catch (final URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if (movie.getBackdropPath() != null) {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
 						new Value<Object>(movie.getBackdropPath())));
+				try {
+					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
+							new MediaItem("backdrop", MediaItem.TYPE_WEB_IMAGE, new URI(movie.getBackdropPath())));
+				} catch (final URISyntaxException e) {
+					e.printStackTrace();
+				}
 			}
 
 			if ((movie.getImages() != null) && (movie.getImages().size() > 0)) {
+				int i = 0;
 				for (final Artwork artwork : movie.getImages()) {
 					resultList.add(new KeyValue<String, Object>(new Key<String>(artwork.getArtworkType().name(), infoType, "images", false,
 							false), new Value<Object>(artwork.getFilePath())));
+					try {
+						ADataHandler.getDataHandler(MediaHandler.class).addData(
+								"mediaItems",
+								fileItem,
+								new MediaItem("artwork_" + i + "_" + artwork.getArtworkType().name(), MediaItem.TYPE_WEB_IMAGE, new URI(
+										artwork.getFilePath())));
+					} catch (final URISyntaxException e) {
+						e.printStackTrace();
+					}
+					i++;
 				}
+
 			}
 
 			// add votes
@@ -444,19 +471,19 @@ public class TheMovieDBCollector extends ACollector {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem item) {
+	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem fileItem) {
 		ArrayList<FileAttributeList> resultList = null;
-		if (item != null) {
+		if (fileItem != null) {
 			String[] titles = null;
 			Integer year = null;
 
-			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(item.getName());
+			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(fileItem.getName());
 			if ((data != null) && data.containsKey("titles") && data.containsKey("year")) {
 				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[((ArrayList<String>) data.get("titles")).size()]);
 				year = (Integer) data.get("year");
 
 				if ((titles != null) && (titles.length > 0)) {
-					resultList = this.getMovieInfo(titles, year);
+					resultList = this.getMovieInfo(titles, year, fileItem);
 				}
 
 			}
@@ -480,7 +507,7 @@ public class TheMovieDBCollector extends ACollector {
 		return this.keysToAdd;
 	}
 
-	private ArrayList<FileAttributeList> getMovieInfo(final String[] titles, final Integer year) {
+	private ArrayList<FileAttributeList> getMovieInfo(final String[] titles, final Integer year, final FileItem fileItem) {
 		final ArrayList<FileAttributeList> tempKeyValueList = new ArrayList<FileAttributeList>();
 		MovieDb movie;
 		try {
@@ -491,7 +518,7 @@ public class TheMovieDBCollector extends ACollector {
 			if (movie != null) {
 				final FileAttributeList attributeList = new FileAttributeList();
 				ArrayList<KeyValue<String, Object>> keyValueList = null;
-				keyValueList = this.fillKeyValueList(movie, infoType);
+				keyValueList = this.fillKeyValueList(movie, infoType, fileItem);
 
 				if (keyValueList != null) {
 					for (final KeyValue<String, Object> keyValue : keyValueList) {
