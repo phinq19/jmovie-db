@@ -167,6 +167,8 @@ public class TheMovieDBCollector extends ACollector {
 			}
 
 			// add images
+			// ADataHandler.getDataHandler(MediaHandler.class).addData("", );
+
 			if (movie.getPosterPath() != null) {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
 						new Value<Object>(movie.getPosterPath())));
