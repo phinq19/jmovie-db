@@ -3,6 +3,8 @@
  */
 package com.lars_albrecht.jmoviedb.mdb.collector;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,10 +15,13 @@ import com.lars_albrecht.general.utilities.Debug;
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.RessourceBundleEx;
 import com.lars_albrecht.mdb.main.core.collector.abstracts.ACollector;
+import com.lars_albrecht.mdb.main.core.handler.datahandler.MediaHandler;
+import com.lars_albrecht.mdb.main.core.handler.datahandler.abstracts.ADataHandler;
 import com.lars_albrecht.mdb.main.core.models.FileAttributeList;
 import com.lars_albrecht.mdb.main.core.models.KeyValue;
 import com.lars_albrecht.mdb.main.core.models.persistable.FileItem;
 import com.lars_albrecht.mdb.main.core.models.persistable.Key;
+import com.lars_albrecht.mdb.main.core.models.persistable.MediaItem;
 import com.lars_albrecht.mdb.main.core.models.persistable.Value;
 import com.omertron.thetvdbapi.TheTVDBApi;
 import com.omertron.thetvdbapi.model.Episode;
@@ -66,9 +71,13 @@ public class TheTVDBCollector extends ACollector {
 	 * @param serie
 	 * @param episode
 	 * @param infoType
+	 * @param fileItem
 	 * @return ArrayList<KeyValue<String, Object>>
 	 */
-	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final Series serie, final Episode episode, final String infoType) {
+	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final Series serie,
+			final Episode episode,
+			final String infoType,
+			final FileItem fileItem) {
 		ArrayList<KeyValue<String, Object>> resultList = null;
 		if (serie != null) {
 			resultList = new ArrayList<KeyValue<String, Object>>();
@@ -130,6 +139,24 @@ public class TheTVDBCollector extends ACollector {
 				}
 			}
 
+			// add images
+			if (serie.getPoster() != null) {
+				try {
+					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
+							new MediaItem("poster", MediaItem.TYPE_WEB_IMAGE, new URI(serie.getPoster()), this.getOptionsFor("poster")));
+				} catch (final URISyntaxException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (serie.getFanart() != null) {
+				try {
+					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
+							new MediaItem("fanart", MediaItem.TYPE_WEB_IMAGE, new URI(serie.getFanart()), this.getOptionsFor("fanart")));
+				} catch (final URISyntaxException e) {
+					e.printStackTrace();
+				}
+			}
 		}
 
 		if (episode != null) {
@@ -181,6 +208,17 @@ public class TheTVDBCollector extends ACollector {
 		}
 
 		return resultList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConcurrentHashMap<Integer, Object> getOptionsFor(final String type) {
+		String optionsStr = "";
+
+		if (type.equalsIgnoreCase("poster") || type.equalsIgnoreCase("fanart")) {
+			optionsStr = MediaItem.OPTION_WEB_ISDIRECT + "|true";
+		}
+
+		return (ConcurrentHashMap<Integer, Object>) Helper.explode(optionsStr, ";", "|");
 	}
 
 	private Episode findEpisode(final String seriesId, final int seasonNr, final int episodeNr) {
@@ -315,19 +353,19 @@ public class TheTVDBCollector extends ACollector {
 	}
 
 	@SuppressWarnings("unchecked")
-	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem item) {
+	private ArrayList<FileAttributeList> getFileAttributeListsForItem(final FileItem fileItem) {
 		ArrayList<FileAttributeList> resultList = null;
-		if (item != null) {
+		if (fileItem != null) {
 			String[] titles = null;
 			String episode = null;
 
-			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(item.getName());
+			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(fileItem.getName());
 			if ((data != null) && data.containsKey("titles") && data.containsKey("episode")) {
 				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[data.size() - 1]);
 				episode = (String) data.get("episode");
 
 				if ((titles != null) && (titles.length > 0)) {
-					resultList = this.getSerieInfo(titles, episode);
+					resultList = this.getSerieInfo(titles, episode, fileItem);
 				}
 			}
 		}
@@ -368,7 +406,7 @@ public class TheTVDBCollector extends ACollector {
 		return -1;
 	}
 
-	private ArrayList<FileAttributeList> getSerieInfo(final String[] titles, final String episodeStr) {
+	private ArrayList<FileAttributeList> getSerieInfo(final String[] titles, final String episodeStr, final FileItem fileItem) {
 		final ArrayList<FileAttributeList> tempKeyValueList = new ArrayList<FileAttributeList>();
 		final Series serie = this.findSerie(titles);
 		final String infoType = "thetvdb";
@@ -382,7 +420,7 @@ public class TheTVDBCollector extends ACollector {
 			}
 			final FileAttributeList attributeList = new FileAttributeList();
 			ArrayList<KeyValue<String, Object>> keyValueList = null;
-			keyValueList = this.fillKeyValueList(serie, episode, infoType);
+			keyValueList = this.fillKeyValueList(serie, episode, infoType, fileItem);
 
 			if (keyValueList != null) {
 				for (final KeyValue<String, Object> keyValue : keyValueList) {

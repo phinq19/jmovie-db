@@ -176,8 +176,12 @@ public class TheMovieDBCollector extends ACollector {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
 						new Value<Object>(movie.getPosterPath())));
 				try {
-					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
-							new MediaItem("poster", MediaItem.TYPE_WEB_IMAGE, new URI(movie.getPosterPath())));
+					ADataHandler.getDataHandler(MediaHandler.class)
+							.addData(
+									"mediaItems",
+									fileItem,
+									new MediaItem("poster", MediaItem.TYPE_WEB_IMAGE, new URI(movie.getPosterPath()), this
+											.getOptionsFor("poster")));
 				} catch (final URISyntaxException e) {
 					e.printStackTrace();
 				}
@@ -187,8 +191,11 @@ public class TheMovieDBCollector extends ACollector {
 				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
 						new Value<Object>(movie.getBackdropPath())));
 				try {
-					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
-							new MediaItem("backdrop", MediaItem.TYPE_WEB_IMAGE, new URI(movie.getBackdropPath())));
+					ADataHandler.getDataHandler(MediaHandler.class).addData(
+							"mediaItems",
+							fileItem,
+							new MediaItem("backdrop", MediaItem.TYPE_WEB_IMAGE, new URI(movie.getBackdropPath()), this
+									.getOptionsFor("backdrop")));
 				} catch (final URISyntaxException e) {
 					e.printStackTrace();
 				}
@@ -204,7 +211,7 @@ public class TheMovieDBCollector extends ACollector {
 								"mediaItems",
 								fileItem,
 								new MediaItem("artwork_" + i + "_" + artwork.getArtworkType().name(), MediaItem.TYPE_WEB_IMAGE, new URI(
-										artwork.getFilePath())));
+										artwork.getFilePath()), this.getOptionsFor(artwork.getArtworkType().name())));
 					} catch (final URISyntaxException e) {
 						e.printStackTrace();
 					}
@@ -230,12 +237,43 @@ public class TheMovieDBCollector extends ACollector {
 					resultList.add(new KeyValue<String, Object>(new Key<String>("trailer", infoType, "video", false, false),
 							new Value<Object>(trailer.getName() + "," + trailer.getSize() + "," + trailer.getSource() + ","
 									+ trailer.getWebsite())));
+
+					try {
+						ADataHandler.getDataHandler(MediaHandler.class).addData(
+								"mediaItems",
+								fileItem,
+								new MediaItem(trailer.getName(), MediaItem.TYPE_WEB_VIDEO, new URI(trailer.getSource()), this
+										.getOptionsFor(trailer.getWebsite())));
+					} catch (final URISyntaxException e) {
+						e.printStackTrace();
+					}
+
 				}
 			}
 
 		}
 
 		return resultList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConcurrentHashMap<Integer, Object> getOptionsFor(final String type) {
+		String optionsStr = "";
+		final String basePath = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
+		final String secureBasePath = "https://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
+
+		optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|" + basePath + ";" + MediaItem.OPTION_WEB_SECURE_BASE_PATH + "|" + secureBasePath;
+
+		if (type.equalsIgnoreCase("poster")) {
+			optionsStr += ";" + MediaItem.OPTION_SIZES + "|w92,w154,w185,w342,w500,original";
+		} else if (type.equalsIgnoreCase("backdrop")) {
+			optionsStr += ";" + MediaItem.OPTION_SIZES + "|w300,w780,w1280,original";
+		} else if (type.equalsIgnoreCase("youtube")) {
+			optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|http://www.youtube.com/watch?v=;" + MediaItem.OPTION_WEB_ISDIRECT
+					+ "|false";
+		}
+
+		return (ConcurrentHashMap<Integer, Object>) Helper.explode(optionsStr, ";", "|");
 	}
 
 	/**
