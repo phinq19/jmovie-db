@@ -173,8 +173,6 @@ public class TheMovieDBCollector extends ACollector {
 
 			// add images
 			if (movie.getPosterPath() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("poster_path", infoType, "images", false, false),
-						new Value<Object>(movie.getPosterPath())));
 				try {
 					ADataHandler.getDataHandler(MediaHandler.class)
 							.addData(
@@ -188,8 +186,6 @@ public class TheMovieDBCollector extends ACollector {
 			}
 
 			if (movie.getBackdropPath() != null) {
-				resultList.add(new KeyValue<String, Object>(new Key<String>("backdrop_path", infoType, "images", false, false),
-						new Value<Object>(movie.getBackdropPath())));
 				try {
 					ADataHandler.getDataHandler(MediaHandler.class).addData(
 							"mediaItems",
@@ -204,8 +200,6 @@ public class TheMovieDBCollector extends ACollector {
 			if ((movie.getImages() != null) && (movie.getImages().size() > 0)) {
 				int i = 0;
 				for (final Artwork artwork : movie.getImages()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>(artwork.getArtworkType().name(), infoType, "images", false,
-							false), new Value<Object>(artwork.getFilePath())));
 					try {
 						ADataHandler.getDataHandler(MediaHandler.class).addData(
 								"mediaItems",
@@ -234,10 +228,6 @@ public class TheMovieDBCollector extends ACollector {
 
 			if ((movie.getTrailers() != null) && (movie.getTrailers().size() > 0)) {
 				for (final Trailer trailer : movie.getTrailers()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("trailer", infoType, "video", false, false),
-							new Value<Object>(trailer.getName() + "," + trailer.getSize() + "," + trailer.getSource() + ","
-									+ trailer.getWebsite())));
-
 					try {
 						ADataHandler.getDataHandler(MediaHandler.class).addData(
 								"mediaItems",
@@ -269,8 +259,7 @@ public class TheMovieDBCollector extends ACollector {
 		} else if (type.equalsIgnoreCase("backdrop")) {
 			optionsStr += ";" + MediaItem.OPTION_SIZES + "|w300,w780,w1280,original";
 		} else if (type.equalsIgnoreCase("youtube")) {
-			optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|http://www.youtube.com/watch?v=;" + MediaItem.OPTION_WEB_ISDIRECT
-					+ "|false";
+			optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|http://www.youtube.com/watch?v=;" + MediaItem.OPTION_WEB_ISDIRECT + "|false";
 		}
 
 		return (ConcurrentHashMap<Integer, Object>) Helper.explode(optionsStr, ";", "|");
