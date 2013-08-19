@@ -246,25 +246,6 @@ public class TheMovieDBCollector extends ACollector {
 		return resultList;
 	}
 
-	@SuppressWarnings("unchecked")
-	private ConcurrentHashMap<Integer, Object> getOptionsFor(final String type) {
-		String optionsStr = "";
-		final String basePath = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
-		final String secureBasePath = "https://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
-
-		optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|" + basePath + ";" + MediaItem.OPTION_WEB_SECURE_BASE_PATH + "|" + secureBasePath;
-
-		if (type.equalsIgnoreCase("poster")) {
-			optionsStr += ";" + MediaItem.OPTION_SIZES + "|w92,w154,w185,w342,w500,original";
-		} else if (type.equalsIgnoreCase("backdrop")) {
-			optionsStr += ";" + MediaItem.OPTION_SIZES + "|w300,w780,w1280,original";
-		} else if (type.equalsIgnoreCase("youtube")) {
-			optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|http://www.youtube.com/watch?v=;" + MediaItem.OPTION_WEB_ISDIRECT + "|false";
-		}
-
-		return (ConcurrentHashMap<Integer, Object>) Helper.explode(optionsStr, ";", "|");
-	}
-
 	/**
 	 * 
 	 * TODO improve detecting of the real filename and the finding of the movie
@@ -568,6 +549,25 @@ public class TheMovieDBCollector extends ACollector {
 			Debug.log(Debug.LEVEL_ERROR, e.getMessage());
 		}
 		return tempKeyValueList;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConcurrentHashMap<Integer, Object> getOptionsFor(final String type) {
+		String optionsStr = "";
+		final String basePath = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
+		final String secureBasePath = "https://d3gtl9l2a4fn1j.cloudfront.net/t/p/";
+
+		optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|" + basePath + ";" + MediaItem.OPTION_WEB_SECURE_BASE_PATH + "|" + secureBasePath;
+
+		if (type.equalsIgnoreCase("poster")) {
+			optionsStr += ";" + MediaItem.OPTION_SIZES + "|w92,w154,w185,w342,w500,original";
+		} else if (type.equalsIgnoreCase("backdrop")) {
+			optionsStr += ";" + MediaItem.OPTION_SIZES + "|w300,w780,w1280,original";
+		} else if (type.equalsIgnoreCase("youtube")) {
+			optionsStr = MediaItem.OPTION_WEB_BASE_PATH + "|http://www.youtube.com/watch?v=;" + MediaItem.OPTION_WEB_ISDIRECT + "|false";
+		}
+
+		return (ConcurrentHashMap<Integer, Object>) Helper.explode(optionsStr, ";", "|");
 	}
 
 	@Override

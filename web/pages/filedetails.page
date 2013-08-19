@@ -6,7 +6,7 @@
 	<input type="hidden" name="fileId" value="{fileId}" />
 	<h2>{title}</h2>
 	<div id="path">{path}</div>
-	{images}
+	{mainimage}
 	<div id="fileInformation">
 		{listwrapperSize}
 		{listwrapperAdded}

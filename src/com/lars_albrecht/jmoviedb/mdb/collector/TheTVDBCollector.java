@@ -210,17 +210,6 @@ public class TheTVDBCollector extends ACollector {
 		return resultList;
 	}
 
-	@SuppressWarnings("unchecked")
-	private ConcurrentHashMap<Integer, Object> getOptionsFor(final String type) {
-		String optionsStr = "";
-
-		if (type.equalsIgnoreCase("poster") || type.equalsIgnoreCase("fanart")) {
-			optionsStr = MediaItem.OPTION_WEB_ISDIRECT + "|true";
-		}
-
-		return (ConcurrentHashMap<Integer, Object>) Helper.explode(optionsStr, ";", "|");
-	}
-
 	private Episode findEpisode(final String seriesId, final int seasonNr, final int episodeNr) {
 		Episode tempEpisode = null;
 		TheTVDBApi ttvdb = null;
@@ -386,6 +375,17 @@ public class TheTVDBCollector extends ACollector {
 	@Override
 	public ArrayList<Key<String>> getKeysToAdd() {
 		return this.keysToAdd;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ConcurrentHashMap<Integer, Object> getOptionsFor(final String type) {
+		String optionsStr = "";
+
+		if (type.equalsIgnoreCase("poster") || type.equalsIgnoreCase("fanart")) {
+			optionsStr = MediaItem.OPTION_WEB_ISDIRECT + "|true";
+		}
+
+		return (ConcurrentHashMap<Integer, Object>) Helper.explode(optionsStr, ";", "|");
 	}
 
 	/**
