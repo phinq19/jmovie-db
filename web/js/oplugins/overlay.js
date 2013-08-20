@@ -2,6 +2,8 @@
  * Overlay class to produce an overlay. 
  * 
  * TODO add an element that is over the overlay, so the content is not affected by the opacity. Add all new elements not to the overlay, add them to the inline element.
+ * @see "http://css-tricks.com/css-transparency-settings-for-all-broswers/"
+ * @see "http://css-tricks.com/non-transparent-elements-inside-transparent-elements/"
  * @param overlayId
  * @param dataName
  * @returns
