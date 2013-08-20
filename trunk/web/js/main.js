@@ -13,10 +13,10 @@ $(document).ready(function(){
 	addSettingsActions();
 	addAllJS();
 	
-//	x = new overlay('myId', 'myDataName');
-//	x.appendTo($('body'));
-//	
-//	new imagewall(x, ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 154, 231);
+	x = new overlay('myId', 'myDataName');
+	x.appendTo($('body'));
+	
+	new imagewall(x, ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 154, 231);
 	
 	
 	x.show();
