@@ -15,7 +15,7 @@ function overlay(overlayId, dataName){
 	this.css = {
 	   'width' 					: $(window).width(),
 	   'height' 				: $(window).width(),
-	   'position' 				: 'absolute',
+	   'position' 				: 'fixed',
 	   'top' 					: 0,
 	   'left' 					: 0,
 	   'opacity'				: 0.5,
@@ -120,4 +120,15 @@ function overlay(overlayId, dataName){
 		return this.overlay;
 	}
 	
+	this.isShown = isShown;
+	function isShown(){
+		return this.overlay.css('display') == 'none' ? false : true;
+	}
+	
+	this.addLayer = addLayer;
+	function addLayer(obj){
+		if(this.isShown() && this.isAppend && obj && typeof(obj) != 'undefined'){
+			this.getOverlay().parent().append(obj);
+		}
+	}
 }
