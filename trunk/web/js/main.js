@@ -13,13 +13,19 @@ $(document).ready(function(){
 	addSettingsActions();
 	addAllJS();
 	
-	x = new overlay('myId', 'myDataName');
-	x.appendTo($('body'));
-	
-	new imagewall(x, ['1', '2', '3', '4', '5', '6', '7', '8', '9'], 154, 231);
+	var myOverlay = new overlay('myId', 'myDataName');
+	myOverlay.appendTo($('body'));
 	
 	
-	x.show();
+	$('.showImagewall').click(function(){
+		$('#allView table tr').each(function(){
+			
+		});
+	});
+	//new imagewall(myOverlay, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], 154, 231);
+	
+	
+	/*myOverlay.show();*/
 	
 	
 });
