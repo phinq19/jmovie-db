@@ -17,16 +17,17 @@ $(document).ready(function(){
 	myOverlay.appendTo($('body'));
 	
 	
+	var imagewallArr = [];
 	$('.showImagewall').click(function(){
-		$('#allView table tr').each(function(){
-			
+		$('#allView table tr a').each(function(){
+			var url = $(this).data('image');
+			if(url){
+				imagewallArr.push(url);
+			}
 		});
+		var myImagewall = new imagewall(myOverlay, imagewallArr, 154, 231);
+		myOverlay.show();
 	});
-	/*new imagewall(myOverlay, ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'], 154, 231);*/
-	
-	
-	/*myOverlay.show();*/
-	
 	
 });
 
