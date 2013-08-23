@@ -28,7 +28,7 @@
 
 {allFileListItem-start}
 	<tr>
-		<td><a href="?action=showFileDetails&fileId={itemId}">{name}</a></td>
+		<td><a href="?action=showFileDetails&fileId={itemId}" data-image="{itemImageUrl}">{name}</a></td>
 		<td>{type}</td>
 		<td>{added}</td>
 		<td>{updated}</td>

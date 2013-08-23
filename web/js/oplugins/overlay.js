@@ -127,7 +127,7 @@ function overlay(overlayId, dataName){
 	
 	this.addLayer = addLayer;
 	function addLayer(obj){
-		if(this.isShown() && this.isAppend && obj && typeof(obj) != 'undefined'){
+		if(this.isAppend && obj && typeof(obj) != 'undefined'){
 			this.getOverlay().parent().append(obj);
 		}
 	}

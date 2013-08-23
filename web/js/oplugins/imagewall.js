@@ -12,15 +12,14 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 	if(typeof(overlayObj) != 'undefined' && typeof(imageList) == 'object'){
 		var imagewallLayer = this.imagewallLayer;
 		$(imageList).each(function(index, elem){
-			imagewallLayer.append(createElement('a' + index, 'b' + index, 'c' + index));
+			imagewallLayer.append(createElement(elem, elem, elem, this.elemWidth, this.elemHeight));
 		});
 		this.imagewallLayer = imagewallLayer;
 		overlayObj.addLayer(this.imagewallLayer);
-		
 	}
 	
 	this.createElement = createElement;
-	function createElement(imgSrcDef, imgSrcBig, title){
+	function createElement(imgSrcDef, imgSrcBig, title, maxWidth, maxHeight){
 		var maxElements = this.totalWidth / 154;
 		var unusedSpace = this.totalWidth % 154;
 		var unusedSpaceForElement = 32 / 8.2;
@@ -32,15 +31,19 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 				'height'			: '90%',
 				'position'			: 'absolute',
 				'left'				: '5%',
-				'top'				: '5%'
+				'top'				: '5%',
 			},
 			'href'	: imgSrcBig
 		});
 		
 		var imgElem = $('<img />', {
-			'src' 	: imgSrcDef,
-			'title'	: title,
-			'alt'	: title
+			'src' 		: imgSrcDef,
+			'title'		: title,
+			'alt'		: title,
+			'css'		: {
+				'width'	: maxWidth,
+				'height': maxHeight
+			}
 		});
 		
 		var titleBadge = $('<span>', {
@@ -70,6 +73,7 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 				'margin-bottom' 	: 10,
 				'float'				: 'left',
 				'position' 			: 'relative',
+				'overflow'			: 'hidden'
 			}
 		});
 		
