@@ -40,7 +40,12 @@ public class JMovieDB {
 			mdbConfig.getListOfTypers().add(new VideoTyper());
 
 			mdbConfig.addTitleExtraction("movie", "themoviedb", "general", "title");
-			mdbConfig.addTitleExtraction("serie", "thetvdb", "general", "title");
+			// TODO <movie name> (<year>) - <collection>
+			// TODO <series name> <episode title> - series/episode number
+			// TODO find possibility to add more than one string | alternatives
+			// | additionals
+			// mdbConfig.addTitleExtraction("serie", "thetvdb", "episode",
+			// "name");
 
 			final MDB mdb = new MDB(mdbConfig);
 			mdb.run();

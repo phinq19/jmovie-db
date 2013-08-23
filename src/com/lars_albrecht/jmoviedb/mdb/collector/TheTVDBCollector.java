@@ -172,7 +172,11 @@ public class TheTVDBCollector extends ACollector {
 				}
 				if (episode.getEpisodeName() != null) {
 					resultList.add(new KeyValue<String, Object>(new Key<String>("name", infoType, "episode", false, false),
-							new Value<Object>(episode.getCombinedEpisodeNumber())));
+							new Value<Object>(episode.getEpisodeName())));
+				}
+				if (episode.getCombinedEpisodeNumber() != null) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("combined_episode_number", infoType, "episode", false,
+							false), new Value<Object>(episode.getCombinedEpisodeNumber())));
 				}
 				if (episode.getEpisodeNumber() > 0) {
 					resultList.add(new KeyValue<String, Object>(new Key<String>("episode_number", infoType, "episode", false, false),
@@ -203,6 +207,10 @@ public class TheTVDBCollector extends ACollector {
 						resultList.add(new KeyValue<String, Object>(new Key<String>("writers", infoType, "episode", false, true),
 								new Value<Object>(writers)));
 					}
+				}
+				if (episode.getFilename() != null) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("filename", infoType, "episode", false, false),
+							new Value<Object>(episode.getFilename())));
 				}
 			}
 		}
