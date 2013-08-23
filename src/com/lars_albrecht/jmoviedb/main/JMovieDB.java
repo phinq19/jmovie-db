@@ -39,6 +39,9 @@ public class JMovieDB {
 
 			mdbConfig.getListOfTypers().add(new VideoTyper());
 
+			mdbConfig.addTitleExtraction("movie", "themoviedb", "general", "title");
+			mdbConfig.addTitleExtraction("serie", "thetvdb", "general", "title");
+
 			final MDB mdb = new MDB(mdbConfig);
 			mdb.run();
 		} catch (final Exception e) {
