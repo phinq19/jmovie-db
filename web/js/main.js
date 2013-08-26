@@ -20,9 +20,9 @@ $(document).ready(function(){
 	var imagewallArr = [];
 	$('.showImagewall').click(function(){
 		$('#allView table tr a').each(function(){
-			var url = $(this).data('image');
-			if(url){
-				imagewallArr.push(url);
+			var item = {'title' : $(this).text(), 'imgDef' : $(this).data('image'), 'imgBig' : $(this).data('image')};
+			if(item){
+				imagewallArr.push(item);
 			}
 		});
 		var myImagewall = new imagewall(myOverlay, imagewallArr, 154, 231);

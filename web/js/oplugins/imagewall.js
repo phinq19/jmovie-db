@@ -12,10 +12,23 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 	if(typeof(overlayObj) != 'undefined' && typeof(imageList) == 'object'){
 		var imagewallLayer = this.imagewallLayer;
 		$(imageList).each(function(index, elem){
-			imagewallLayer.append(createElement(elem, elem, elem, this.elemWidth, this.elemHeight));
+			imagewallLayer.append(createElement(elem.imgDef, elem.imgBig, elem.title, this.elemWidth, this.elemHeight));
 		});
 		this.imagewallLayer = imagewallLayer;
 		overlayObj.addLayer(this.imagewallLayer);
+		
+		$(window).scroll(function() {
+			var elemPosTop = undefined;
+			var posTop = $(document).scrollTop();
+			var posBottom = $(document).scrollTop() + $(window).height();
+			$('#imagewall .elementWrapper img.imgUnload').each(function(index, elem){
+				elemPosTop = $(this).position().top;
+				if((elemPosTop > posTop) && (elemPosTop < posBottom)){
+					$(this).attr('src', $(this).data('img'));
+				}
+			});
+		});
+		$(window).scroll();
 	}
 	
 	this.createElement = createElement;
@@ -32,19 +45,32 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 				'position'			: 'absolute',
 				'left'				: '5%',
 				'top'				: '5%',
+				'overflow'			: 'hidden'
 			},
 			'href'	: imgSrcBig
 		});
 		
-		var imgElem = $('<img />', {
-			'src' 		: imgSrcDef,
-			'title'		: title,
-			'alt'		: title,
-			'css'		: {
-				'width'	: maxWidth,
-				'height': maxHeight
-			}
-		});
+		if(imgSrcDef){
+			var imgElem = $('<img />', {
+				'src' 		: '',
+				'class'		: 'imgUnload',
+				'title'		: title,
+				'alt'		: title,
+				'css'		: {
+					'width'	: maxWidth,
+					'height': maxHeight
+				},
+				'data'		: {
+					'img'	: imgSrcDef
+				}
+			});
+		} else {
+			var imgElem = $('<div>', {
+				'css'		: {
+					'background-color'	: 'white'
+				}
+			});
+		}
 		
 		var titleBadge = $('<span>', {
 			'class'	: 'elemTitle',
@@ -57,8 +83,9 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 				'border'			: '1px solid black',
 				'border-left'		: 'none',
 				'border-right'		: 'none',
-				'background-color'	: 'lightgray',
-				'text-align'		: 'center'
+				'background-color'	: 'white',
+				'text-align'		: 'center',
+				'font-size'			: '0.8em'
 			}
 		});
 		
