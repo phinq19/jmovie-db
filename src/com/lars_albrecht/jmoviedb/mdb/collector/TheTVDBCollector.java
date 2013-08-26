@@ -131,6 +131,16 @@ public class TheTVDBCollector extends ACollector {
 						new Value<Object>(serie.getContentRating())));
 			}
 
+			if (serie.getFirstAired() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("first_aired", infoType, "facts", false, false),
+						new Value<Object>(serie.getFirstAired())));
+			}
+
+			if (serie.getRating() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("rating", infoType, "rating", false, false), new Value<Object>(
+						serie.getRating())));
+			}
+
 			// add genres
 			if (serie.getGenres() != null) {
 				for (final String genre : serie.getGenres()) {
@@ -140,6 +150,15 @@ public class TheTVDBCollector extends ACollector {
 			}
 
 			// add images
+			if (serie.getBanner() != null) {
+				try {
+					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
+							new MediaItem("banner", MediaItem.TYPE_WEB_IMAGE, new URI(serie.getBanner()), this.getOptionsFor("banner")));
+				} catch (final URISyntaxException e) {
+					e.printStackTrace();
+				}
+			}
+
 			if (serie.getPoster() != null) {
 				try {
 					ADataHandler.getDataHandler(MediaHandler.class).addData("mediaItems", fileItem,
@@ -186,8 +205,16 @@ public class TheTVDBCollector extends ACollector {
 					resultList.add(new KeyValue<String, Object>(new Key<String>("season_number", infoType, "episode", false, false),
 							new Value<Object>(episode.getSeasonNumber())));
 				}
+				if (episode.getOverview() != null) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "episode", false, false),
+							new Value<Object>(episode.getOverview())));
+				}
+				if (episode.getRating() != null) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("rating", infoType, "episode", false, false),
+							new Value<Object>(episode.getRating())));
+				}
 				if ((episode.getDirectors() != null) && (episode.getGuestStars().size() > 0)) {
-					for (final String directors : episode.getGuestStars()) {
+					for (final String directors : episode.getDirectors()) {
 						resultList.add(new KeyValue<String, Object>(new Key<String>("directors", infoType, "episode", false, true),
 								new Value<Object>(directors)));
 					}
@@ -198,19 +225,11 @@ public class TheTVDBCollector extends ACollector {
 								new Value<Object>(guestStar)));
 					}
 				}
-				if (episode.getOverview() != null) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "episode", false, false),
-							new Value<Object>(episode.getOverview())));
-				}
-				if ((episode.getWriters() != null) && (episode.getGuestStars().size() > 0)) {
+				if ((episode.getWriters() != null) && (episode.getWriters().size() > 0)) {
 					for (final String writers : episode.getGuestStars()) {
 						resultList.add(new KeyValue<String, Object>(new Key<String>("writers", infoType, "episode", false, true),
 								new Value<Object>(writers)));
 					}
-				}
-				if (episode.getFilename() != null) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("filename", infoType, "episode", false, false),
-							new Value<Object>(episode.getFilename())));
 				}
 			}
 		}
@@ -343,7 +362,7 @@ public class TheTVDBCollector extends ACollector {
 		final Matcher m = p.matcher(episodeStr);
 
 		if (m.find() && (m.groupCount() > 1) && (m.group(2) != null)) {
-			return Integer.parseInt(m.group(1));
+			return Integer.parseInt(m.group(2));
 		}
 
 		return -1;
@@ -389,7 +408,7 @@ public class TheTVDBCollector extends ACollector {
 	private ConcurrentHashMap<Integer, Object> getOptionsFor(final String type) {
 		String optionsStr = "";
 
-		if (type.equalsIgnoreCase("poster") || type.equalsIgnoreCase("fanart")) {
+		if (type.equalsIgnoreCase("poster") || type.equalsIgnoreCase("fanart") || type.equalsIgnoreCase("banner")) {
 			optionsStr = MediaItem.OPTION_WEB_ISDIRECT + "|true";
 		}
 
