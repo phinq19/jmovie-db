@@ -25,6 +25,7 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 				elemPosTop = $(this).position().top;
 				if((elemPosTop > posTop) && (elemPosTop < posBottom)){
 					$(this).attr('src', $(this).data('img'));
+					$(this).removeClass('imgUnload').addClass('imgLoad');
 				}
 			});
 		});
