@@ -32,7 +32,6 @@ import com.omertron.themoviedbapi.model.Language;
 import com.omertron.themoviedbapi.model.MovieDb;
 import com.omertron.themoviedbapi.model.PersonCast;
 import com.omertron.themoviedbapi.model.PersonCrew;
-import com.omertron.themoviedbapi.model.Reviews;
 import com.omertron.themoviedbapi.model.Trailer;
 
 /**
@@ -146,19 +145,28 @@ public class TheMovieDBCollector extends ACollector {
 						new Value<Object>(movie.getHomepage())));
 			}
 
-			// add reviews
-			if (movie.getReviews() != null && movie.getReviews().size() > 0) {
-				for (final Reviews review : movie.getReviews()) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("review_id", infoType, "reviews_" + review.getId(), false,
-							false), new Value<Object>(review.getId())));
-					resultList.add(new KeyValue<String, Object>(new Key<String>("review_author", infoType, "reviews_" + review.getId(),
-							false, false), new Value<Object>(review.getAuthor())));
-					resultList.add(new KeyValue<String, Object>(new Key<String>("review_content", infoType, "reviews_" + review.getId(),
-							false, false), new Value<Object>(review.getContent())));
-					resultList.add(new KeyValue<String, Object>(new Key<String>("review_url", infoType, "reviews_" + review.getId(), false,
-							false), new Value<Object>(review.getUrl())));
-				}
-			}
+			// add reviews | null pointer
+			// if (movie.getReviews() != null && movie.getReviews().size() > 0)
+			// {
+			// for (final Reviews review : movie.getReviews()) {
+			// resultList.add(new KeyValue<String, Object>(new
+			// Key<String>("review_id", infoType, "reviews_" + review.getId(),
+			// false,
+			// false), new Value<Object>(review.getId())));
+			// resultList.add(new KeyValue<String, Object>(new
+			// Key<String>("review_author", infoType, "reviews_" +
+			// review.getId(),
+			// false, false), new Value<Object>(review.getAuthor())));
+			// resultList.add(new KeyValue<String, Object>(new
+			// Key<String>("review_content", infoType, "reviews_" +
+			// review.getId(),
+			// false, false), new Value<Object>(review.getContent())));
+			// resultList.add(new KeyValue<String, Object>(new
+			// Key<String>("review_url", infoType, "reviews_" + review.getId(),
+			// false,
+			// false), new Value<Object>(review.getUrl())));
+			// }
+			// }
 
 			// add cast and crew
 			if ((movie.getCast() != null) && (movie.getCast().size() > 0)) {
@@ -243,14 +251,16 @@ public class TheMovieDBCollector extends ACollector {
 
 			if ((movie.getTrailers() != null) && (movie.getTrailers().size() > 0)) {
 				for (final Trailer trailer : movie.getTrailers()) {
-					try {
-						ADataHandler.getDataHandler(MediaHandler.class).addData(
-								"mediaItems",
-								fileItem,
-								new MediaItem(trailer.getName(), MediaItem.TYPE_WEB_VIDEO, new URI(trailer.getSource()), this
-										.getOptionsFor(trailer.getWebsite())));
-					} catch (final URISyntaxException e) {
-						e.printStackTrace();
+					if (trailer != null && trailer.getWebsite() != null && trailer.getSource() != null) {
+						try {
+							ADataHandler.getDataHandler(MediaHandler.class).addData(
+									"mediaItems",
+									fileItem,
+									new MediaItem(trailer.getName(), MediaItem.TYPE_WEB_VIDEO, new URI(trailer.getSource()), this
+											.getOptionsFor(trailer.getWebsite())));
+						} catch (final URISyntaxException e) {
+							// e.printStackTrace();
+						}
 					}
 
 				}
