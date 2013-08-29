@@ -12,8 +12,22 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 	if(typeof(overlayObj) != 'undefined' && typeof(imageList) == 'object'){
 		var imagewallLayer = this.imagewallLayer;
 		$(imageList).each(function(index, elem){
-			imagewallLayer.append(createElement(elem.imgDef, elem.imgBig, elem.title, this.elemWidth, this.elemHeight));
+			imagewallLayer.append(createElement(elem.imgDef, elem.imgBig, elem.title, elem.href, elemWidth, elemHeight));
 		});
+		
+		if(typeof($.fancybox) == 'function'){
+			imagewallLayer.find('.elementWrapper > a').fancybox({
+				'transitionIn'	:	'elastic',
+				'transitionOut'	:	'elastic',
+				'speedIn'		:	600, 
+				'speedOut'		:	200, 
+				'overlayShow'	:	true
+			});
+			
+		}
+		
+			
+		
 		this.imagewallLayer = imagewallLayer;
 		overlayObj.addLayer(this.imagewallLayer);
 		
@@ -33,7 +47,7 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 	}
 	
 	this.createElement = createElement;
-	function createElement(imgSrcDef, imgSrcBig, title, maxWidth, maxHeight){
+	function createElement(imgSrcDef, imgSrcBig, title, href, maxWidth, maxHeight){
 		var maxElements = this.totalWidth / 154;
 		var unusedSpace = this.totalWidth % 154;
 		var unusedSpaceForElement = 32 / 8.2;
@@ -58,8 +72,7 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 				'title'		: title,
 				'alt'		: title,
 				'css'		: {
-					'width'	: maxWidth,
-					'height': maxHeight
+					'width'	: (maxWidth + 'px')
 				},
 				'data'		: {
 					'img'	: imgSrcDef
@@ -75,7 +88,10 @@ function imagewall(overlayObj, imageList, elemWidth, elemHeight){
 		
 		var titleBadge = $('<span>', {
 			'class'	: 'elemTitle',
-			'text'	: title,
+			'html'	: $('<a>', {
+				'text' 	: title,
+				'href'	: href
+			}),
 			'css'	: {
 				'position' 			: 'absolute',
 				'left'				: 0,
