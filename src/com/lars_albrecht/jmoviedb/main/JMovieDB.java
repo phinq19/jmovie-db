@@ -31,7 +31,7 @@ public class JMovieDB {
 			mdbConfig.setFinderFileFilter(new VideoFileFilter());
 			mdbConfig.setSystemTrayInterfaceIconImageFile(new File("trunk/tray/bulb.gif"));
 			mdbConfig.setWebInterfaceFileDetailsOutputItem(new MovieFileDetailsOutputItem());
-			mdbConfig.setLoglevel(Debug.LEVEL_ALL);
+			mdbConfig.setLoglevel(Debug.LEVEL_INFO);
 
 			mdbConfig.getListOfCollectors().add(new MediaInfoCollector());
 			mdbConfig.getListOfCollectors().add(new TheMovieDBCollector());
