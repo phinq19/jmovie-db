@@ -9,7 +9,7 @@
 {information-start}
 	<h2>Informationen</h2>
 	<h3 class="tableHeader">Anzahl Einträge</h3>
-	<table>
+	<table class="defaultTable">
 		<tr>
 			<th>Typ</th>
 			<th>Anzahl</th>
@@ -89,7 +89,7 @@
 
 {noinformationTable-start}
 <h3>{collectorName}</h3>
-<table>
+<table class="defaultTable">
 	<tr>
 		<th>ID</th>
 		<th>Titel</th>
@@ -110,7 +110,7 @@
 {missing-start}
 <h2>Fehlende Dateien</h2>
 <p>Für folgende <span class="missingCounter">{missingcounter}</span> Einträge, wurde keine Datei mehr gefunden:</p>
-<table>
+<table class="defaultTable">
 	<tr>
 		<th>ID</th>
 		<th>Titel</th>
