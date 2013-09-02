@@ -19,7 +19,7 @@
 {listSettings-start}
 	<h2>Listen</h2>
 	<h3 class="tableHeader">Einstellungen für Listen</h3>
-	<table>
+	<table class="defaultTable">
 		<tr>
 			<th>Name</th>
 			<th>Einstellung</th>
@@ -46,7 +46,7 @@
 {searchSettings-start}
 	<h2>Suche</h2>
 	<h3 class="tableHeader">Einstellungen für die Suche</h3>
-	<table>
+	<table class="defaultTable">
 		<tr>
 			<th>Name</th>
 			<th>Einstellung</th>

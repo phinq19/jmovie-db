@@ -21,6 +21,7 @@ h3											{margin-top:15px;}
 hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 
 .main aside										{margin-bottom:20px; clear:right;}
+table.defaultTable								{ }
 
 #contentContainer									{padding:10px; border-top: 20px solid #000000; border-left: 1px solid #000; margin-bottom:20px; 
 															-webkit-box-shadow: 0 5px 5px #333;
@@ -39,10 +40,10 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 
 #contentContainer .resulttable 								{overflow:hidden;}
 #contentContainer .tableHeader								{height:20px; line-height:20px; text-transform:capitalize; text-align:left; color:#ffffff; background-color:#000000; text-indent:10px; font-size:0.83em}
-#contentContainer table									{width:100%;}
+#contentContainer table									{width:100%;overflow:hidden;}
 #contentContainer table tr								{border-bottom:1px solid #000;}
-#contentContainer table tr th								{background: none repeat scroll 0 0 #888888; color:#fff; text-align:left; padding-left: 10px; width:50%;}
-#contentContainer table tr td								{padding: 0 10px; width:50%; vertical-align:top;}
+#contentContainer table tr th								{background: none repeat scroll 0 0 #888888; color:#fff; text-align:left; text-indent:10px;}
+#contentContainer table tr td								{padding: 0 10px; vertical-align:top;}
 #contentContainer nav									{float:none; width:auto;}
 #contentContainer nav ul li								{display:inline-block; white-space:nowrap;}
 #contentContainer nav a									{padding:5px 10px; font-size:12px; float:none; width:auto; border-top:2px solid #000000;}
@@ -100,9 +101,28 @@ hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 
 #allView table a 									{width:250px; display:block;}
 
+#settingsView table tr td select					{width:100%;}
 
 
 
 input[type=text],
 input[type=password]									{height:20px; line-height:20px; border:1px solid #49B3FF; text-indent:5px; font-size:12px;}
 select													{height:24px; line-height:24px; border:1px solid #49B3FF; font-size:12px; padding:2px 0;}
+
+/** Media Queries **/
+@media only screen and (max-width:479px){
+	.defaultTable th.hideXS,
+	.defaultTable td.hideXS {
+		display:none;
+	}
+}
+
+@media only screen and (min-width: 480px) and (max-width: 1023px) {
+	.defaultTable th.hideS,
+	.defaultTable td.hideS {
+		display:none;
+	}
+}
+
+@media only screen and (min-width: 1024px) {
+}

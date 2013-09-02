@@ -13,7 +13,7 @@
 {browser-end}
 
 {browserFileListItemSingle-start}
-<table class="{class}">
+<table class="defaultTable {class}">
 	<tr>
 		<th>{title}</th>
 	</tr>

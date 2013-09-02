@@ -105,7 +105,7 @@
 {attributeListSection-start}
 		<div class="sectionSection">
 			<h5 class="tableHeader">{sectionname}</h5>
-			<table>
+			<table class="defaultTable">
 				<tr>
 					<th>{keyTitle}</th>
 					<th>{valueTitle}</th>

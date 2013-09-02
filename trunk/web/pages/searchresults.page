@@ -11,7 +11,7 @@
 	</p>
 	
 	<div class="resulttable">
-		<table>
+		<table class="defaultTable">
 			<tbody>
 				<tr>
 					<th>Filename</th>

@@ -13,13 +13,13 @@
 </div>
 
 {allFileList-start}
-<table>
+<table class="defaultTable">
 	<thead>
 		<tr>
-			<th data-sort="string">Titel</th>
-			<th data-sort="string">Typ</th>
-			<th data-sort="date">Hinzugefügt am</th>
-			<th data-sort="date">Updated am</th>
+			<th>Titel</th>
+			<th class="hideXS">Typ</th>
+			<th class="hideS hideXS">Hinzugefügt am</th>
+			<th class="hideS hideXS">Updated am</th>
 		</tr>
 	</thead>
 	{fileListItems}
@@ -29,9 +29,9 @@
 {allFileListItem-start}
 	<tr>
 		<td><a href="?action=showFileDetails&fileId={itemId}" data-image="{itemImageUrl}" data-id="{itemId}">{name}</a></td>
-		<td>{type}</td>
-		<td>{added}</td>
-		<td>{updated}</td>
+		<td class="hideXS">{type}</td>
+		<td class="hideS hideXS">{added}</td>
+		<td class="hideS hideXS">{updated}</td>
 	</tr>
 {allFileListItem-end}
 
