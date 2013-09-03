@@ -251,7 +251,7 @@ public class TheMovieDBCollector extends ACollector {
 
 			if ((movie.getTrailers() != null) && (movie.getTrailers().size() > 0)) {
 				for (final Trailer trailer : movie.getTrailers()) {
-					if (trailer != null && trailer.getWebsite() != null && trailer.getSource() != null) {
+					if ((trailer != null) && (trailer.getWebsite() != null) && (trailer.getSource() != null)) {
 						try {
 							ADataHandler.getDataHandler(MediaHandler.class).addData(
 									"mediaItems",
