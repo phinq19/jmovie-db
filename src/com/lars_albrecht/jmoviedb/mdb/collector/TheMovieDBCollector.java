@@ -3,6 +3,7 @@
  */
 package com.lars_albrecht.jmoviedb.mdb.collector;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -418,19 +419,26 @@ public class TheMovieDBCollector extends ACollector {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Map<String, Object> getDataForFilename(String filename) {
+	private Map<String, Object> getDataForFilename(final FileItem file) {
+		String filename = null;
 		final ConcurrentHashMap<String, Object> data = new ConcurrentHashMap<String, Object>();
 		data.put("titles", new ArrayList<String>());
 		data.put("year", -1);
 
-		// remove file extension from filename
-		final String fileExtension = Helper.getFileExtension(filename);
-		filename = Helper.replaceLast(filename, fileExtension, "");
+		// get file extension from filename
+		final String fileExtension = Helper.getFileExtension(file.getName());
+
+		// choose filename location
+		if (fileExtension.equalsIgnoreCase("vob")) {
+			filename = new File(file.getFullpath()).getParent();
+		} else {
+			filename = Helper.getFileNameWithoutExtension(file.getName());
+		}
 
 		final String separator = " - ";
-		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?= - |$))";
+		final String strPattern = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?=" + separator + "|$))";
 		final String strPatternSingle = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+)";
-		final String yearPattern = "([0-9]{4})+(?= - |$)";
+		final String yearPattern = "([0-9]{4})+(?=" + separator + "|$)";
 		final String endYearPattern = "([\\ \\.]){0,1}";
 		final String fullYearPattern = "(" + yearPattern + endYearPattern + ")";
 
@@ -510,7 +518,7 @@ public class TheMovieDBCollector extends ACollector {
 			String[] titles = null;
 			Integer year = null;
 
-			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(fileItem.getName());
+			final ConcurrentHashMap<String, Object> data = (ConcurrentHashMap<String, Object>) this.getDataForFilename(fileItem);
 			if ((data != null) && data.containsKey("titles") && data.containsKey("year")) {
 				titles = ((ArrayList<Key<String>>) data.get("titles")).toArray(new String[((ArrayList<String>) data.get("titles")).size()]);
 				year = (Integer) data.get("year");
