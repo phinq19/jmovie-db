@@ -45,17 +45,19 @@ public class MovieFileDetailsOutputItem extends AbstractFileDetailsOutputItem {
 				if (keyValue.getKey().getKey().equalsIgnoreCase("homepage")) {
 					return ((value != null) && (value.length() > 0)) ? "<a href=\"" + value + "\">" + value + "</a>" : null;
 				}
-			}
-		}
-
-		if (sectionName.equalsIgnoreCase("general")) {
-			if (keyValue.getKey().getKey().equalsIgnoreCase("imdb_id")) {
-				return "<a href=\"http://www.imdb.com/title/" + value + "\">@ IMDB" + " (" + value + ")</a>";
+			} else if (sectionName.equalsIgnoreCase("general")) {
+				if (keyValue.getKey().getKey().equalsIgnoreCase("imdb_id")) {
+					return "<a href=\"http://www.imdb.com/title/" + value + "\">@ IMDB" + " (" + value + ")</a>";
+				}
 			}
 		}
 
 		if (keyValue.getKey().getKey().equalsIgnoreCase("duration")) {
 			return Helper.getFormattedTimestamp(Long.parseLong(value) / 1000, "HH:mm:ss");
+		}
+
+		if (keyValue.getKey().getKey().equalsIgnoreCase("StreamSize") || keyValue.getKey().getKey().equalsIgnoreCase("FileSize")) {
+			return Helper.getHumanreadableFileSize(Long.parseLong(value));
 		}
 
 		return this.getDefaultValue(infoType, sectionName, keyValue, value);

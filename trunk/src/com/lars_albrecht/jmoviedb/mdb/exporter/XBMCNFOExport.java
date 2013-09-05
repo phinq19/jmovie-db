@@ -18,12 +18,14 @@ public class XBMCNFOExport extends AExporter {
 
 	@Override
 	public void exportItem(final File file, final FileItem fileItem, final List<Object> options) {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void exportList(final File file, final List<FileItem> fileList, final List<Object> options) {
-		// TODO Auto-generated method stub
+		for (final FileItem fileItem : fileList) {
+			this.exportItem(file, fileItem, options);
+		}
 	}
 
 	@Override
