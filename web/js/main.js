@@ -1,4 +1,4 @@
-var interval = 1000;
+var interval = 5000;
 var statusReloadErrorCounter = 0;
 var statusReloadId;
 
@@ -216,21 +216,21 @@ function loadStatus(){
 			if(message != ''){
 				$('#status').html(message);
 			}
-			if(interval != 1000){
-				resetInterval(1000);
+			if(interval != interval){
+				resetInterval(interval);
 			}
 		},
 		error: function( XMLHttpRequest, textStatus, errorThrown ) {
 			if(XMLHttpRequest.readyState == 0 && XMLHttpRequest.status == 0){
 				statusReloadErrorCounter++;
 				$('#status').html('<p>No connection. JMovieDB seems to be offline.' + (statusReloadErrorCounter > 1 ? ' Tried ' + statusReloadErrorCounter + ' times.' : '') + '</p>');
-				if(interval != 10000){
-					resetInterval(10000);
+				if(interval != interval*10){
+					resetInterval(interval*10);
 				}
 				
 				if(statusReloadErrorCounter >= 10){
-					if(interval != 60000){
-						resetInterval(60000);
+					if(interval != interval*60){
+						resetInterval(interval*60);
 					}
 				}
 			}
