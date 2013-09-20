@@ -14,7 +14,7 @@ import com.lars_albrecht.jmoviedb.mdb.outputItems.MovieFileDetailsOutputItem;
 import com.lars_albrecht.jmoviedb.mdb.typer.VideoTyper;
 import com.lars_albrecht.mdb.main.MDB;
 import com.lars_albrecht.mdb.main.MDBConfig;
-import com.lars_albrecht.mdb.main.utilities.Paths;
+import com.lars_albrecht.mdb.main.core.utilities.Paths;
 
 /**
  * @author lalbrecht
