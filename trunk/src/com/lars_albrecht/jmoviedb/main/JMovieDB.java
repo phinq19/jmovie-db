@@ -14,6 +14,7 @@ import com.lars_albrecht.jmoviedb.mdb.outputItems.MovieFileDetailsOutputItem;
 import com.lars_albrecht.jmoviedb.mdb.typer.VideoTyper;
 import com.lars_albrecht.mdb.main.MDB;
 import com.lars_albrecht.mdb.main.MDBConfig;
+import com.lars_albrecht.mdb.main.utilities.Paths;
 
 /**
  * @author lalbrecht
@@ -29,7 +30,7 @@ public class JMovieDB {
 		try {
 			final MDBConfig mdbConfig = new MDBConfig();
 			mdbConfig.setFinderFileFilter(new VideoFileFilter());
-			mdbConfig.setSystemTrayInterfaceIconImageFile(new File("trunk/tray/bulb.gif"));
+			mdbConfig.setSystemTrayInterfaceIconImageFile(new File(Paths.TRAY + File.separator + "icon.gif"));
 			mdbConfig.setWebInterfaceFileDetailsOutputItem(new MovieFileDetailsOutputItem());
 			mdbConfig.setLoglevel(Debug.LEVEL_INFO);
 
