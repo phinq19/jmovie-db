@@ -10,7 +10,7 @@
 {lastfivelist-end}
 
 {lastfivelistitem-start}
-	<li><a href="?action=showFileDetails&fileId={fileid}">{filetitle}</a></li>
+	<li><a href="?action=fileDetails&fileId={fileid}">{filetitle}</a></li>
 {lastfivelistitem-end}
 
 {nolastitems-start}
