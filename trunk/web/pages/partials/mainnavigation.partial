@@ -1,0 +1,18 @@
+<nav>
+	{content}	
+</nav>
+
+
+{navigation-start}
+	<ul>
+		{navigationitems}
+	</ul>
+{navigation-end}
+
+{navitem-start}
+	<li><a href="{href}">{title}</a></li>
+{navitem-end}
+
+{nonavitems-start}
+	<p>Keine Menüpunkte verfügbar</p>
+{nonavitems-end}

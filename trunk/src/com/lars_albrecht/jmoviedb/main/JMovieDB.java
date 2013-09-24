@@ -14,6 +14,15 @@ import com.lars_albrecht.jmoviedb.mdb.outputItems.MovieFileDetailsOutputItem;
 import com.lars_albrecht.jmoviedb.mdb.typer.VideoTyper;
 import com.lars_albrecht.mdb.main.MDB;
 import com.lars_albrecht.mdb.main.MDBConfig;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.AllPage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.AttributesTagsPage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.BrowsePage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.FileDetailsPage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.HomePage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.InfoControlPage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.SearchResultsPage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.SettingsPage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.config.WebPageConfig;
 import com.lars_albrecht.mdb.main.core.utilities.Paths;
 
 /**
@@ -37,6 +46,31 @@ public class JMovieDB {
 			mdbConfig.getListOfCollectors().add(new MediaInfoCollector());
 			mdbConfig.getListOfCollectors().add(new TheMovieDBCollector());
 			mdbConfig.getListOfCollectors().add(new TheTVDBCollector());
+
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(HomePage.class, "Start", new String[] {
+					"home", "index", "Start"
+			}, true, 0));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(InfoControlPage.class, "Info / Kontrolle", new String[] {
+					"infoControl", "infoKontrolle"
+			}, true, 4));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(FileDetailsPage.class, null, new String[] {
+					"filedetails", "detailansicht"
+			}, false, 0));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SearchResultsPage.class, null, new String[] {
+					"searchresults", "suchergebnisse"
+			}, false, 0));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SettingsPage.class, "Einstellungen", new String[] {
+					"settings", "einstellungen"
+			}, true, 5));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(BrowsePage.class, "Durchsuchen", new String[] {
+					"browser", "durchsuchen"
+			}, true, 2));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(AttributesTagsPage.class, "Attribute / Tags", new String[] {
+					"attributestags", "AttributeTags"
+			}, true, 3));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(AllPage.class, "Alle", new String[] {
+					"all", "alle"
+			}, true, 1));
 
 			mdbConfig.getListOfTypers().add(new VideoTyper());
 
