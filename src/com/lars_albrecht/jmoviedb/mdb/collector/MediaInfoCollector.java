@@ -171,7 +171,7 @@ public class MediaInfoCollector extends ACollector {
 								}
 								Value<Object> value = new Value<Object>(keyValues[1]);
 								pos = -1;
-								if (((pos = values.indexOf(value)) > -1) && (values.get(pos) instanceof Value<?>)) {
+								if (values != null && ((pos = values.indexOf(value)) > -1) && (values.get(pos) instanceof Value<?>)) {
 									value = (Value<Object>) values.get(pos);
 								} else {
 									if (!this.valuesToAdd.contains(value)) {
