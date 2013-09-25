@@ -19,7 +19,7 @@ $(document).ready(function(){
 	
 	var imagewallArr = [];
 	$('.showImagewall').click(function(){
-		$('#allView table tr a').each(function(){
+		$('#allView table tr a, #moviesView table tr a, #seriesView table tr a').each(function(){
 			var item = {'title' : $(this).text(), 'imgDef' : $(this).data('image'), 'imgBig' : $(this).data('image'), 'href' : '?action=fileDetails&fileId=' + $(this).data('id')};
 			if(item){
 				imagewallArr.push(item);
