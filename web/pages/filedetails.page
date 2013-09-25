@@ -1,4 +1,5 @@
 <div id="detailView" class="contentPart">
+	<a href="?action=fileDetails&fileId={fileid}&do=reloadFileInformation">RELOAD FILE INFORMATION</a>
 	{content}
 </div>
 
