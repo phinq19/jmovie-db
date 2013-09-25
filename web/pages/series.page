@@ -1,1 +1,60 @@
-<p>Series</p>
+<div id="buttonBar">
+	<nav>
+		<ul>
+			<li>
+				<a class="showImagewall">Show imagewall</a>
+			</li>
+		</ul>
+	</nav>
+</div>
+<div id="seriesView" class="contentPart">
+	{content}
+	{paginationContainer}
+</div>
+
+{seriesFileList-start}
+<table class="defaultTable">
+	<thead>
+		<tr>
+			<th>Titel</th>
+			<th class="hideS hideXS">Hinzugefügt am</th>
+			<th class="hideS hideXS">Updated am</th>
+		</tr>
+	</thead>
+	{fileListItems}
+</table>
+{seriesFileList-end}
+
+{seriesFileListItem-start}
+	<tr>
+		<td><a href="?action=fileDetails&fileId={itemId}" data-image="{itemImageUrl}" data-id="{itemId}">{name}</a></td>
+		<td class="hideS hideXS">{added}</td>
+		<td class="hideS hideXS">{updated}</td>
+	</tr>
+{seriesFileListItem-end}
+
+{pagination-start}
+<div class="pagination">
+	<div class="paginationTop">
+		<p>Zeige Seite {currentPage} von {maxPage}</p>
+	</div>
+
+	{paginationStartContainer}
+	
+	<span>{pageCurrentTitle}</span> 
+	
+	{paginationEndContainer}
+</div>
+{pagination-end}
+
+{paginationStart-start}
+	<span><a href="?action=series&page={pageFirst}">&lt;&lt;</a></span>
+	
+	<span><a href="?action=series&page={pagePrevious}">&lt;</a></span>
+{paginationStart-end}
+
+{paginationEnd-start}
+	<span><a href="?action=series&page={pageNext}">&gt;</a></span>
+	
+	<span><a href="?action=series&page={pageLast}">&gt;&gt;</a></span>
+{paginationEnd-end}
