@@ -23,7 +23,7 @@
 
 {browserFileListItem-start}
 	<tr>
-		<td><a href="?action=showFileDetails&fileId={itemId}">{name}</a></td>
+		<td><a href="?action=fileDetails&fileId={itemId}">{name}</a></td>
 	</tr>
 {browserFileListItem-end}
 

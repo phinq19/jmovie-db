@@ -4,13 +4,13 @@
 
 {settingsFields-start}
 	<div id="searchSettings">
-		<form action="?action=showSettings&do=save" method="post">
+		<form action="?action=settings&do=save" method="post">
 		{searchSettings}
 		</form>
 	</div>
 	
 	<div id="listSettings">
-		<form action="?action=showSettings&do=save" method="post">
+		<form action="?action=settings&do=save" method="post">
 		{listSettings}
 		</form>
 	</div>
