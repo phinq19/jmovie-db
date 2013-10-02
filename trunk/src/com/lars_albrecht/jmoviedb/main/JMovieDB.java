@@ -11,6 +11,7 @@ import com.lars_albrecht.jmoviedb.mdb.collector.TheMovieDBCollector;
 import com.lars_albrecht.jmoviedb.mdb.collector.TheTVDBCollector;
 import com.lars_albrecht.jmoviedb.mdb.filter.VideoFileFilter;
 import com.lars_albrecht.jmoviedb.mdb.interfaces.pages.MoviesPage;
+import com.lars_albrecht.jmoviedb.mdb.interfaces.pages.SeriesExPage;
 import com.lars_albrecht.jmoviedb.mdb.interfaces.pages.SeriesPage;
 import com.lars_albrecht.jmoviedb.mdb.outputItems.MovieFileDetailsOutputItem;
 import com.lars_albrecht.jmoviedb.mdb.typer.VideoTyper;
@@ -75,6 +76,9 @@ public class JMovieDB {
 			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SeriesPage.class, "Serien", new String[] {
 					"series", "serien"
 			}, true, 2));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SeriesExPage.class, "Serien", new String[] {
+					"seriesex", "serien"
+			}, false, 0));
 
 			mdbConfig.getListOfTypers().add(new VideoTyper());
 

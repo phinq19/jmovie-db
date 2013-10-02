@@ -436,7 +436,7 @@ public class TheMovieDBCollector extends ACollector {
 		}
 
 		final String separator = " - ";
-		final String strPattern = "([\\^\\°\\'\\#\\+\\*\\~\\&\\\\!\\?\\\"\\[\\]\\{\\}\\(\\)\\,\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?="
+		final String strPattern = "([\\’\\^\\°\\'\\#\\+\\*\\~\\&\\\\!\\?\\\"\\[\\]\\{\\}\\(\\)\\,\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+?(?="
 				+ separator + "|$))";
 		final String strPatternSingle = "([\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+)";
 		final String yearPattern = "([0-9]{4})+(?=" + separator + "|$)";

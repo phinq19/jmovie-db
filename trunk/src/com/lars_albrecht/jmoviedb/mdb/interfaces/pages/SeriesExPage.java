@@ -1,6 +1,8 @@
 package com.lars_albrecht.jmoviedb.mdb.interfaces.pages;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jetty.server.Request;
 
@@ -22,9 +24,9 @@ import com.lars_albrecht.mdb.main.core.models.persistable.MediaItem;
  * @author lalbrecht
  * 
  */
-public class SeriesPage extends WebPage {
+public class SeriesExPage extends WebPage {
 
-	public SeriesPage(final String actionname, final Request request, final MainController mainController, final WebInterface webInterface)
+	public SeriesExPage(final String actionname, final Request request, final MainController mainController, final WebInterface webInterface)
 			throws Exception {
 		super(actionname, request, mainController, webInterface);
 
@@ -72,8 +74,12 @@ public class SeriesPage extends WebPage {
 				new MediaHandler<>().getClass().getCanonicalName(), new AttributeHandler<>().getClass().getCanonicalName()
 		};
 
-		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().getFileItemsForPaging(startIndex, maxElems,
-				"filetype='serie'", sortOrder, additionalHandlerData);
+		// final ArrayList<FileItem> fileItems =
+		// this.mainController.getDataHandler().getFileItemsForPaging(startIndex,
+		// maxElems,
+		// "filetype='serie'", sortOrder, additionalHandlerData);
+		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().findAllFileItemForStringInAttributesByKey(
+				"collection_id", true, additionalHandlerData);
 
 		// pagination start
 		final boolean showPagination = (fileItems.size() > 0) && (maxItemsForPagingOption > 0)
@@ -111,49 +117,99 @@ public class SeriesPage extends WebPage {
 		}
 		// pagination end
 
-		String fileList = seriesTemplate.getSubMarkerContent("seriesFileList");
-		String fileListItems = "";
-		String tempFileListItem = null;
-
 		// TODO extract / refactor this code block to a general class.
 		String itemTitle = null;
 		String extractedName = null;
+
+		final ConcurrentHashMap<Integer, ArrayList<FileItem>> sortedList = new ConcurrentHashMap<Integer, ArrayList<FileItem>>();
+		int collectionId = -1;
 		for (final FileItem fileItem : fileItems) {
-			extractedName = this.getExtractedName(fileItem);
-			itemTitle = extractedName != null ? extractedName : fileItem.getName();
+			collectionId = this.getCollectionId(fileItem);
+			System.out.println(collectionId);
+			if (!sortedList.containsKey(collectionId)) {
+				sortedList.put(collectionId, new ArrayList<FileItem>());
+			}
+			sortedList.get(collectionId).add(fileItem);
+		}
 
-			tempFileListItem = seriesTemplate.getSubMarkerContent("seriesFileListItem");
-			tempFileListItem = Template.replaceMarker(tempFileListItem, "name", itemTitle, false);
+		String seriesListContainer = "";
+		String seriesList = seriesTemplate.getSubMarkerContent("seriesList");
+		String seriesFileList = null;
+		String fileListItems = "";
+		String seriesFileListItem = null;
 
-			// TODO Refactor / Recode. This is only proof of concept.
-			final ArrayList<MediaItem> fileMediaItems = ((MediaHandler<?>) ADataHandler.getDataHandler(MediaHandler.class))
-					.getHandlerDataForFileItem(fileItem);
-			String imageToShow = null;
-			String bigImageToShow = null;
-			if (fileMediaItems != null) {
-				for (final MediaItem mediaItem : fileMediaItems) {
-					if (mediaItem.getName().equalsIgnoreCase("poster")) {
-						imageToShow = this.getUrlFromMediaItem(mediaItem, 1);
-						bigImageToShow = this.getUrlFromMediaItem(mediaItem, 2);
-						break;
+		boolean isSetSeasonNumber = false;
+		boolean isSetSeriesTitle = false;
+		for (final Entry<Integer, ArrayList<FileItem>> fileItemListEntry : sortedList.entrySet()) {
+			isSetSeasonNumber = false;
+			isSetSeriesTitle = false;
+
+			seriesList = seriesTemplate.getSubMarkerContent("seriesList");
+			seriesFileList = seriesTemplate.getSubMarkerContent("seriesFileList");
+			fileListItems = "";
+			for (final FileItem fileItem : fileItemListEntry.getValue()) {
+				if (!isSetSeasonNumber) {
+					final Object seasonNumber = AttributeHandler.getAttributeValueByKey(fileItem, "season_number");
+					if (seasonNumber != null) {
+						seriesList = Template.replaceMarker(seriesList, "season", (String) seasonNumber, false);
+						isSetSeasonNumber = true;
 					}
 				}
+				if (!isSetSeriesTitle) {
+					seriesList = Template.replaceMarker(seriesList, "seriesTitle",
+							(String) AttributeHandler.getAttributeValueByKey(fileItem, "title"), false);
+					isSetSeriesTitle = true;
+				}
+
+				extractedName = this.getExtractedName(fileItem);
+				itemTitle = extractedName != null ? extractedName : fileItem.getName();
+
+				seriesFileListItem = seriesTemplate.getSubMarkerContent("seriesFileListItem");
+				seriesFileListItem = Template.replaceMarker(seriesFileListItem, "name", itemTitle, false);
+
+				// TODO Refactor / Recode. This is only proof of concept.
+				final ArrayList<MediaItem> fileMediaItems = ((MediaHandler<?>) ADataHandler.getDataHandler(MediaHandler.class))
+						.getHandlerDataForFileItem(fileItem);
+				String imageToShow = null;
+				String bigImageToShow = null;
+				if (fileMediaItems != null) {
+					for (final MediaItem mediaItem : fileMediaItems) {
+						if (mediaItem.getName().equalsIgnoreCase("poster")) {
+							imageToShow = this.getUrlFromMediaItem(mediaItem, 1);
+							bigImageToShow = this.getUrlFromMediaItem(mediaItem, 2);
+							break;
+						}
+					}
+				}
+
+				seriesFileListItem = Template.replaceMarker(seriesFileListItem, "itemImageUrl", imageToShow, false);
+				seriesFileListItem = Template.replaceMarker(seriesFileListItem, "itemImageUrlBig", bigImageToShow, false);
+				seriesFileListItem = Template.replaceMarker(seriesFileListItem, "itemId", fileItem.getId().toString(), true);
+				seriesFileListItem = Template.replaceMarker(seriesFileListItem, "added",
+						Helper.getFormattedTimestamp(fileItem.getCreateTS().longValue(), null), false);
+				seriesFileListItem = Template.replaceMarker(seriesFileListItem, "updated",
+						Helper.getFormattedTimestamp(fileItem.getUpdateTS().longValue(), null), false);
+
+				fileListItems += seriesFileListItem;
 			}
+			seriesFileList = Template.replaceMarker(seriesFileList, "fileListItems", fileListItems, false);
 
-			tempFileListItem = Template.replaceMarker(tempFileListItem, "itemImageUrl", imageToShow, false);
-			tempFileListItem = Template.replaceMarker(tempFileListItem, "itemImageUrlBig", bigImageToShow, false);
-			tempFileListItem = Template.replaceMarker(tempFileListItem, "itemId", fileItem.getId().toString(), true);
-			tempFileListItem = Template.replaceMarker(tempFileListItem, "added",
-					Helper.getFormattedTimestamp(fileItem.getCreateTS().longValue(), null), false);
-			tempFileListItem = Template.replaceMarker(tempFileListItem, "updated",
-					Helper.getFormattedTimestamp(fileItem.getUpdateTS().longValue(), null), false);
-			fileListItems += tempFileListItem;
+			seriesList = Template.replaceMarker(seriesList, "singleseries", seriesFileList, false);
+			seriesListContainer += seriesList;
 		}
-		fileList = Template.replaceMarker(fileList, "fileListItems", fileListItems, false);
 
-		seriesTemplate.replaceMarker("content", fileList, false);
+		seriesTemplate.replaceMarker("content", seriesListContainer, false);
 
 		return seriesTemplate;
+	}
+
+	private int getCollectionId(final FileItem fileItem) {
+		final Object resultObj = AttributeHandler.getAttributeValueByKey(fileItem, "collection_id");
+		if (resultObj == null) {
+			return -1;
+		} else {
+			return Integer.parseInt((String) resultObj);
+		}
 	}
 
 	private String getExtractedName(final FileItem fileItem) {
@@ -184,7 +240,7 @@ public class SeriesPage extends WebPage {
 
 	@Override
 	public String getTemplateName() {
-		return "series";
+		return "seriesex";
 	}
 
 	@Override
