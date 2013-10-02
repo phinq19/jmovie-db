@@ -320,7 +320,7 @@ public class TheTVDBCollector extends ACollector {
 		final String fileExtension = Helper.getFileExtension(filename);
 		filename = Helper.replaceLast(filename, fileExtension, "");
 
-		final String strPattern = "[\\^\\°\\'\\#\\+\\*\\~\\&\\\\!\\?\\\"\\[\\]\\{\\}\\(\\)\\,\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+";
+		final String strPattern = "[\\’\\^\\°\\'\\#\\+\\*\\~\\&\\\\!\\?\\\"\\[\\]\\{\\}\\(\\)\\,\\.\\_\\-0-9a-zA-ZÄÖÜßäöü\\ ]+";
 		final String episodePattern = "(S[0-9]{1,2}E[0-9]{1,2}E[0-9]{1,2})|(S[0-9]{1,2}E[0-9]{1,2})";
 		final String regex = "(^(" + strPattern + ") - (" + strPattern + ") - (" + episodePattern + ")+)|(^(" + strPattern + ") - ("
 				+ episodePattern + ")+)";
