@@ -21,7 +21,7 @@ h3											{margin-top:15px;}
 hr											{clear:left; float:left; padding: 10px 0; width:100%;}
 
 .main aside										{margin-bottom:20px; clear:right;}
-table.defaultTable								{ }
+table.defaultTable								{table-layout:fixed;}
 
 #contentContainer									{padding:10px; border-top: 20px solid #000000; border-left: 1px solid #000; margin-bottom:20px; 
 															-webkit-box-shadow: 0 5px 5px #333;
@@ -102,6 +102,9 @@ table.defaultTable								{ }
 #allView table a 									{width:250px; display:block;}
 
 #settingsView table tr td select					{width:100%;}
+
+#moviesView table.defaultTable .hideS,
+#seriesView table.defaultTable .hideS				{width:95px;}
 
 
 
