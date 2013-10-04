@@ -49,36 +49,36 @@ public class JMovieDB {
 			mdbConfig.getListOfCollectors().add(new TheMovieDBCollector());
 			mdbConfig.getListOfCollectors().add(new TheTVDBCollector());
 
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(HomePage.class, "Start", new String[] {
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(HomePage.class, new String[] {
 					"home", "index", "Start"
-			}, true, 0));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(InfoControlPage.class, "Info / Kontrolle", new String[] {
+			}, "Start", true, 0));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(InfoControlPage.class, new String[] {
 					"infoControl", "infoKontrolle"
-			}, true, 5));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(FileDetailsPage.class, null, new String[] {
+			}, "Info / Kontrolle", true, 5));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(FileDetailsPage.class, new String[] {
 					"filedetails", "detailansicht"
-			}, false, 0));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SearchResultsPage.class, null, new String[] {
+			}));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SearchResultsPage.class, new String[] {
 					"searchresults", "suchergebnisse"
-			}, false, 0));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SettingsPage.class, "Einstellungen", new String[] {
+			}));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SettingsPage.class, new String[] {
 					"settings", "einstellungen"
-			}, true, 6));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(BrowsePage.class, "Durchsuchen", new String[] {
+			}, "Einstellungen", true, 6));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(BrowsePage.class, new String[] {
 					"browser", "durchsuchen"
-			}, true, 3));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(AttributesTagsPage.class, "Attribute / Tags", new String[] {
+			}, "Durchsuchen", true, 3));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(AttributesTagsPage.class, new String[] {
 					"attributestags", "AttributeTags"
-			}, true, 4));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(MoviesPage.class, "Filme", new String[] {
+			}, "Attribute / Tags", true, 4));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(MoviesPage.class, new String[] {
 					"movies", "filme"
-			}, true, 1));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SeriesPage.class, "Serien", new String[] {
+			}, "Filme", true, 1));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SeriesPage.class, new String[] {
 					"series", "serien"
-			}, true, 2));
-			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SeriesExPage.class, "Serien", new String[] {
+			}, "Serien", true, 2));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SeriesExPage.class, new String[] {
 					"seriesex", "serien"
-			}, false, 0));
+			}));
 
 			mdbConfig.getListOfTypers().add(new VideoTyper());
 
