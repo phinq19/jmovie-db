@@ -24,7 +24,7 @@
 		<tr>
 			<th>Titel</th>
 			<th class="hideS hideXS">Hinzugefügt</th>
-			<th class="hideS hideXS">Updated</th>
+			<th class="hideS hideXS">Geändert</th>
 		</tr>
 	</thead>
 	{fileListItems}
