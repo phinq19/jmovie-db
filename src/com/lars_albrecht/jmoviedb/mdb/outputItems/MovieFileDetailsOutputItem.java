@@ -92,8 +92,8 @@ public class MovieFileDetailsOutputItem extends AbstractFileDetailsOutputItem {
 	private String translateKey(final String infoType, final String sectionName, final KeyValue<String, Object> keyValue) {
 		final String translateKey = "moviedb.filedetails." + infoType + "." + sectionName + "." + keyValue.getKey().getKey();
 		// System.out.println(translateKey);
-		if (RessourceBundleEx.getInstance("mdb-trans").contains(translateKey)) {
-			return RessourceBundleEx.getInstance("mdb-trans").getProperty(translateKey);
+		if (RessourceBundleEx.getInstance("jmdb-trans").contains(translateKey)) {
+			return RessourceBundleEx.getInstance("jmdb-trans").getProperty(translateKey);
 		} else {
 			return null;
 		}
