@@ -79,7 +79,7 @@ public class SeriesExPage extends WebPage {
 		// maxElems,
 		// "filetype='serie'", sortOrder, additionalHandlerData);
 		final ArrayList<FileItem> fileItems = this.mainController.getDataHandler().findAllFileItemForStringInAttributesByKey(
-				"collection_id", true, additionalHandlerData);
+				"collection_id", true, "name", additionalHandlerData);
 
 		// pagination start
 		final boolean showPagination = (fileItems.size() > 0) && (maxItemsForPagingOption > 0)
@@ -125,7 +125,6 @@ public class SeriesExPage extends WebPage {
 		int collectionId = -1;
 		for (final FileItem fileItem : fileItems) {
 			collectionId = this.getCollectionId(fileItem);
-			System.out.println(collectionId);
 			if (!sortedList.containsKey(collectionId)) {
 				sortedList.put(collectionId, new ArrayList<FileItem>());
 			}
