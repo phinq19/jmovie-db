@@ -204,7 +204,7 @@ public class SeriesExPage extends WebPage {
 
 	private int getCollectionId(final FileItem fileItem) {
 		final Object resultObj = AttributeHandler.getAttributeValueByKey(fileItem, "collection_id");
-		if (resultObj == null) {
+		if (resultObj == null || resultObj.equals("")) {
 			return -1;
 		} else {
 			return Integer.parseInt((String) resultObj);
