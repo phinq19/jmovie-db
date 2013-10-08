@@ -1,9 +1,8 @@
 package com.lars_albrecht.jmoviedb.mdb.sorter;
 
 import java.util.Comparator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import com.lars_albrecht.jmoviedb.mdb.helper.SeriesHelper;
 import com.lars_albrecht.mdb.main.core.models.persistable.FileItem;
 
 /**
@@ -24,25 +23,14 @@ public class FileItemSortSeriesRegExName implements Comparator<FileItem> {
 
 	@Override
 	public int compare(final FileItem item1, final FileItem item2) {
-		String item1EpisodeSeason = null;
-		String item2EpisodeSeason = null;
+		final Integer item1EpisodeSeason = SeriesHelper.getSeasonFromFileItem(item1);
+		final Integer item2EpisodeSeason = SeriesHelper.getSeasonFromFileItem(item2);
 
-		final Pattern p = Pattern.compile("(S[0-9]{1,2}E[0-9]{1,2})");
-		Matcher m = null;
-		m = p.matcher(item1.getName());
-		if (m.find()) {
-			item1EpisodeSeason = m.group(1);
-		}
-		m = p.matcher(item2.getName());
-		if (m.find()) {
-			item2EpisodeSeason = m.group(1);
-		}
-
-		if (item1EpisodeSeason != null && item2EpisodeSeason != null) {
+		if ((item1EpisodeSeason != null) && (item2EpisodeSeason != null)) {
 			if (this.sort == FileItemSortSeriesRegExName.SORT_ASC) {
-				return item2EpisodeSeason.compareToIgnoreCase(item1EpisodeSeason);
+				return item2EpisodeSeason.compareTo(item1EpisodeSeason);
 			} else {
-				return item1EpisodeSeason.compareToIgnoreCase(item2EpisodeSeason);
+				return item1EpisodeSeason.compareTo(item2EpisodeSeason);
 			}
 		}
 		return 0;
