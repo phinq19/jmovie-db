@@ -145,27 +145,33 @@ public class SeriesExPage extends WebPage {
 		String fileListItems = "";
 		String seriesFileListItem = null;
 
-		boolean isSetSeasonNumber = false;
 		boolean isSetSeriesTitle = false;
+		boolean isSetSeriesBanner = false;
 		for (final Entry<Integer, ArrayList<FileItem>> fileItemListEntry : sortedList.entrySet()) {
-			isSetSeasonNumber = false;
 			isSetSeriesTitle = false;
+			isSetSeriesBanner = false;
 
 			seriesList = seriesTemplate.getSubMarkerContent("seriesList");
 			seriesFileList = seriesTemplate.getSubMarkerContent("seriesFileList");
 			fileListItems = "";
 			for (final FileItem fileItem : fileItemListEntry.getValue()) {
-				if (!isSetSeasonNumber) {
-					final Object seasonNumber = AttributeHandler.getAttributeValueByKey(fileItem, "season_number");
-					if (seasonNumber != null) {
-						seriesList = Template.replaceMarker(seriesList, "season", (String) seasonNumber, false);
-						isSetSeasonNumber = true;
-					}
-				}
 				if (!isSetSeriesTitle) {
 					seriesList = Template.replaceMarker(seriesList, "seriesTitle",
-							(String) AttributeHandler.getAttributeValueByKey(fileItem, "title"), false);
+							(String) AttributeHandler.getAttributeValueByKey(fileItem, "title"), true);
 					isSetSeriesTitle = true;
+				}
+				if (!isSetSeriesBanner) {
+					@SuppressWarnings("unchecked")
+					final ArrayList<MediaItem> itemFileMedia = (ArrayList<MediaItem>) ADataHandler.getHandlerDataFromFileItem(fileItem,
+							MediaHandler.class);
+
+					final MediaItem mediaItemBanner = MediaHandler.getMediaItemByName(itemFileMedia, "banner");
+					if (mediaItemBanner != null) {
+						mediaItemBanner.getUri().toString();
+						seriesList = Template.replaceMarker(seriesList, "seriesBanner", mediaItemBanner.getUri().toString(), false);
+						isSetSeriesBanner = true;
+					}
+
 				}
 
 				extractedName = this.getExtractedName(fileItem);
@@ -175,8 +181,10 @@ public class SeriesExPage extends WebPage {
 				seriesFileListItem = Template.replaceMarker(seriesFileListItem, "name", itemTitle, false);
 
 				// TODO Refactor / Recode. This is only proof of concept.
-				final ArrayList<MediaItem> fileMediaItems = ((MediaHandler<?>) ADataHandler.getDataHandler(MediaHandler.class))
-						.getHandlerDataForFileItem(fileItem);
+				@SuppressWarnings("unchecked")
+				final ArrayList<MediaItem> fileMediaItems = (ArrayList<MediaItem>) ADataHandler.getHandlerDataFromFileItem(fileItem,
+						MediaHandler.class);
+
 				String imageToShow = null;
 				String bigImageToShow = null;
 				if (fileMediaItems != null) {
@@ -212,7 +220,7 @@ public class SeriesExPage extends WebPage {
 
 	private int getCollectionId(final FileItem fileItem) {
 		final Object resultObj = AttributeHandler.getAttributeValueByKey(fileItem, "collection_id");
-		if (resultObj == null || resultObj.equals("")) {
+		if ((resultObj == null) || resultObj.equals("")) {
 			return -1;
 		} else {
 			return Integer.parseInt((String) resultObj);

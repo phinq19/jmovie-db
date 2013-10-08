@@ -106,6 +106,9 @@ table.defaultTable								{table-layout:fixed;}
 #moviesView table.defaultTable .hideS,
 #seriesView table.defaultTable .hideS				{width:95px;}
 
+#seriesView .series 								{margin-bottom:20px;}
+#seriesView .series .seriesBanner img				{width:100%;}
+
 
 
 input[type=text],

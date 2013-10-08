@@ -13,7 +13,8 @@
 
 {seriesList-start}
 <div class="series">
-	<div class="seriesTitle">{seriesTitle} - {season}</div>
+	<div class="seriesBanner"><img alt="Banner &quot;{seriesTitle}&quot;" src="{seriesBanner}" title="Banner &quot;{seriesTitle}&quot;" /></div>
+	<div class="seriesTitle">{seriesTitle}</div>
 	{singleseries}
 </div>
 {seriesList-end}
