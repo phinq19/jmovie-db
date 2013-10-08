@@ -1,6 +1,7 @@
 package com.lars_albrecht.jmoviedb.mdb.interfaces.pages;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -8,6 +9,7 @@ import org.eclipse.jetty.server.Request;
 
 import com.lars_albrecht.general.utilities.Helper;
 import com.lars_albrecht.general.utilities.Template;
+import com.lars_albrecht.jmoviedb.mdb.sorter.FileItemSortSeriesRegExName;
 import com.lars_albrecht.mdb.main.core.controller.MainController;
 import com.lars_albrecht.mdb.main.core.handler.OptionsHandler;
 import com.lars_albrecht.mdb.main.core.handler.datahandler.AttributeHandler;
@@ -129,6 +131,12 @@ public class SeriesExPage extends WebPage {
 				sortedList.put(collectionId, new ArrayList<FileItem>());
 			}
 			sortedList.get(collectionId).add(fileItem);
+		}
+
+		// sort sortedList for each series
+		final FileItemSortSeriesRegExName sorter = new FileItemSortSeriesRegExName(FileItemSortSeriesRegExName.SORT_DESC);
+		for (final Entry<Integer, ArrayList<FileItem>> entry : sortedList.entrySet()) {
+			Collections.sort(entry.getValue(), sorter);
 		}
 
 		String seriesListContainer = "";
