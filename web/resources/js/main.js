@@ -208,7 +208,6 @@ function loadStatus(){
 	$.ajax({
 		type: "POST",
 		url: "/ajax.html?action=getStatus",
-		data: { 'action' : 'test'},
 		timeout : interval-10,
 		success: function( msg ) {
 			statusReloadErrorCounter = 0;
@@ -223,7 +222,7 @@ function loadStatus(){
 		error: function( XMLHttpRequest, textStatus, errorThrown ) {
 			if(XMLHttpRequest.readyState == 0 && XMLHttpRequest.status == 0){
 				statusReloadErrorCounter++;
-				$('#status').html('<p>No connection. JMovieDB seems to be offline.' + (statusReloadErrorCounter > 1 ? ' Tried ' + statusReloadErrorCounter + ' times.' : '') + '</p>');
+				$('#status').html('<p>Konnte keine Verbindung aufbauen. JMovieDB scheint nicht erreichbar zu sein.' + (statusReloadErrorCounter > 1 ? ' Tried ' + statusReloadErrorCounter + ' times.' : '') + '</p>');
 				if(interval != interval*10){
 					resetInterval(interval*10);
 				}

@@ -14,6 +14,11 @@
 		<p>Der Graph zeigt an, an welchen Tagen wie viele Dateien hinzugefügt wurden.</p>
 		<img src="/statistics/addsPerDay.jpg" title="Hinzugefügt pro Tag" alt="Hinzugefügt pro Tag" />
 	</div>
+	<div class="statisticsBlock">
+		<h3>Aktualisierungen pro Tag</h3>
+		<p>Der Graph zeigt an, an welchen Tagen wie viele Dateien aktualisiert wurden.</p>
+		<img src="/statistics/updatesPerDay.jpg" title="Aktualisierungen pro Tag" alt="Aktualisierungen pro Tag" />
+	</div>
 {statistics-end}
 
 {information-start}

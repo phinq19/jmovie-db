@@ -1,0 +1,18 @@
+<div id="loginBoxPartial">
+	{content}
+</div>
+
+
+{loginBoxForm-start}
+	<form action="" method="post">
+		<label for="loginBoxEmail">E-Mail</label>
+		<input type="email" name="loginBoxEmail" id="loginBoxEmail" value="" required="required" placeholder="E-Mail" />
+		<label for="loginBoxPassword">Password</label>
+		<input type="password" name="loginBoxPassword" id="loginBoxPassword" value="" required="required" placeholder="Passwort" />
+	</form>
+{loginBoxForm-end}
+
+{loginBoxText-start}
+	<p>You are logged in as <span class="loginBoxName">&quot;{name}&quot;</span></p>
+	<p><a href="# " class="loginBoxLogout">Logout</a></p>
+{loginBoxText-end}
