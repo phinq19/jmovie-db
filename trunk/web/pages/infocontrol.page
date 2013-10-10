@@ -4,7 +4,17 @@
 	<div id="noInformation">{noinfocontainer}</div>
 	<div id="duplicatecontainer">{duplicatecontainer}</div>
 	<div id="missingcontainer">{missingcontainer}</div>
+	<div id="statisticscontainer">{statisticscontainer}</div>
 </div>
+
+{statistics-start}
+	<h2>Statistiken</h2>
+	<div class="statisticsBlock">
+		<h3>Hinzugefügt pro Tag</h3>
+		<p>Der Graph zeigt an, an welchen Tagen wie viele Dateien hinzugefügt wurden.</p>
+		<img src="/statistics/addsPerDay.jpg" title="Hinzugefügt pro Tag" alt="Hinzugefügt pro Tag" />
+	</div>
+{statistics-end}
 
 {information-start}
 	<h2>Informationen</h2>
