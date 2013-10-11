@@ -22,6 +22,7 @@ import com.lars_albrecht.mdb.main.core.interfaces.web.pages.BrowsePage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.FileDetailsPage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.HomePage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.InfoControlPage;
+import com.lars_albrecht.mdb.main.core.interfaces.web.pages.LoginPage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.SearchResultsPage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.SettingsPage;
 import com.lars_albrecht.mdb.main.core.interfaces.web.pages.config.WebPageConfig;
@@ -78,6 +79,9 @@ public class JMovieDB {
 			}, "Serien", true, 2));
 			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(SeriesExPage.class, new String[] {
 					"seriesex", "serien"
+			}));
+			mdbConfig.getWebInterfacePageConfigs().add(new WebPageConfig(LoginPage.class, new String[] {
+					"login", "login"
 			}));
 
 			mdbConfig.getListOfTypers().add(new VideoTyper());
