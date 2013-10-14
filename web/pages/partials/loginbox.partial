@@ -9,7 +9,7 @@
 		<input type="email" name="loginBoxEmail" id="loginBoxEmail" value="{identifier}" required="required" placeholder="E-Mail" />
 		<label for="loginBoxPassword">Password</label>
 		<input type="password" name="loginBoxPassword" id="loginBoxPassword" value="{password}" required="required" placeholder="Passwort" />
-		<input type="submit" value="submit" id="loginBoxSubmit" />
+		<input type="submit" value="Einloggen" id="loginBoxSubmit" />
 	</form>
 {loginBoxForm-end}
 

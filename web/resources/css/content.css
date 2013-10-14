@@ -27,6 +27,7 @@ table.defaultTable								{table-layout:fixed;}
 															-webkit-box-shadow: 0 5px 5px #333;
 											        		   -moz-box-shadow: 0 5px 5px #333;
 											        		        box-shadow: 0 5px 5px #333;
+											         float:left; width:100%;
                 									}
 
 #titleBox 										{width:100%;}
@@ -109,7 +110,9 @@ table.defaultTable								{table-layout:fixed;}
 #seriesView .series 								{margin-bottom:20px;}
 #seriesView .series .seriesBanner img				{width:100%;}
 
-
+#loginBoxPartial label 								{clear:left; float:left; width:100%;}
+#loginBoxPartial input 								{float:left; width:100%; margin-bottom:15px;}
+#loginBoxPartial input#loginBoxSubmit				{width:auto; padding:0 5px;}
 
 input[type=text],
 input[type=password]									{height:20px; line-height:20px; border:1px solid #49B3FF; text-indent:5px; font-size:12px;}

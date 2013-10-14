@@ -1,3 +1,4 @@
 <div id="login">
+	<p>Bitte loggen Sie sich ein um alle Funktionen nutzen zu können: </p>
 	{loginbox}
 </div>
