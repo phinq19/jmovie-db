@@ -68,6 +68,7 @@ public class SeriesExPage extends WebPage {
 			final int page,
 			final Integer maxItemsForPagingOption) {
 		final int maxElems = maxItemsForPagingOption;
+		@SuppressWarnings("unused")
 		final int startIndex = (page > 0 ? ((page * (maxElems > 0 ? maxElems : 0))) : 0);
 
 		final int maxExistingElems = this.mainController.getDataHandler().getRowCount(new FileItem(), "filetype='serie'");

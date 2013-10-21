@@ -4,6 +4,7 @@
 
 
 {loginBoxForm-start}
+	<p>Bitte loggen Sie sich ein um alle Funktionen nutzen zu können: </p>
 	<form action="{action}" method="post">
 		<label for="loginBoxEmail">E-Mail</label>
 		<input type="email" name="loginBoxEmail" id="loginBoxEmail" value="{identifier}" required="required" placeholder="E-Mail" />
@@ -14,6 +15,6 @@
 {loginBoxForm-end}
 
 {loginBoxText-start}
-	<p>You are logged in as <span class="loginBoxName">&quot;{name}&quot;</span></p>
+	<p>Du bist eingeloggt als <span class="loginBoxName">&quot;{name}&quot;</span></p>
 	<p><a href="/index.html?action=login&do=logout" class="loginBoxLogout">Logout</a></p>
 {loginBoxText-end}
