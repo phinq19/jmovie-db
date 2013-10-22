@@ -110,6 +110,20 @@ public class MediaInfoCollector extends ACollector {
 		return "MediaInfo";
 	}
 
+	@SuppressWarnings("unchecked")
+	private Key<String> getKeyFromSectionItemKeyValueArr(final String[] keyValues, final String sectionName, final ArrayList<Key<?>> keys) {
+		Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), sectionName, false, false);
+		int pos = -1;
+		if (((pos = keys.indexOf(key)) > -1) && (keys.get(pos) instanceof Key<?>)) {
+			key = (Key<String>) keys.get(pos);
+		} else {
+			if (!this.keysToAdd.contains(key)) {
+				this.keysToAdd.add(key);
+			}
+		}
+		return key;
+	}
+
 	@Override
 	public ArrayList<Key<String>> getKeysToAdd() {
 		return this.keysToAdd;
@@ -120,7 +134,7 @@ public class MediaInfoCollector extends ACollector {
 	 * @param sectionKeyStr
 	 * @return
 	 */
-	private String getSectionname(final String sectionKeyStr) {
+	private String getSectionnameByKey(final String sectionKeyStr) {
 		if (sectionKeyStr.equalsIgnoreCase("GENERAL")) {
 			return MediaInfoCollector.SECTIONNAME_GENERAL;
 		} else if (sectionKeyStr.equalsIgnoreCase("VIDEO")) {
@@ -134,62 +148,80 @@ public class MediaInfoCollector extends ACollector {
 		}
 	}
 
+	/**
+	 * Splits a dataString to a section-array.
+	 * 
+	 * @param data
+	 * @return
+	 */
+	private String[] getSections(final String data) {
+		if (data != null) {
+			return data.split("\\~");
+		}
+		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private Value<Object> getValueFromSectionItemKeyValueArr(final String[] keyValues, final ArrayList<Value<?>> values) {
+		Value<Object> value = new Value<Object>(keyValues[1]);
+		int pos = -1;
+		if ((values != null) && ((pos = values.indexOf(value)) > -1) && (values.get(pos) instanceof Value<?>)) {
+			value = (Value<Object>) values.get(pos);
+		} else {
+			if (!this.valuesToAdd.contains(value)) {
+				this.valuesToAdd.add(value);
+			}
+		}
+		return value;
+	}
+
 	@Override
 	public ArrayList<Value<?>> getValuesToAdd() {
 		return this.valuesToAdd;
 	}
 
-	@SuppressWarnings("unchecked")
 	private HashMap<String, ArrayList<KeyValue<String, Object>>> parseDataString(final String dataString) {
 		String[] sections = null;
 		HashMap<String, ArrayList<KeyValue<String, Object>>> resultList = null;
 		if (dataString != null) {
-			sections = dataString.split("\\~");
-			if (sections != null) {
+			sections = this.getSections(dataString);
+			if ((sections != null) && (sections.length > 0)) {
 				resultList = new HashMap<String, ArrayList<KeyValue<String, Object>>>();
 				final ArrayList<Key<?>> keys = this.mainController.getDataHandler().getKeys();
 				final ArrayList<Value<?>> values = this.mainController.getDataHandler().getValues();
+
+				Key<String> key = null;
+				Value<Object> value = null;
 				for (String completeSection : sections) {
 					if ((completeSection != null) && !completeSection.equalsIgnoreCase("") && (completeSection.indexOf("{") > -1)) {
-						final String sectionName = completeSection
-								.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
+
+						final String sectionName = this.getSectionnameByKey(this.parseSectionName(completeSection));
 						completeSection = completeSection.substring(completeSection.indexOf("}") + 1);
+
 						final ArrayList<KeyValue<String, Object>> keyValueList = new ArrayList<KeyValue<String, Object>>();
 						final String[] items = completeSection.split("\\|");
 						for (final String string : items) {
 							final String[] keyValues = string.split("\\:");
 							if (keyValues.length > 1) {
-								Key<String> key = new Key<String>(keyValues[0], this.getInfoType(), this.getSectionname(sectionName),
-										false, false);
-								int pos = -1;
-								if (((pos = keys.indexOf(key)) > -1) && (keys.get(pos) instanceof Key<?>)) {
-									key = (Key<String>) keys.get(pos);
-								} else {
-									if (!this.keysToAdd.contains(key)) {
-										this.keysToAdd.add(key);
-									}
-								}
-								Value<Object> value = new Value<Object>(keyValues[1]);
-								pos = -1;
-								if ((values != null) && ((pos = values.indexOf(value)) > -1) && (values.get(pos) instanceof Value<?>)) {
-									value = (Value<Object>) values.get(pos);
-								} else {
-									if (!this.valuesToAdd.contains(value)) {
-										this.valuesToAdd.add(value);
-									}
-								}
-
+								key = this.getKeyFromSectionItemKeyValueArr(keyValues, sectionName, keys);
+								value = this.getValueFromSectionItemKeyValueArr(keyValues, values);
 								keyValueList.add(new KeyValue<String, Object>(key, value));
 							}
-
 						}
-						resultList.put(this.getSectionname(sectionName), keyValueList);
+						resultList.put(this.getSectionnameByKey(sectionName), keyValueList);
 					}
 				}
-			}
 
+			}
+		}
+		return resultList;
+	}
+
+	private String parseSectionName(final String completeSection) {
+		if (completeSection != null) {
+			return completeSection.substring(completeSection.indexOf("{") + 1, completeSection.indexOf("}"));
 		}
 
-		return resultList;
+		return null;
 	}
 }
