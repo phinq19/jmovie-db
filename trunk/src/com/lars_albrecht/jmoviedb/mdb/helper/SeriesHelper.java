@@ -34,15 +34,23 @@ public class SeriesHelper {
 				}
 			}
 			if (seasonNumber == null) {
-				final Pattern p = Pattern.compile("(S([0-9]{1,2})E[0-9]{1,2})");
-				Matcher m = null;
-				m = p.matcher(fileItem.getName());
-				if (m.find()) {
-					seasonNumber = Integer.parseInt(m.group(2));
-				}
+				seasonNumber = SeriesHelper.getSeasonFromFilename(fileItem.getName());
 			}
 		}
 
 		return seasonNumber;
+	}
+
+	private static Integer getSeasonFromFilename(final String fileName) {
+		if (fileName == null) {
+			return null;
+		}
+		final Pattern p = Pattern.compile("(S([0-9]{1,2})E[0-9]{1,2})");
+		Matcher m = null;
+		m = p.matcher(fileName);
+		if (m.find()) {
+			return Integer.parseInt(m.group(2));
+		}
+		return null;
 	}
 }

@@ -166,12 +166,11 @@ public class SeriesPage extends WebPage {
 				if ((titleExtractionPath != null) && (titleExtractionPath.length == 3) && (attributesList != null)) {
 					for (final FileAttributeList fileAttributeList : attributesList) {
 						if (fileAttributeList.getInfoType().equalsIgnoreCase(titleExtractionPath[0])
-								&& fileAttributeList.getSectionName().equalsIgnoreCase(titleExtractionPath[1])) {
-							if (fileAttributeList.getKeyValues() != null) {
-								for (final KeyValue<String, Object> keyValue : fileAttributeList.getKeyValues()) {
-									if (keyValue.getKey().getKey().equalsIgnoreCase(titleExtractionPath[2])) {
-										return keyValue.getValue().getValue().toString();
-									}
+								&& fileAttributeList.getSectionName().equalsIgnoreCase(titleExtractionPath[1])
+								&& (fileAttributeList.getKeyValues() != null)) {
+							for (final KeyValue<String, Object> keyValue : fileAttributeList.getKeyValues()) {
+								if (keyValue.getKey().getKey().equalsIgnoreCase(titleExtractionPath[2])) {
+									return keyValue.getValue().getValue().toString();
 								}
 							}
 						}

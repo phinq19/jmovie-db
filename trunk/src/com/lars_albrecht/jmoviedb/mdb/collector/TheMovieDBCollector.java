@@ -477,7 +477,7 @@ public class TheMovieDBCollector extends ACollector {
 
 		while (m.find()) {
 
-			if (true) {
+			if (Debug.inDebugLevel(Debug.LEVEL_DEBUG)) {
 				Debug.log(Debug.LEVEL_DEBUG, "Groups: " + m.groupCount());
 				for (int i = 0; i <= m.groupCount(); i++) {
 					Debug.log(Debug.LEVEL_DEBUG, "Group: " + i + ": " + m.group(i));
