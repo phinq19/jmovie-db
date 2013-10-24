@@ -79,8 +79,79 @@ public class TheTVDBCollector extends ACollector {
 			final String infoType,
 			final FileItem fileItem) {
 		ArrayList<KeyValue<String, Object>> resultList = null;
+
+		resultList = new ArrayList<KeyValue<String, Object>>();
+
+		// add series info
+		resultList = this.addSeriesInfo(resultList, serie, infoType, fileItem);
+
+		// add episode infos
+		resultList = this.addEpisodeInfo(resultList, episode, infoType);
+
+		return resultList;
+	}
+
+	private ArrayList<KeyValue<String, Object>> addEpisodeInfo(final ArrayList<KeyValue<String, Object>> resultList,
+			final Episode episode,
+			final String infoType) {
+		if (episode != null) {
+
+			if (episode.getAbsoluteNumber() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("absolute_number", infoType, "episode", false, false),
+						new Value<Object>(episode.getAbsoluteNumber())));
+			}
+			if (episode.getEpisodeName() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("name", infoType, "episode", false, false), new Value<Object>(
+						episode.getEpisodeName())));
+			}
+			if (episode.getCombinedEpisodeNumber() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("combined_episode_number", infoType, "episode", false, false),
+						new Value<Object>(episode.getCombinedEpisodeNumber())));
+			}
+			if (episode.getEpisodeNumber() > 0) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("episode_number", infoType, "episode", false, false),
+						new Value<Object>(episode.getEpisodeNumber())));
+			}
+			if (episode.getSeasonNumber() > 0) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("season_number", infoType, "episode", false, false),
+						new Value<Object>(episode.getSeasonNumber())));
+			}
+			if (episode.getOverview() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "episode", false, false),
+						new Value<Object>(episode.getOverview())));
+			}
+			if (episode.getRating() != null) {
+				resultList.add(new KeyValue<String, Object>(new Key<String>("rating", infoType, "episode", false, false),
+						new Value<Object>(episode.getRating())));
+			}
+			if ((episode.getDirectors() != null) && (episode.getGuestStars().size() > 0)) {
+				for (final String directors : episode.getDirectors()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("directors", infoType, "episode", false, true),
+							new Value<Object>(directors)));
+				}
+			}
+			if ((episode.getGuestStars() != null) && (episode.getGuestStars().size() > 0)) {
+				for (final String guestStar : episode.getGuestStars()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("guest_stars", infoType, "episode", false, true),
+							new Value<Object>(guestStar)));
+				}
+			}
+			if ((episode.getWriters() != null) && (episode.getWriters().size() > 0)) {
+				for (final String writers : episode.getGuestStars()) {
+					resultList.add(new KeyValue<String, Object>(new Key<String>("writers", infoType, "episode", false, true),
+							new Value<Object>(writers)));
+				}
+			}
+		}
+		return resultList;
+	}
+
+	private ArrayList<KeyValue<String, Object>> addSeriesInfo(final ArrayList<KeyValue<String, Object>> resultList,
+			final Series serie,
+			final String infoType,
+			final FileItem fileItem) {
+
 		if (serie != null) {
-			resultList = new ArrayList<KeyValue<String, Object>>();
 
 			// add general infos
 			if (serie.getId() != null) {
@@ -177,63 +248,6 @@ public class TheTVDBCollector extends ACollector {
 				}
 			}
 		}
-
-		if (episode != null) {
-			if (resultList == null) {
-				resultList = new ArrayList<KeyValue<String, Object>>();
-			}
-
-			// add episode infos
-			if (episode != null) {
-				if (episode.getAbsoluteNumber() != null) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("absolute_number", infoType, "episode", false, false),
-							new Value<Object>(episode.getAbsoluteNumber())));
-				}
-				if (episode.getEpisodeName() != null) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("name", infoType, "episode", false, false),
-							new Value<Object>(episode.getEpisodeName())));
-				}
-				if (episode.getCombinedEpisodeNumber() != null) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("combined_episode_number", infoType, "episode", false,
-							false), new Value<Object>(episode.getCombinedEpisodeNumber())));
-				}
-				if (episode.getEpisodeNumber() > 0) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("episode_number", infoType, "episode", false, false),
-							new Value<Object>(episode.getEpisodeNumber())));
-				}
-				if (episode.getSeasonNumber() > 0) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("season_number", infoType, "episode", false, false),
-							new Value<Object>(episode.getSeasonNumber())));
-				}
-				if (episode.getOverview() != null) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("overview", infoType, "episode", false, false),
-							new Value<Object>(episode.getOverview())));
-				}
-				if (episode.getRating() != null) {
-					resultList.add(new KeyValue<String, Object>(new Key<String>("rating", infoType, "episode", false, false),
-							new Value<Object>(episode.getRating())));
-				}
-				if ((episode.getDirectors() != null) && (episode.getGuestStars().size() > 0)) {
-					for (final String directors : episode.getDirectors()) {
-						resultList.add(new KeyValue<String, Object>(new Key<String>("directors", infoType, "episode", false, true),
-								new Value<Object>(directors)));
-					}
-				}
-				if ((episode.getGuestStars() != null) && (episode.getGuestStars().size() > 0)) {
-					for (final String guestStar : episode.getGuestStars()) {
-						resultList.add(new KeyValue<String, Object>(new Key<String>("guest_stars", infoType, "episode", false, true),
-								new Value<Object>(guestStar)));
-					}
-				}
-				if ((episode.getWriters() != null) && (episode.getWriters().size() > 0)) {
-					for (final String writers : episode.getGuestStars()) {
-						resultList.add(new KeyValue<String, Object>(new Key<String>("writers", infoType, "episode", false, true),
-								new Value<Object>(writers)));
-					}
-				}
-			}
-		}
-
 		return resultList;
 	}
 
