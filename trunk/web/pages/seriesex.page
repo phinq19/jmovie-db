@@ -13,11 +13,18 @@
 
 {seriesList-start}
 <div class="series">
-	<div class="seriesBanner"><img alt="Banner &quot;{seriesTitle}&quot;" src="{seriesBanner}" title="Banner &quot;{seriesTitle}&quot;" /></div>
-	<div class="seriesTitle">{seriesTitle}</div>
+	{seriestitlebanner}
 	{singleseries}
 </div>
 {seriesList-end}
+
+{seriesTitleStr-start}
+<div class="seriesTitle">{seriesTitle}</div>
+{seriesTitleStr-end}
+
+{seriesTitleBanner-start}
+<div class="seriesBanner"><img alt="Banner &quot;{seriesTitle}&quot;" src="{seriesBanner}" title="Banner &quot;{seriesTitle}&quot;" /></div>
+{seriesTitleBanner-end}
 
 {seriesFileList-start}
 <table class="defaultTable">
