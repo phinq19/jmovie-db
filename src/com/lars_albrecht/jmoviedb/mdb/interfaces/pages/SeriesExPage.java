@@ -156,11 +156,6 @@ public class SeriesExPage extends WebPage {
 			seriesFileList = seriesTemplate.getSubMarkerContent("seriesFileList");
 			fileListItems = "";
 			for (final FileItem fileItem : fileItemListEntry.getValue()) {
-				if (!isSetSeriesTitle) {
-					seriesList = Template.replaceMarker(seriesList, "seriesTitle",
-							(String) AttributeHandler.getAttributeValueByKey(fileItem, "title"), true);
-					isSetSeriesTitle = true;
-				}
 				if (!isSetSeriesBanner) {
 					@SuppressWarnings("unchecked")
 					final ArrayList<MediaItem> itemFileMedia = (ArrayList<MediaItem>) ADataHandler.getHandlerDataFromFileItem(fileItem,
@@ -169,10 +164,21 @@ public class SeriesExPage extends WebPage {
 					final MediaItem mediaItemBanner = MediaHandler.getMediaItemByName(itemFileMedia, "banner");
 					if (mediaItemBanner != null) {
 						mediaItemBanner.getUri().toString();
-						seriesList = Template.replaceMarker(seriesList, "seriesBanner", mediaItemBanner.getUri().toString(), false);
+						String banner = seriesTemplate.getSubMarkerContent("seriesTitleBanner");
+						banner = Template.replaceMarker(banner, "seriesBanner", mediaItemBanner.getUri().toString(), false);
+						banner = Template.replaceMarker(banner, "seriesTitle",
+								(String) AttributeHandler.getAttributeValueByKey(fileItem, "title"), true);
+						seriesList = Template.replaceMarker(seriesList, "seriestitlebanner", banner, false);
 						isSetSeriesBanner = true;
 					}
+				}
+				if (!isSetSeriesTitle && !isSetSeriesBanner) {
+					String title = seriesTemplate.getSubMarkerContent("seriesTitleStr");
+					title = Template.replaceMarker(title, "seriesTitle",
+							(String) AttributeHandler.getAttributeValueByKey(fileItem, "title"), false);
+					seriesList = Template.replaceMarker(seriesList, "seriestitlebanner", title, false);
 
+					isSetSeriesTitle = true;
 				}
 
 				extractedName = this.getExtractedName(fileItem);
