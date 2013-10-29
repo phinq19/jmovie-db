@@ -50,47 +50,6 @@ public class TheTVDBCollector extends ACollector {
 		this.valuesToAdd = new ArrayList<Value<?>>();
 	}
 
-	@Override
-	public void doCollect() {
-		this.fileAttributeListToAdd.clear();
-		ArrayList<FileAttributeList> tempFileAttributes = null;
-		for (final FileItem item : this.getFileItems()) {
-			// collect all data for all found items in the list
-			if (item != null) {
-				tempFileAttributes = this.getFileAttributeListsForItem(item);
-				if (tempFileAttributes != null) {
-					this.fileAttributeListToAdd.put(item, tempFileAttributes);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Returns a list of all infos in a keyValue-List.
-	 * 
-	 * @param serie
-	 * @param episode
-	 * @param infoType
-	 * @param fileItem
-	 * @return ArrayList<KeyValue<String, Object>>
-	 */
-	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final Series serie,
-			final Episode episode,
-			final String infoType,
-			final FileItem fileItem) {
-		ArrayList<KeyValue<String, Object>> resultList = null;
-
-		resultList = new ArrayList<KeyValue<String, Object>>();
-
-		// add series info
-		resultList = this.addSeriesInfo(resultList, serie, infoType, fileItem);
-
-		// add episode infos
-		resultList = this.addEpisodeInfo(resultList, episode, infoType);
-
-		return resultList;
-	}
-
 	private ArrayList<KeyValue<String, Object>> addEpisodeInfo(final ArrayList<KeyValue<String, Object>> resultList,
 			final Episode episode,
 			final String infoType) {
@@ -248,6 +207,47 @@ public class TheTVDBCollector extends ACollector {
 				}
 			}
 		}
+		return resultList;
+	}
+
+	@Override
+	public void doCollect() {
+		this.fileAttributeListToAdd.clear();
+		ArrayList<FileAttributeList> tempFileAttributes = null;
+		for (final FileItem item : this.getFileItems()) {
+			// collect all data for all found items in the list
+			if (item != null) {
+				tempFileAttributes = this.getFileAttributeListsForItem(item);
+				if (tempFileAttributes != null) {
+					this.fileAttributeListToAdd.put(item, tempFileAttributes);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Returns a list of all infos in a keyValue-List.
+	 * 
+	 * @param serie
+	 * @param episode
+	 * @param infoType
+	 * @param fileItem
+	 * @return ArrayList<KeyValue<String, Object>>
+	 */
+	private ArrayList<KeyValue<String, Object>> fillKeyValueList(final Series serie,
+			final Episode episode,
+			final String infoType,
+			final FileItem fileItem) {
+		ArrayList<KeyValue<String, Object>> resultList = null;
+
+		resultList = new ArrayList<KeyValue<String, Object>>();
+
+		// add series info
+		resultList = this.addSeriesInfo(resultList, serie, infoType, fileItem);
+
+		// add episode infos
+		resultList = this.addEpisodeInfo(resultList, episode, infoType);
+
 		return resultList;
 	}
 
